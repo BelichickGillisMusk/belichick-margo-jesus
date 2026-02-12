@@ -112,56 +112,80 @@ Fallback: Sonnet for basic searches
 
 ---
 
-## Cost Breakdown
+## Cost Breakdown - MAXIMIZED (Use What You Already Pay For)
 
-### Option A: All Claude API (Pay Per Token)
+### What You Already Have (Monthly Subs)
 
-| Agent | Model | Est. Daily Tokens | Daily Cost | Monthly Cost |
-|-------|-------|-------------------|------------|--------------|
-| Belichick (Admin) | Opus | 100K in / 20K out | ~$2.10 | ~$63 |
-| Mila (Customer Svc) | Haiku | 50K in / 10K out | ~$0.08 | ~$2.40 |
-| Atlas (Web Dev) | Sonnet | 80K in / 30K out | ~$1.14 | ~$34 |
-| Cipher (Finance) | Sonnet | 30K in / 10K out | ~$0.39 | ~$12 |
-| Nova (Marketing) | Sonnet | 60K in / 20K out | ~$0.78 | ~$23 |
-| Sentinel (Legal) | Opus | 80K in / 15K out | ~$1.65 | ~$50 |
-| **TOTAL** | | | **~$6.14/day** | **~$185/mo** |
+| Service | You Pay | What We Use It For |
+|---------|---------|-------------------|
+| **Gemini Pro/Developer** | Already paying | ALL grunt work: Maps scraping, Sheets, Drive, Calendar, summarization, CS bot |
+| **Google Cloud** | Already paying | Gemini API free tier, Cloud Functions if needed |
+| **Make.com** | Already paying | Automation workflows: lead pipelines, notifications, data sync between systems |
+| **Claude Code (this)** | Already paying | Strategy, complex code, architecture, legal analysis |
 
-### Option B: Hybrid - Local Models + Claude API (RECOMMENDED)
+### Model Assignment - Maximize Free, Minimize Paid
 
-| Agent | Primary Model | Claude API For | Monthly Cost |
-|-------|--------------|----------------|--------------|
-| Belichick (Admin) | Claude Sonnet | Complex tasks | ~$40 |
-| Mila (Customer Svc) | Ollama (Llama 3) | Nothing - fully local | $0 |
-| Atlas (Web Dev) | Claude Sonnet | Coding only | ~$25 |
-| Cipher (Finance) | Claude Sonnet | Calculations | ~$10 |
-| Nova (Marketing) | Ollama (Llama 3) | Final polish only | ~$5 |
-| Sentinel (Legal) | Claude Sonnet | Deep analysis | ~$30 |
-| **TOTAL** | | | **~$110/mo** |
+| Agent | Task Type | Model | Cost |
+|-------|-----------|-------|------|
+| **Belichick** (Admin) | Calendar, email, reminders, Drive | **Gemini - FREE** | $0 |
+| **Belichick** (Admin) | Complex strategy/decisions | Claude (on-demand) | $ only when needed |
+| **Mila** (Customer Svc) | CARB Q&A on website | **Gemini - FREE** | $0 |
+| **Mila** (Admin assist) | Schedule tests, organize Drive | **Gemini - FREE** | $0 |
+| **Atlas** (Web Dev) | Simple site updates | **Gemini - FREE** | $0 |
+| **Atlas** (Web Dev) | Complex code/architecture | Claude (on-demand) | $ only when needed |
+| **Cipher** (Finance) | Sheets formulas, invoice gen | **Gemini - FREE** | $0 |
+| **Cipher** (Finance) | Tax strategy, complex analysis | Claude (on-demand) | $ only when needed |
+| **Nova** (Marketing) | Content drafts, SEO, social | **Gemini - FREE** | $0 |
+| **Nova** (Marketing) | YouTube scripts, animation briefs | **Gemini - FREE** | $0 |
+| **Sentinel** (Legal) | Basic law research, summaries | **Gemini - FREE** | $0 |
+| **Sentinel** (Legal) | Deep regulatory analysis | Claude (on-demand) | $ only when needed |
+| **Lead Scraper** | Google Maps phone/address pulls | **Gemini - FREE** | $0 |
+| **Data Sync** | Move data between systems | **Make.com** | $0 (already paid) |
 
-### Option C: Claude Max Subscription ($100/mo flat)
+### Make.com Automation Workflows
 
-Use your Claude Max subscription through OpenClaw's OAuth auth profile.
-- Fixed cost regardless of usage
-- All agents use Claude through your subscription
-- No surprise bills
-- **Best value if you're already paying for Max**
+Use Make.com for everything that's a repeating pipeline:
 
-| Component | Monthly Cost |
-|-----------|-------------|
-| Claude Max subscription | $100 |
-| Electricity (Mac running 24/7) | ~$5 |
-| **TOTAL** | **~$105/mo** |
+| Workflow | Trigger | Action |
+|----------|---------|--------|
+| **Lead Capture → Sheets** | Mila collects a lead on website | Auto-add to Google Sheets lead tracker |
+| **Compliance Deadline Alerts** | Calendar event approaching | Send SMS/email reminder to customer |
+| **Test Results → Drive** | Tester submits results | Auto-file in customer's Drive folder |
+| **New CARB Regulation Alert** | RSS/web monitor on CARB site | Notify you + update Mila's knowledge |
+| **Invoice Generation** | Cipher creates invoice | Auto-send via email, log in Sheets |
+| **Social Media Posting** | Nova creates content | Auto-post to platforms on schedule |
+| **Fleet Compliance Check** | Weekly cron | Pull fleet status, flag non-compliant |
 
-### Local Infrastructure Cost (All Options)
+### Revised Monthly Cost
 
-| Item | Cost |
-|------|------|
-| Mac (you already own it) | $0 |
-| Docker Desktop (free tier) | $0 |
-| OpenClaw (open source) | $0 |
-| Ollama (local models) | $0 |
-| Domain/hosting (Vercel free tier) | $0 |
-| Electricity (~5W idle Mac Mini) | ~$5/mo |
+| Item | Cost | Notes |
+|------|------|-------|
+| Gemini Pro/Developer/Cloud | Already paying | Handles 80% of agent tasks |
+| Make.com | Already paying | Handles all automation |
+| Claude API (on-demand only) | ~$15-30/mo | ONLY for complex tasks |
+| OpenClaw (open source) | $0 | |
+| Ollama (backup local model) | $0 | |
+| Mac electricity | ~$5 | |
+| **TOTAL NEW COST** | **~$20-35/mo** | Down from $185/mo |
+
+### What to EVALUATE for Cutting
+
+| Service | Keep or Cut? | Why |
+|---------|-------------|-----|
+| Google Cloud VM (Mila's current home) | **CUT** | Moving everything local |
+| Any redundant automation tool | **EVALUATE** | If Make.com covers it, cut it |
+| Paid Gemini tier vs free tier | **EVALUATE** | Check if free tier covers your volume |
+| Multiple Claude subscriptions | **EVALUATE** | One is enough if agents share it |
+
+### Gemini API Free Tier Limits (Google AI Studio)
+
+| Resource | Free Limit | Good Enough? |
+|----------|-----------|-------------|
+| Gemini 2.0 Flash | 15 RPM / 1M TPM / 1500 RPD | YES for most agents |
+| Gemini 1.5 Pro | 2 RPM / 32K TPM / 50 RPD | YES for complex tasks |
+| Gemini 1.5 Flash | 15 RPM / 1M TPM / 1500 RPD | YES for grunt work |
+
+If you're on the paid Gemini tier, limits are much higher. Either way: plenty for agent work.
 
 ---
 
@@ -192,12 +216,19 @@ YOUR MAC
 │   ├── Auth: Token-based (timing-safe)
 │   ├── Bind: 127.0.0.1 ONLY
 │   └── Agents:
-│       ├── Belichick ─── Claude API (capped)
-│       ├── Mila ──────── Ollama LOCAL (no network)
-│       ├── Atlas ─────── Claude API (capped)
-│       ├── Cipher ────── Claude API (capped)
-│       ├── Nova ──────── Ollama LOCAL / Claude API
-│       └── Sentinel ──── Claude API (capped)
+│       ├── Belichick ─── Gemini FREE (daily) / Claude (on-demand)
+│       ├── Mila ──────── Gemini FREE (CS bot) / Ollama (backup)
+│       ├── Atlas ─────── Gemini FREE (simple) / Claude (complex code)
+│       ├── Cipher ────── Gemini FREE (Sheets) / Claude (tax/analysis)
+│       ├── Nova ──────── Gemini FREE (content) / Claude (polish)
+│       └── Sentinel ──── Gemini FREE (research) / Claude (deep analysis)
+│
+├── Make.com (automation layer)
+│   ├── Lead capture pipelines
+│   ├── Compliance deadline alerts
+│   ├── Invoice/document workflows
+│   ├── Social media posting
+│   └── CARB regulation monitoring
 │
 ├── Docker (optional sandboxing)
 │   └── Each agent can run in isolated container
