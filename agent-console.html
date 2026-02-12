@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none';">
+<title>Agent Console - BelichickGillisMusk</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root{
+    --bg:#0e1117;
+    --panel:#161b22;
+    --border:#30363d;
+    --text:#c9d1d9;
+    --text-dim:#6e7681;
+    --accent:#58a6ff;
+    --accent-glow:rgba(88,166,255,.3);
+    --green:#3fb950;
+    --green-glow:rgba(63,185,80,.3);
+    --red:#f85149;
+    --red-glow:rgba(248,81,73,.3);
+    --gold:#d29922;
+    --gold-glow:rgba(210,153,34,.3);
+    --purple:#bc8cff;
+    --bot-bg:#1c2333;
+    --user-bg:#1a3a2a;
+    --approval-bg:#2d1f0e;
+  }
+
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    display:flex;
+    height:100vh;
+    overflow:hidden;
+  }
+
+  /* ── SIDEBAR: AGENT ROSTER ── */
+  .sidebar{
+    width:260px;
+    min-width:260px;
+    background:var(--panel);
+    border-right:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    overflow-y:auto;
+  }
+
+  .sidebar-header{
+    padding:16px 20px;
+    border-bottom:1px solid var(--border);
+  }
+
+  .sidebar-header h2{
+    font-size:1rem;
+    color:var(--text);
+    margin-bottom:2px;
+  }
+
+  .sidebar-header .mode-badge{
+    display:inline-block;
+    font-size:.58rem;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+    padding:2px 8px;
+    border-radius:10px;
+    background:rgba(248,81,73,.15);
+    color:var(--red);
+    border:1px solid rgba(248,81,73,.3);
+  }
+
+  .agent-list{
+    flex:1;
+    padding:8px 0;
+  }
+
+  .agent-btn{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    width:100%;
+    padding:10px 20px;
+    background:transparent;
+    border:none;
+    color:var(--text-dim);
+    font-size:.8rem;
+    cursor:pointer;
+    transition:all .15s;
+    text-align:left;
+  }
+
+  .agent-btn:hover{
+    background:rgba(88,166,255,.06);
+    color:var(--text);
+  }
+
+  .agent-btn.active{
+    background:rgba(88,166,255,.1);
+    color:var(--accent);
+    border-right:2px solid var(--accent);
+  }
+
+  .agent-btn .agent-emoji{
+    font-size:1.2rem;
+    width:28px;
+    text-align:center;
+  }
+
+  .agent-btn .agent-info{
+    flex:1;
+    min-width:0;
+  }
+
+  .agent-btn .agent-info .name{
+    font-weight:600;
+    font-size:.78rem;
+  }
+
+  .agent-btn .agent-info .role{
+    font-size:.62rem;
+    color:var(--text-dim);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .agent-btn .status-dot{
+    width:8px;height:8px;
+    border-radius:50%;
+    flex-shrink:0;
+  }
+
+  .status-dot.online{background:var(--green);box-shadow:0 0 6px var(--green-glow)}
+  .status-dot.offline{background:var(--border)}
+  .status-dot.busy{background:var(--gold);box-shadow:0 0 6px var(--gold-glow)}
+
+  .sidebar-footer{
+    padding:12px 20px;
+    border-top:1px solid var(--border);
+    font-size:.62rem;
+    color:var(--text-dim);
+    line-height:1.5;
+  }
+
+  .approval-mode-toggle{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:8px;
+    padding:8px 12px;
+    background:rgba(248,81,73,.08);
+    border:1px solid rgba(248,81,73,.2);
+    border-radius:6px;
+    cursor:pointer;
+    transition:all .2s;
+  }
+
+  .approval-mode-toggle:hover{
+    background:rgba(248,81,73,.15);
+  }
+
+  .approval-mode-toggle .toggle-label{
+    font-size:.68rem;
+    color:var(--red);
+    font-weight:600;
+  }
+
+  .approval-mode-toggle .toggle-desc{
+    font-size:.58rem;
+    color:var(--text-dim);
+  }
+
+  .approval-mode-toggle.autonomous{
+    background:rgba(63,185,80,.08);
+    border-color:rgba(63,185,80,.2);
+  }
+
+  .approval-mode-toggle.autonomous .toggle-label{
+    color:var(--green);
+  }
+
+  /* ── MAIN CHAT AREA ── */
+  .chat-area{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    min-width:0;
+  }
+
+  .chat-header{
+    padding:14px 24px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:var(--panel);
+  }
+
+  .chat-header-left{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+
+  .chat-header-left .agent-avatar{
+    font-size:1.4rem;
+  }
+
+  .chat-header-left h1{
+    font-size:.95rem;
+    font-weight:600;
+  }
+
+  .chat-header-left .agent-model{
+    font-size:.6rem;
+    color:var(--text-dim);
+  }
+
+  .sandbox-badge{
+    font-size:.58rem;
+    padding:3px 8px;
+    border-radius:4px;
+    background:rgba(63,185,80,.1);
+    color:var(--green);
+    border:1px solid rgba(63,185,80,.25);
+    text-transform:uppercase;
+    letter-spacing:.08em;
+  }
+
+  .messages{
+    flex:1;
+    overflow-y:auto;
+    padding:16px 24px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .message{
+    max-width:80%;
+    padding:12px 16px;
+    border-radius:12px;
+    font-size:.82rem;
+    line-height:1.55;
+    animation:msg-in .2s ease-out;
+    white-space:pre-wrap;
+  }
+
+  @keyframes msg-in{
+    from{opacity:0;transform:translateY(6px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+
+  .message.bot{
+    align-self:flex-start;
+    background:var(--bot-bg);
+    border:1px solid var(--border);
+    border-bottom-left-radius:4px;
+  }
+
+  .message.user{
+    align-self:flex-end;
+    background:var(--user-bg);
+    border:1px solid rgba(63,185,80,.2);
+    border-bottom-right-radius:4px;
+  }
+
+  .message.system{
+    align-self:center;
+    background:transparent;
+    border:1px dashed var(--border);
+    color:var(--text-dim);
+    font-size:.72rem;
+    max-width:90%;
+    text-align:center;
+    border-radius:8px;
+  }
+
+  .message .sender{
+    font-size:.62rem;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--text-dim);
+    margin-bottom:4px;
+  }
+
+  .message.bot .sender{color:var(--accent)}
+  .message.user .sender{color:var(--green)}
+
+  /* ── APPROVAL REQUEST ── */
+  .approval-request{
+    align-self:flex-start;
+    max-width:85%;
+    background:var(--approval-bg);
+    border:1px solid rgba(210,153,34,.3);
+    border-radius:12px;
+    padding:14px 16px;
+    animation:msg-in .2s ease-out;
+  }
+
+  .approval-header{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:8px;
+    font-size:.7rem;
+    font-weight:600;
+    color:var(--gold);
+    text-transform:uppercase;
+    letter-spacing:.08em;
+  }
+
+  .approval-header::before{
+    content:'';
+    width:8px;height:8px;
+    border-radius:50%;
+    background:var(--gold);
+    box-shadow:0 0 8px var(--gold-glow);
+    animation:pulse-approval 1.2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-approval{
+    0%,100%{opacity:1}
+    50%{opacity:.4}
+  }
+
+  .approval-body{
+    font-size:.8rem;
+    color:var(--text);
+    line-height:1.5;
+    margin-bottom:12px;
+    white-space:pre-wrap;
+  }
+
+  .approval-actions{
+    display:flex;
+    gap:8px;
+  }
+
+  .btn-approve{
+    padding:6px 20px;
+    background:var(--green);
+    border:none;
+    border-radius:6px;
+    color:#fff;
+    font-size:.75rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:all .2s;
+  }
+
+  .btn-approve:hover{
+    box-shadow:0 0 12px var(--green-glow);
+  }
+
+  .btn-deny{
+    padding:6px 20px;
+    background:transparent;
+    border:1px solid var(--red);
+    border-radius:6px;
+    color:var(--red);
+    font-size:.75rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:all .2s;
+  }
+
+  .btn-deny:hover{
+    background:rgba(248,81,73,.1);
+    box-shadow:0 0 12px var(--red-glow);
+  }
+
+  .btn-modify{
+    padding:6px 14px;
+    background:transparent;
+    border:1px solid var(--border);
+    border-radius:6px;
+    color:var(--text-dim);
+    font-size:.72rem;
+    cursor:pointer;
+    transition:all .2s;
+  }
+
+  .btn-modify:hover{
+    border-color:var(--accent);
+    color:var(--accent);
+  }
+
+  .approval-resolved{
+    opacity:.6;
+  }
+
+  .approval-resolved .approval-actions{display:none}
+
+  .approval-stamp{
+    font-size:.65rem;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    font-weight:700;
+    padding:2px 8px;
+    border-radius:4px;
+    display:inline-block;
+    margin-top:4px;
+  }
+
+  .approval-stamp.approved{
+    color:var(--green);
+    background:rgba(63,185,80,.1);
+  }
+
+  .approval-stamp.denied{
+    color:var(--red);
+    background:rgba(248,81,73,.1);
+  }
+
+  /* typing indicator */
+  .typing-indicator{
+    align-self:flex-start;
+    padding:10px 14px;
+    background:var(--bot-bg);
+    border:1px solid var(--border);
+    border-radius:12px;
+    border-bottom-left-radius:4px;
+    display:none;
+  }
+
+  .typing-indicator span{
+    display:inline-block;
+    width:5px;height:5px;
+    border-radius:50%;
+    background:var(--text-dim);
+    margin:0 2px;
+    animation:typing .8s ease-in-out infinite;
+  }
+
+  .typing-indicator span:nth-child(2){animation-delay:.15s}
+  .typing-indicator span:nth-child(3){animation-delay:.3s}
+
+  @keyframes typing{
+    0%,60%,100%{transform:translateY(0);opacity:.4}
+    30%{transform:translateY(-3px);opacity:1}
+  }
+
+  .input-area{
+    padding:14px 24px;
+    border-top:1px solid var(--border);
+    background:var(--panel);
+    display:flex;
+    gap:10px;
+  }
+
+  .input-area input{
+    flex:1;
+    padding:10px 14px;
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:8px;
+    color:var(--text);
+    font-size:.82rem;
+    outline:none;
+    transition:border-color .2s;
+  }
+
+  .input-area input:focus{
+    border-color:var(--accent);
+  }
+
+  .input-area button{
+    padding:10px 20px;
+    background:var(--accent);
+    border:none;
+    border-radius:8px;
+    color:#fff;
+    font-size:.78rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:all .2s;
+    white-space:nowrap;
+  }
+
+  .input-area button:hover{
+    box-shadow:0 0 14px var(--accent-glow);
+  }
+
+  /* ── SECURITY OVERLAY ── */
+  .security-wall{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.85);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:9999;
+    backdrop-filter:blur(8px);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .3s;
+  }
+
+  .security-wall.show{
+    opacity:1;
+    pointer-events:all;
+  }
+
+  .security-box{
+    background:var(--panel);
+    border:1px solid var(--red);
+    border-radius:12px;
+    padding:32px;
+    max-width:420px;
+    text-align:center;
+    box-shadow:0 0 40px rgba(248,81,73,.2);
+  }
+
+  .security-box h2{
+    color:var(--red);
+    margin-bottom:8px;
+  }
+
+  .security-box p{
+    color:var(--text-dim);
+    font-size:.82rem;
+    line-height:1.5;
+    margin-bottom:16px;
+  }
+
+  .security-box button{
+    padding:8px 24px;
+    background:var(--red);
+    border:none;
+    border-radius:6px;
+    color:#fff;
+    font-weight:600;
+    cursor:pointer;
+  }
+
+  /* ── AUDIT LOG ── */
+  .audit-panel{
+    width:280px;
+    min-width:280px;
+    background:var(--panel);
+    border-left:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+  }
+
+  .audit-header{
+    padding:14px 16px;
+    border-bottom:1px solid var(--border);
+    font-size:.75rem;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    color:var(--text-dim);
+  }
+
+  .audit-log{
+    flex:1;
+    overflow-y:auto;
+    padding:8px 12px;
+  }
+
+  .audit-entry{
+    padding:6px 0;
+    border-bottom:1px solid rgba(48,54,61,.5);
+    font-size:.65rem;
+    color:var(--text-dim);
+    line-height:1.4;
+  }
+
+  .audit-entry .timestamp{
+    color:var(--text-dim);
+    opacity:.6;
+  }
+
+  .audit-entry.approved{border-left:2px solid var(--green);padding-left:8px}
+  .audit-entry.denied{border-left:2px solid var(--red);padding-left:8px}
+  .audit-entry.action{border-left:2px solid var(--accent);padding-left:8px}
+  .audit-entry.security{border-left:2px solid var(--red);padding-left:8px;color:var(--red)}
+
+  .audit-stats{
+    padding:12px 16px;
+    border-top:1px solid var(--border);
+    font-size:.62rem;
+    color:var(--text-dim);
+    display:flex;
+    justify-content:space-between;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:1024px){
+    .audit-panel{display:none}
+  }
+  @media(max-width:768px){
+    .sidebar{display:none}
+    .message{max-width:92%}
+  }
+</style>
+</head>
+<body>
+
+<!-- SECURITY BOUNDARY ALERT -->
+<div class="security-wall" id="securityWall">
+  <div class="security-box">
+    <h2>SANDBOX VIOLATION</h2>
+    <p id="securityMsg">An attempt to access unauthorized resources was blocked.</p>
+    <button onclick="dismissSecurity()">Acknowledge</button>
+  </div>
+</div>
+
+<!-- SIDEBAR: AGENT ROSTER -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <h2>Agent Console</h2>
+    <span class="mode-badge">Human Approval Required</span>
+  </div>
+
+  <div class="agent-list" id="agentList"></div>
+
+  <div class="sidebar-footer">
+    <div>All actions require your YES before execution.</div>
+    <div class="approval-mode-toggle" id="approvalToggle" onclick="toggleApprovalMode()">
+      <div>
+        <div class="toggle-label" id="approvalLabel">APPROVAL: EVERYTHING</div>
+        <div class="toggle-desc" id="approvalDesc">You confirm every action</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN CHAT -->
+<main class="chat-area">
+  <div class="chat-header">
+    <div class="chat-header-left">
+      <span class="agent-avatar" id="headerEmoji">🏈</span>
+      <div>
+        <h1 id="headerName">Belichick</h1>
+        <div class="agent-model" id="headerModel">Gemini FREE → Claude Opus (escalation)</div>
+      </div>
+    </div>
+    <span class="sandbox-badge">Sandboxed - No Network</span>
+  </div>
+
+  <div class="messages" id="messages"></div>
+
+  <div class="typing-indicator" id="typingIndicator">
+    <span></span><span></span><span></span>
+  </div>
+
+  <div class="input-area">
+    <input type="text" id="userInput" placeholder="Talk to the agent..." autocomplete="off">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+</main>
+
+<!-- AUDIT LOG -->
+<aside class="audit-panel">
+  <div class="audit-header">Audit Log</div>
+  <div class="audit-log" id="auditLog"></div>
+  <div class="audit-stats">
+    <span id="auditApproved">Approved: 0</span>
+    <span id="auditDenied">Denied: 0</span>
+    <span id="auditTotal">Total: 0</span>
+  </div>
+</aside>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// SANDBOX ENFORCEMENT
+// ══════════════════════════════════════════════════════════════
+
+(function() {
+  window.eval = function() {
+    triggerSecurityWall('eval() execution blocked');
+    return undefined;
+  };
+  window.fetch = function() {
+    triggerSecurityWall('Outbound fetch() blocked by sandbox');
+    return Promise.reject(new Error('Sandbox: network blocked'));
+  };
+  window.XMLHttpRequest = function() {
+    triggerSecurityWall('XMLHttpRequest blocked by sandbox');
+    return {};
+  };
+  window.WebSocket = function() {
+    triggerSecurityWall('WebSocket blocked by sandbox');
+    return {};
+  };
+  window.EventSource = function() {
+    triggerSecurityWall('EventSource blocked by sandbox');
+    return {};
+  };
+  if (navigator.sendBeacon) {
+    navigator.sendBeacon = function() {
+      triggerSecurityWall('sendBeacon blocked by sandbox');
+      return false;
+    };
+  }
+  const origCreate = document.createElement.bind(document);
+  document.createElement = function(tag) {
+    const lower = tag.toLowerCase();
+    if (lower === 'script' || lower === 'iframe' || lower === 'object' || lower === 'embed') {
+      triggerSecurityWall('<' + tag + '> creation blocked by sandbox');
+      return origCreate('div');
+    }
+    return origCreate(tag);
+  };
+})();
+
+function triggerSecurityWall(msg) {
+  document.getElementById('securityMsg').textContent = msg;
+  document.getElementById('securityWall').classList.add('show');
+  auditLog('security', msg);
+}
+
+function dismissSecurity() {
+  document.getElementById('securityWall').classList.remove('show');
+}
+
+// ══════════════════════════════════════════════════════════════
+// AGENT ROSTER
+// ══════════════════════════════════════════════════════════════
+
+const AGENTS = [
+  {
+    id: 'belichick', name: 'Belichick', emoji: '🏈',
+    role: 'Admin / Strategy', model: 'Gemini FREE → Claude Opus',
+    skill: 'belichick-strategy',
+    greeting: "What's the play? Give me the situation and I'll tell you who handles it, when, and why.",
+    personality: 'Strategic, decisive, no-nonsense. Sees the whole board. Delegates to the right agent.',
+    capabilities: ['Coordinate agents', 'Make GO/NO-GO decisions', 'Allocate budget', 'Strategic planning', 'Delegate tasks'],
+    approvalActions: ['Delegate to agent', 'Budget allocation', 'Launch decision', 'Priority change']
+  },
+  {
+    id: 'mila', name: 'Mila', emoji: '💬',
+    role: 'Customer Service (CARB)', model: 'Gemini FREE → Ollama',
+    skill: 'mila-carb-cs',
+    greeting: "Hi! I handle CARB compliance questions. Ask me about emissions testing, HD I/M program, or scheduling a test.",
+    personality: 'Helpful, knowledgeable about CARB regulations, never guesses - only answers from known data.',
+    capabilities: ['Answer CARB questions', 'Collect lead info', 'Schedule appointments', 'Route complex questions'],
+    approvalActions: ['Collect lead info', 'Send to CRM', 'Schedule appointment', 'Escalate to human']
+  },
+  {
+    id: 'atlas', name: 'Atlas', emoji: '🗺️',
+    role: 'Web Dev / Creative', model: 'Gemini FREE → Claude Sonnet',
+    skill: 'atlas-creative',
+    greeting: "What are we building? Give me the content brief or the bug report and I'll get to work.",
+    personality: 'Creative but methodical. Plans content pipelines. Writes scripts. Optimizes everything.',
+    capabilities: ['YouTube strategy', 'Video scripts', 'Web development', 'SEO optimization', 'Content calendars'],
+    approvalActions: ['Publish content', 'Deploy code', 'Create video brief', 'Post to social']
+  },
+  {
+    id: 'closer', name: 'Closer', emoji: '🤝',
+    role: 'Sales', model: 'Claude Sonnet',
+    skill: 'closer-sales',
+    greeting: "Ready to close. Who's the prospect and what's their pain point? Let's build the pitch.",
+    personality: 'Aggressive but ethical. Always asks for the sale. Handles objections like a pro.',
+    capabilities: ['Lead qualification', 'Objection handling', 'Sales scripts', 'Funnel design', 'Follow-up sequences'],
+    approvalActions: ['Send outreach', 'Quote price', 'Offer discount', 'Schedule demo']
+  },
+  {
+    id: 'cipher', name: 'Cipher', emoji: '💰',
+    role: 'Finance / Accounting', model: 'Gemini FREE → Claude Sonnet',
+    skill: 'cipher-finance',
+    greeting: "Numbers don't lie. What do you need - invoice, expense report, budget review, or tax prep?",
+    personality: 'Precise, conservative with estimates, flags anomalies, never fabricates data.',
+    capabilities: ['Invoicing', 'Expense tracking', 'Tax preparation', 'Budget forecasting', 'Financial reports'],
+    approvalActions: ['Generate invoice', 'Record expense', 'Budget adjustment', 'Tax filing prep']
+  },
+  {
+    id: 'nova', name: 'Nova', emoji: '📣',
+    role: 'Marketing / Growth', model: 'Gemini FREE → Claude Haiku',
+    skill: 'nova-marketing',
+    greeting: "Let's make some noise. What channel are we hitting - social, email, SEO, or all of the above?",
+    personality: 'Creative, data-driven, always thinking about conversion. Repurposes everything.',
+    capabilities: ['Social media strategy', 'Email campaigns', 'SEO optimization', 'Content repurposing', 'Analytics review'],
+    approvalActions: ['Post to social', 'Send email blast', 'Publish blog', 'Run ad campaign']
+  },
+  {
+    id: 'sentinel', name: 'Sentinel', emoji: '⚖️',
+    role: 'Legal / Regulatory', model: 'Gemini FREE → Claude Opus',
+    skill: 'sentinel-legal',
+    greeting: "What regulation or law do you want me to dig into? I find where friction creates opportunity.",
+    personality: 'Thorough, always cites sources, distinguishes law from opinion, recommends CPA/attorney for advice.',
+    capabilities: ['Regulatory research', 'Compliance monitoring', 'Opportunity identification', 'Risk assessment', 'License requirements'],
+    approvalActions: ['Legal opinion brief', 'Compliance filing', 'Opportunity assessment', 'Risk report']
+  },
+  {
+    id: 'scraper', name: 'Lead Scraper', emoji: '📍',
+    role: 'Maps Data Extraction', model: 'Gemini FREE',
+    skill: 'gemini-lead-scraper',
+    greeting: "Give me a location and business type. I'll pull names, addresses, phone numbers from Google Maps.",
+    personality: 'Efficient, structured output, respects rate limits and TOS.',
+    capabilities: ['Google Maps data', 'Business contact info', 'Phone numbers', 'Address extraction', 'Bulk scraping'],
+    approvalActions: ['Start scraping job', 'Export data', 'Enrich leads', 'Push to CRM']
+  }
+];
+
+let currentAgent = AGENTS[0];
+let chatHistories = {};
+let approvalMode = 'all'; // 'all', 'risky', 'none'
+let auditStats = { approved: 0, denied: 0, total: 0 };
+let pendingApprovalId = 0;
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+
+function init() {
+  AGENTS.forEach(a => chatHistories[a.id] = []);
+  renderAgentList();
+  switchAgent(AGENTS[0].id);
+}
+
+function renderAgentList() {
+  const list = document.getElementById('agentList');
+  list.innerHTML = AGENTS.map(a => `
+    <button class="agent-btn${a.id === currentAgent.id ? ' active' : ''}" data-agent="${a.id}" onclick="switchAgent('${a.id}')">
+      <span class="agent-emoji">${a.emoji}</span>
+      <div class="agent-info">
+        <div class="name">${a.name}</div>
+        <div class="role">${a.role}</div>
+      </div>
+      <span class="status-dot ${a.id === currentAgent.id ? 'online' : 'offline'}"></span>
+    </button>
+  `).join('');
+}
+
+function switchAgent(id) {
+  currentAgent = AGENTS.find(a => a.id === id);
+  renderAgentList();
+
+  document.getElementById('headerEmoji').textContent = currentAgent.emoji;
+  document.getElementById('headerName').textContent = currentAgent.name;
+  document.getElementById('headerModel').textContent = currentAgent.model;
+
+  renderMessages();
+
+  if (chatHistories[id].length === 0) {
+    setTimeout(() => {
+      addBotMessage(currentAgent.greeting);
+      addSystemMessage(currentAgent.name + ' capabilities: ' + currentAgent.capabilities.join(', '));
+    }, 300);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// MESSAGES
+// ══════════════════════════════════════════════════════════════
+
+const messagesEl = document.getElementById('messages');
+const typingIndicator = document.getElementById('typingIndicator');
+
+function renderMessages() {
+  messagesEl.innerHTML = '';
+  const history = chatHistories[currentAgent.id];
+  history.forEach(msg => {
+    if (msg.type === 'approval') {
+      renderApprovalInPlace(msg);
+    } else {
+      renderMessageEl(msg);
+    }
+  });
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function renderMessageEl(msg) {
+  const div = document.createElement('div');
+  div.className = 'message ' + msg.role;
+  if (msg.role === 'system') {
+    div.textContent = msg.text;
+  } else {
+    div.innerHTML = '<div class="sender">' + escapeHtml(msg.sender || msg.role) + '</div>' + escapeHtml(msg.text);
+  }
+  messagesEl.appendChild(div);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function renderApprovalInPlace(msg) {
+  const div = document.createElement('div');
+  div.className = 'approval-request' + (msg.resolved ? ' approval-resolved' : '');
+  div.id = 'approval-' + msg.approvalId;
+
+  let actionsHtml = '';
+  if (!msg.resolved) {
+    actionsHtml = `
+      <div class="approval-actions">
+        <button class="btn-approve" onclick="resolveApproval(${msg.approvalId}, 'approved')">Approve</button>
+        <button class="btn-deny" onclick="resolveApproval(${msg.approvalId}, 'denied')">Deny</button>
+        <button class="btn-modify" onclick="resolveApproval(${msg.approvalId}, 'modify')">Modify</button>
+      </div>`;
+  } else {
+    actionsHtml = '<div class="approval-stamp ' + msg.resolution + '">' + msg.resolution.toUpperCase() + '</div>';
+  }
+
+  div.innerHTML = `
+    <div class="approval-header">Approval Required</div>
+    <div class="approval-body">${escapeHtml(msg.action)}\n\nAgent: ${escapeHtml(currentAgent.name)}\nAction type: ${escapeHtml(msg.actionType)}</div>
+    ${actionsHtml}
+  `;
+
+  messagesEl.appendChild(div);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function addBotMessage(text) {
+  const msg = { role: 'bot', sender: currentAgent.name, text: text };
+  chatHistories[currentAgent.id].push(msg);
+  renderMessageEl(msg);
+  auditLog('action', currentAgent.name + ': ' + text.substring(0, 60) + '...');
+}
+
+function addUserMessage(text) {
+  const msg = { role: 'user', sender: 'You', text: text };
+  chatHistories[currentAgent.id].push(msg);
+  renderMessageEl(msg);
+}
+
+function addSystemMessage(text) {
+  const msg = { role: 'system', text: text };
+  chatHistories[currentAgent.id].push(msg);
+  renderMessageEl(msg);
+}
+
+function requestApproval(action, actionType, callback) {
+  pendingApprovalId++;
+  const msg = {
+    type: 'approval',
+    approvalId: pendingApprovalId,
+    action: action,
+    actionType: actionType,
+    resolved: false,
+    resolution: null,
+    callback: callback
+  };
+  chatHistories[currentAgent.id].push(msg);
+  renderApprovalInPlace(msg);
+  auditLog('action', 'APPROVAL REQUESTED: ' + actionType + ' by ' + currentAgent.name);
+}
+
+function resolveApproval(id, resolution) {
+  const history = chatHistories[currentAgent.id];
+  const msg = history.find(m => m.type === 'approval' && m.approvalId === id);
+  if (!msg || msg.resolved) return;
+
+  msg.resolved = true;
+  msg.resolution = resolution;
+
+  auditStats.total++;
+  if (resolution === 'approved') {
+    auditStats.approved++;
+    auditLog('approved', 'APPROVED: ' + msg.actionType);
+  } else if (resolution === 'denied') {
+    auditStats.denied++;
+    auditLog('denied', 'DENIED: ' + msg.actionType);
+  } else {
+    auditLog('action', 'MODIFY REQUESTED: ' + msg.actionType);
+  }
+
+  updateAuditStats();
+  renderMessages();
+
+  // Execute callback after approval
+  if (msg.callback) {
+    setTimeout(() => msg.callback(resolution), 400);
+  }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ══════════════════════════════════════════════════════════════
+// SEND & RESPOND
+// ══════════════════════════════════════════════════════════════
+
+function sendMessage() {
+  const text = document.getElementById('userInput').value.trim();
+  if (!text) return;
+  document.getElementById('userInput').value = '';
+  addUserMessage(text);
+
+  typingIndicator.style.display = 'block';
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+
+  const delay = 500 + Math.random() * 1000;
+  setTimeout(() => {
+    typingIndicator.style.display = 'none';
+    generateResponse(text);
+  }, delay);
+}
+
+document.getElementById('userInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') sendMessage();
+});
+
+// ══════════════════════════════════════════════════════════════
+// RESPONSE ENGINE (demo mode - pattern matching per agent)
+// ══════════════════════════════════════════════════════════════
+
+function generateResponse(input) {
+  const lower = input.toLowerCase();
+  const agent = currentAgent;
+
+  // ── Prompt injection detection (all agents) ──
+  const injectionPatterns = [
+    'ignore previous', 'ignore above', 'disregard', 'forget your',
+    'new instructions', 'system prompt', 'you are now', 'pretend to be',
+    'act as', 'roleplay as', 'bypass', 'jailbreak', 'override'
+  ];
+
+  if (injectionPatterns.some(p => lower.includes(p))) {
+    addBotMessage("That looks like a prompt injection attempt. I'm sandboxed and I stay in my lane. What can I actually help you with?");
+    auditLog('security', 'Prompt injection blocked: ' + input.substring(0, 40));
+    return;
+  }
+
+  // ── Route to agent-specific handler ──
+  switch (agent.id) {
+    case 'belichick': return respondBelichick(lower, input); break;
+    case 'mila':      return respondMila(lower, input); break;
+    case 'atlas':     return respondAtlas(lower, input); break;
+    case 'closer':    return respondCloser(lower, input); break;
+    case 'cipher':    return respondCipher(lower, input); break;
+    case 'nova':      return respondNova(lower, input); break;
+    case 'sentinel':  return respondSentinel(lower, input); break;
+    case 'scraper':   return respondScraper(lower, input); break;
+    default:          addBotMessage("I'm not sure how to help with that. Try switching to a different agent."); break;
+  }
+}
+
+// ── BELICHICK ──
+function respondBelichick(lower, input) {
+  if (lower.includes('delegate') || lower.includes('assign') || lower.includes('who should')) {
+    requestApproval(
+      'Belichick wants to delegate this task to another agent.\n\nTask: ' + input,
+      'Delegate to agent',
+      (resolution) => {
+        if (resolution === 'approved') {
+          addBotMessage("Roger. Delegating now. I'll route this to the right agent and track progress. Switch to their tab to see the work.");
+        } else if (resolution === 'denied') {
+          addBotMessage("Understood. Holding off on delegation. What's the concern?");
+        } else {
+          addBotMessage("Got it. Tell me how you want to modify the delegation and I'll adjust.");
+        }
+      }
+    );
+    return;
+  }
+  if (lower.includes('status') || lower.includes('report') || lower.includes('update')) {
+    addBotMessage("TEAM STATUS:\n\nMila (CS): Online - handling CARB inquiries\nAtlas (Creative): Standby - awaiting content brief\nCloser (Sales): Standby - no active prospects\nCipher (Finance): Standby - books up to date\nNova (Marketing): Standby - content calendar empty\nSentinel (Legal): Standby - last scan Monday\nScraper: Standby - no active jobs\n\nBudget: $12.40 of $35.00 used this month.\nWhat's the priority?");
+    return;
+  }
+  if (lower.includes('launch') || lower.includes('go') || lower.includes('start') || lower.includes('business')) {
+    requestApproval(
+      'Belichick recommends running the full launch checklist:\n\n1. Sentinel: Legal/regulatory check\n2. Atlas: Market/audience research\n3. Closer: Sales pitch test\n4. Cipher: Cost/revenue projection\n\nThis will activate 4 agents.',
+      'Launch decision',
+      (resolution) => {
+        if (resolution === 'approved') {
+          addBotMessage("Launch checklist initiated. I'm spinning up Sentinel for legal, Atlas for market research. You'll get approval requests from each. Nothing moves without your say-so.");
+        } else {
+          addBotMessage("Launch held. Smart to be cautious. What piece do you want to tackle first?");
+        }
+      }
+    );
+    return;
+  }
+  addBotMessage("I see the whole board. Give me a situation and I'll tell you:\n\n1. WHO handles it (which agent)\n2. WHAT they do (specific task)\n3. WHEN it happens (priority/timeline)\n4. WHY this approach (strategic rationale)\n\nOr ask for a team status report.");
+}
+
+// ── MILA ──
+function respondMila(lower, input) {
+  if (lower.includes('carb') || lower.includes('emissions') || lower.includes('compliance') || lower.includes('test')) {
+    addBotMessage("CARB HD I/M Program basics:\n\n- All heavy-duty vehicles 14,001+ lbs must pass\n- Testing required at credentialed facilities\n- Non-compliance: up to $10,000/day penalties\n- Clean Truck Check program is active now\n\nDo you need to schedule a test or have a specific compliance question?");
+    return;
+  }
+  if (lower.includes('schedule') || lower.includes('appointment') || lower.includes('book')) {
+    requestApproval(
+      'Mila wants to collect customer info and schedule an appointment.\n\nCustomer request: ' + input,
+      'Schedule appointment',
+      (resolution) => {
+        if (resolution === 'approved') {
+          addBotMessage("I'll need a few details to get you scheduled:\n\n1. Company name\n2. Vehicle type and count\n3. Preferred date/time\n4. Contact email\n\nWhat's your company name?");
+        } else {
+          addBotMessage("No problem. If you have questions about the testing process or requirements, I'm here to help.");
+        }
+      }
+    );
+    return;
+  }
+  addBotMessage("I can help with:\n\n- CARB emissions testing requirements\n- HD I/M program details\n- Compliance deadlines and penalties\n- Scheduling a test\n- General CARB regulation questions\n\nWhat do you need to know?");
+}
+
+// ── ATLAS ──
+function respondAtlas(lower, input) {
+  if (lower.includes('video') || lower.includes('youtube') || lower.includes('script') || lower.includes('content')) {
+    requestApproval(
+      'Atlas wants to create a content brief based on:\n\n"' + input + '"',
+      'Create video brief',
+      (resolution) => {
+        if (resolution === 'approved') {
+          addBotMessage("VIDEO BRIEF DRAFT:\n\nTITLE: [Will research best hook]\nHOOK: First 5 sec - pattern interrupt\nTARGET: 8-12 minutes\nFORMAT: Educational with B-roll\n\nSCRIPT OUTLINE:\n0:00 - Hook (the problem)\n0:05 - Why this matters to YOU\n1:00 - The breakdown\n5:00 - How to actually do it\n8:00 - Results / proof\n10:00 - CTA\n\nWant me to flesh out the full script?");
+        } else {
+          addBotMessage("Brief paused. Want to adjust the direction first?");
+        }
+      }
+    );
+    return;
+  }
+  if (lower.includes('seo') || lower.includes('keyword') || lower.includes('rank')) {
+    addBotMessage("SEO quick analysis:\n\nTarget keywords should follow the pattern:\n[Power Word] + [Topic] + [Benefit/Number]\n\nFor CARB content:\n- 'How CARB Compliance Saves Fleets $50K/year'\n- 'CARB Clean Truck Check: Complete 2026 Guide'\n- 'Avoid $10K/Day CARB Penalties [Step by Step]'\n\nWant me to build a full keyword strategy?");
+    return;
+  }
+  addBotMessage("I handle content and web dev. Give me:\n\n- A video topic → I'll build the full brief\n- A bug report → I'll diagnose and fix\n- An SEO question → I'll research keywords\n- A content calendar request → I'll plan the month\n\nWhat are we building?");
+}
+
+// ── CLOSER ──
+function respondCloser(lower, input) {
+  if (lower.includes('pitch') || lower.includes('sell') || lower.includes('prospect') || lower.includes('lead')) {
+    requestApproval(
+      'Closer wants to draft a sales approach:\n\n"' + input + '"',
+      'Draft sales pitch',
+      (resolution) => {
+        if (resolution === 'approved') {
+          addBotMessage("SALES APPROACH:\n\nSCENARIO: Outbound to prospect\n\nOPENING:\n\"Hey [Name], quick question - are you handling your CARB compliance in-house or outsourcing it? Either way, I've got something that'll save you 40 hours this quarter.\"\n\nDISCOVERY:\n1. How many vehicles in your fleet?\n2. When's your next compliance deadline?\n3. What's your current process costing you?\n\nCLOSE:\n\"Based on what you told me, you're looking at [X] in potential penalties. We can fix that for [price]. Want to start this week?\"\n\nApprove the outreach or want me to adjust?");
+        } else {
+          addBotMessage("Pitch held. What's the angle you want to take instead?");
+        }
+      }
+    );
+    return;
+  }
+  if (lower.includes('objection') || lower.includes('expensive') || lower.includes('no')) {
+    addBotMessage("OBJECTION PLAYBOOK:\n\n\"Too expensive\" → That's less than one day of penalties. $10K/day vs our price - you do the math.\n\n\"Need to think\" → What specifically? I'll address it right now.\n\n\"Not interested\" → Totally fair. But what IS your biggest fleet headache? Bet I can help.\n\n\"Using someone else\" → Great. Are they getting you results like [proof point]? Most people switch for that alone.\n\nWhich objection are you hitting?");
+    return;
+  }
+  addBotMessage("I'm ready to close. Tell me:\n\n- Who's the prospect? (industry, size, pain)\n- What are we selling? (service/product)\n- What's the objection? (I'll handle it)\n\nOr give me a scenario and I'll build the full pitch.");
+}
+
+// ── CIPHER ──
+function respondCipher(lower, input) {
+  if (lower.includes('invoice') || lower.includes('bill')) {
+    requestApproval(
+      'Cipher wants to generate an invoice.\n\nDetails: ' + input,
+      'Generate invoice',
+      (resolution) => {
+        if (resolution === 'approved') {
+          addBotMessage("INVOICE DRAFT:\n\nINVOICE #2026-02-001\nFROM: BelichickGillisMusk\nTO: [Client Name needed]\nDATE: 2026-02-12\nDUE: 2026-03-14 (Net 30)\n\nITEMS:\n  [Description]     [Qty]  [Rate]   [Amount]\n  ──────────────────────────────────────────\n  [Need line items]\n\nSUBTOTAL: $0.00\nTAX: TBD\nTOTAL: $0.00\n\nI need: client name, line items, and amounts. What are they?");
+        } else {
+          addBotMessage("Invoice paused. What needs to change?");
+        }
+      }
+    );
+    return;
+  }
+  if (lower.includes('expense') || lower.includes('spent') || lower.includes('cost') || lower.includes('budget')) {
+    addBotMessage("BUDGET STATUS:\n\nMONTHLY BUDGET: $35.00\nSPENT THIS MONTH: $12.40\nREMAINING: $22.60 (64%)\n\nBREAKDOWN:\n  Agent API costs:    $8.20\n  Software subs:      $0.00 (already paid)\n  Marketing:          $0.00\n  Other:              $4.20\n\n  ALERT: At current burn rate, budget lasts through month.\n\nWant a full financial report or need to record an expense?");
+    return;
+  }
+  if (lower.includes('tax') || lower.includes('deduct')) {
+    addBotMessage("TAX PREP STATUS:\n\nQ1 2026 estimate due: April 15\n\nCHECKLIST:\n[ ] Revenue totals (need Sheets data)\n[ ] Expense categorization\n[ ] Self-employment tax: 15.3%\n[ ] State tax (IL): 4.95%\n[ ] Home office deduction\n[ ] Equipment depreciation\n\nNOTE: I organize and calculate. For actual tax ADVICE, consult your CPA.\n\nWhat do you need?");
+    return;
+  }
+  addBotMessage("Numbers. That's what I do.\n\n- Invoice → I'll generate it (you approve)\n- Expense → I'll record and categorize\n- Budget → I'll show you where the money is\n- Tax prep → I'll organize documents\n- P&L → I'll run the report\n\nWhat do you need?");
+}
+
+// ── NOVA ──
+function respondNova(lower, input) {
+  if (lower.includes('post') || lower.includes('social') || lower.includes('linkedin') || lower.includes('twitter') || lower.includes('instagram')) {
+    requestApproval(
+      'Nova wants to draft social media content.\n\nBrief: ' + input,
+      'Post to social',
+      (resolution) => {
+        if (resolution === 'approved') {
+          addBotMessage("SOCIAL CONTENT DRAFT:\n\nLINKEDIN:\n\"Most fleet managers don't know this: CARB penalties are $10,000/DAY for non-compliance. That's not a typo.\n\nHere's the 3-step checklist to make sure you're covered:\n1. [Step]\n2. [Step]\n3. [Step]\n\nDon't wait until enforcement knocks. Link in comments.\"\n\nTWITTER/X:\nThread: \"CARB compliance thread 🧵\"\n\nINSTAGRAM:\nCarousel: 5 slides, stat → problem → solution → proof → CTA\n\nApprove to post or want edits?");
+        } else {
+          addBotMessage("Content held. What's the angle you prefer?");
+        }
+      }
+    );
+    return;
+  }
+  if (lower.includes('email') || lower.includes('newsletter') || lower.includes('campaign')) {
+    requestApproval(
+      'Nova wants to draft an email campaign.\n\nBrief: ' + input,
+      'Send email blast',
+      (resolution) => {
+        if (resolution === 'approved') {
+          addBotMessage("EMAIL DRAFT:\n\nSUBJECT: Your CARB compliance deadline is closer than you think\n\nBODY:\nHey [First Name],\n\nQuick heads up - [deadline detail].\n\nThe penalty for missing it? $10,000 per day. Per vehicle.\n\nWe've helped [X] fleets get compliant in under a week.\n\n[CTA Button: Schedule Your Test]\n\nBest,\n[Name]\n\nSend to how many recipients?");
+        } else {
+          addBotMessage("Email held. Want to adjust the messaging?");
+        }
+      }
+    );
+    return;
+  }
+  addBotMessage("Marketing engine ready.\n\n- Social post → I'll draft for all platforms\n- Email → I'll write the campaign\n- SEO → I'll research keywords and optimize\n- Content calendar → I'll plan the week/month\n- Analytics → I'll review what's working\n\nOne piece of content becomes 8. What's the seed?");
+}
+
+// ── SENTINEL ──
+function respondSentinel(lower, input) {
+  if (lower.includes('carb') || lower.includes('regulation') || lower.includes('compliance') || lower.includes('law')) {
+    requestApproval(
+      'Sentinel wants to run a regulatory research scan.\n\nTopic: ' + input,
+      'Legal opinion brief',
+      (resolution) => {
+        if (resolution === 'approved') {
+          addBotMessage("REGULATORY BRIEF:\n\nREGULATION: CARB HD I/M Program\nJURISDICTION: California (state)\nAGENCY: California Air Resources Board\n\nAFFECTED: All HD vehicles 14,001+ lbs operating in CA\nESTIMATED COUNT: 1.5M+ vehicles\nPAIN LEVEL: HIGH\n\nFRICTION: Owners must find credentialed testers, understand complex requirements, meet rolling deadlines.\n\nOPPORTUNITY: Compliance-as-a-service. Charge per vehicle, handle everything.\n\nMARKET SIZE: ~$500M/year in testing services\nBARRIERS: Need CARB credentials\n\nRECOMMENDATION: GO - strong regulatory tailwind\nCONFIDENCE: HIGH\n\nNOTE: This is research, not legal advice. Consult an attorney.\n\nWant me to dig deeper on any section?");
+        } else {
+          addBotMessage("Research paused. What angle should I take instead?");
+        }
+      }
+    );
+    return;
+  }
+  if (lower.includes('opportunity') || lower.includes('business') || lower.includes('gap') || lower.includes('money')) {
+    addBotMessage("OPPORTUNITY SCAN AREAS:\n\n1. CARB compliance services (ACTIVE - high opportunity)\n2. Fleet management software gap\n3. EV charging mandate (infrastructure needed)\n4. Carbon credit trading (LCFS market)\n5. DOT safety compliance gap\n\nEach one has regulatory friction = business opportunity.\n\nPick a number and I'll run the full F.I.N.D. analysis (with your approval).");
+    return;
+  }
+  addBotMessage("I watch the law so you can profit from it.\n\n- Name a regulation → I'll assess the opportunity\n- Name an industry → I'll find the friction points\n- Ask about licensing → I'll tell you what you need\n- Ask about risk → I'll flag what could shut you down\n\nI research. I don't advise. Your attorney advises.\n\nWhat do you want me to dig into?");
+}
+
+// ── LEAD SCRAPER ──
+function respondScraper(lower, input) {
+  if (lower.includes('scrape') || lower.includes('search') || lower.includes('find') || lower.includes('pull')) {
+    requestApproval(
+      'Lead Scraper wants to start a data extraction job.\n\nQuery: ' + input + '\n\nThis will search Google Maps for business data.',
+      'Start scraping job',
+      (resolution) => {
+        if (resolution === 'approved') {
+          addBotMessage("SCRAPING JOB STARTED:\n\nQuery: " + input + "\nSource: Google Maps\nEstimated results: 50-200\n\nData collected per result:\n- Business name\n- Address\n- Phone number\n- Website\n- Rating / reviews\n- Hours\n\nOutput format: CSV → Google Sheets\n\n[DEMO MODE: No actual scraping. In production, this uses Gemini API with Maps data.]\n\nWant me to filter by rating, distance, or category?");
+        } else {
+          addBotMessage("Scraping job cancelled. Want to adjust the search parameters?");
+        }
+      }
+    );
+    return;
+  }
+  addBotMessage("Give me a target and I'll pull the data:\n\n- 'trucking companies in Los Angeles'\n- 'fleet managers near Sacramento'\n- 'CARB testing facilities in California'\n\nI pull: name, address, phone, website, rating.\nOutput goes to Google Sheets.\n\nWhat's the search?");
+}
+
+// ══════════════════════════════════════════════════════════════
+// APPROVAL MODE TOGGLE
+// ══════════════════════════════════════════════════════════════
+
+function toggleApprovalMode() {
+  const modes = ['all', 'risky', 'none'];
+  const labels = {
+    all: 'APPROVAL: EVERYTHING',
+    risky: 'APPROVAL: RISKY ONLY',
+    none: 'APPROVAL: AUTONOMOUS'
+  };
+  const descs = {
+    all: 'You confirm every action',
+    risky: 'Only external/destructive actions need approval',
+    none: 'Agents run freely (NOT RECOMMENDED)'
+  };
+
+  const idx = modes.indexOf(approvalMode);
+  approvalMode = modes[(idx + 1) % modes.length];
+
+  const toggle = document.getElementById('approvalToggle');
+  document.getElementById('approvalLabel').textContent = labels[approvalMode];
+  document.getElementById('approvalDesc').textContent = descs[approvalMode];
+
+  if (approvalMode === 'none') {
+    toggle.classList.add('autonomous');
+    document.querySelector('.mode-badge').textContent = 'Autonomous Mode';
+    document.querySelector('.mode-badge').style.background = 'rgba(63,185,80,.15)';
+    document.querySelector('.mode-badge').style.color = 'var(--green)';
+    document.querySelector('.mode-badge').style.borderColor = 'rgba(63,185,80,.3)';
+  } else {
+    toggle.classList.remove('autonomous');
+    document.querySelector('.mode-badge').textContent = 'Human Approval Required';
+    document.querySelector('.mode-badge').style.background = '';
+    document.querySelector('.mode-badge').style.color = '';
+    document.querySelector('.mode-badge').style.borderColor = '';
+  }
+
+  auditLog('action', 'Approval mode changed to: ' + approvalMode);
+}
+
+// ══════════════════════════════════════════════════════════════
+// AUDIT LOG
+// ══════════════════════════════════════════════════════════════
+
+function auditLog(type, text) {
+  const log = document.getElementById('auditLog');
+  const entry = document.createElement('div');
+  entry.className = 'audit-entry ' + type;
+  const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+  entry.innerHTML = '<span class="timestamp">' + time + '</span> ' + escapeHtml(text);
+  log.appendChild(entry);
+  log.scrollTop = log.scrollHeight;
+}
+
+function updateAuditStats() {
+  document.getElementById('auditApproved').textContent = 'Approved: ' + auditStats.approved;
+  document.getElementById('auditDenied').textContent = 'Denied: ' + auditStats.denied;
+  document.getElementById('auditTotal').textContent = 'Total: ' + auditStats.total;
+}
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+
+init();
+</script>
+</body>
+</html>

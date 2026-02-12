@@ -313,14 +313,14 @@
 <script>
 // ── Agent roster ──────────────────────────────────────────────
 const agents = [
-  { id: 'belichick', name: 'Belichick',  emoji: '🏈', role: 'Strategist',   status: 'active'   },
-  { id: 'margo',     name: 'Margo',      emoji: '🔬', role: 'Researcher',   status: 'active'   },
-  { id: 'jesus',     name: 'Jesus',       emoji: '🕊️', role: 'Coordinator',  status: 'active'   },
-  { id: 'atlas',     name: 'Atlas',       emoji: '🗺️', role: 'Navigator',    status: 'inactive' },
-  { id: 'nova',      name: 'Nova',        emoji: '⚡', role: 'Builder',      status: 'active'   },
-  { id: 'sentinel',  name: 'Sentinel',    emoji: '🛡️', role: 'Guardian',     status: 'trouble'  },
-  { id: 'cipher',    name: 'Cipher',      emoji: '🔐', role: 'Security',     status: 'active'   },
-  { id: 'spark',     name: 'Spark',       emoji: '✨', role: 'Creative',     status: 'inactive' },
+  { id: 'belichick', name: 'Belichick',  emoji: '🏈', role: 'Admin / Strategy',     status: 'active',   model: 'Opus → Gemini',   skill: 'belichick-strategy' },
+  { id: 'mila',      name: 'Mila',       emoji: '💬', role: 'Customer Service',     status: 'active',   model: 'Haiku → Gemini',  skill: 'mila-carb-cs' },
+  { id: 'atlas',     name: 'Atlas',      emoji: '🗺️', role: 'Web Dev / Creative',   status: 'inactive', model: 'Sonnet → Gemini', skill: 'atlas-creative' },
+  { id: 'closer',    name: 'Closer',     emoji: '🤝', role: 'Sales',               status: 'inactive', model: 'Sonnet',          skill: 'closer-sales' },
+  { id: 'cipher',    name: 'Cipher',     emoji: '💰', role: 'Finance / Accounting', status: 'inactive', model: 'Sonnet → Gemini', skill: 'cipher-finance' },
+  { id: 'nova',      name: 'Nova',       emoji: '📣', role: 'Marketing / Growth',   status: 'inactive', model: 'Sonnet → Gemini', skill: 'nova-marketing' },
+  { id: 'sentinel',  name: 'Sentinel',   emoji: '⚖️', role: 'Legal / Regulatory',   status: 'inactive', model: 'Opus → Gemini',   skill: 'sentinel-legal' },
+  { id: 'scraper',   name: 'Lead Scraper', emoji: '📍', role: 'Maps Data',          status: 'inactive', model: 'Gemini FREE',     skill: 'gemini-lead-scraper' },
 ];
 
 const STATUS_CYCLE = ['active', 'inactive', 'trouble'];
@@ -409,7 +409,7 @@ const tooltip = document.getElementById('tooltip');
 
 function showTooltip (e, agent) {
   const labels = { active: 'Working', inactive: 'Offline', trouble: 'Trouble' };
-  tooltip.innerHTML = `<strong>${agent.name}</strong> &mdash; ${agent.role}<br>Status: ${labels[agent.status] || agent.status}`;
+  tooltip.innerHTML = `<strong>${agent.name}</strong> &mdash; ${agent.role}<br>Status: ${labels[agent.status] || agent.status}<br>Model: ${agent.model || '—'}<br>Skill: ${agent.skill || '—'}`;
   tooltip.classList.add('show');
   moveTooltip(e);
   document.addEventListener('mousemove', moveTooltip);

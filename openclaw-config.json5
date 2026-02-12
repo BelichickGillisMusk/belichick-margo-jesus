@@ -1,6 +1,6 @@
 // OpenClaw Configuration for BelichickGillisMusk
 // Drop this into ~/.openclaw/openclaw.json on your Mac
-// Agents: Mila (Research/Legal), Atlas (YouTube/Creative), Closer (Sales), Belichick (Strategy)
+// Full roster: Belichick, Mila, Atlas, Closer, Cipher, Nova, Sentinel, Lead Scraper
 {
   "gateway": {
     "bind": "loopback",          // ONLY accessible from your machine - not the internet
@@ -13,16 +13,37 @@
   // ── IDENTITY ──
   "identity": {
     "name": "BelichickGillisMusk HQ",
-    "systemPrompt": "You are part of the BelichickGillisMusk agent team. You operate within strict budgets and guardrails. Never exceed your role boundaries."
+    "systemPrompt": "You are part of the BelichickGillisMusk agent team. You operate within strict budgets and guardrails. Never exceed your role boundaries. ALL actions require human approval before execution."
   },
 
   // ── COST CONTROLS (the kill switches) ──
-  "auth": {
+  "costControls": {
     "cooldowns": {
       "billingBackoffHours": 1,        // Disable API key 1 hour after billing error
       "billingMaxHours": 12,           // Max 12 hour cooldown
       "failureWindowHours": 6          // Track failures over 6 hours
-    }
+    },
+    "budgetMonthly": 35,               // $35/mo hard cap
+    "alertThresholds": [50, 75, 90],   // Alert at 50%, 75%, 90% of budget
+    "killAt": 100                       // Kill all paid models at 100%
+  },
+
+  // ── HUMAN APPROVAL GATE ──
+  // Nothing executes without human "yes"
+  "approval": {
+    "mode": "all",                     // "all" = approve everything, "risky" = only risky actions, "none" = autonomous
+    "timeout": 300,                    // Wait 5 min for approval, then abort
+    "requiresApproval": [
+      "api_call",                      // Any external API call
+      "file_write",                    // Any file creation/modification
+      "email_send",                    // Any outbound email
+      "invoice_generate",             // Any invoice creation
+      "social_post",                   // Any social media post
+      "payment_process",              // Any payment action
+      "data_delete",                   // Any data deletion
+      "config_change",                // Any configuration change
+      "deploy"                         // Any deployment action
+    ]
   },
 
   // ── AGENT DEFAULTS (apply to ALL agents) ──
@@ -32,6 +53,7 @@
       "contextTokens": 60000,          // Cap context to 60K tokens per turn
       "timeoutSeconds": 300,           // Kill any agent after 5 minutes of silence
       "bootstrapMaxChars": 15000,      // Limit bootstrap prompt size
+      "approvalRequired": true,        // Human must approve all actions
 
       "subagents": {
         "maxConcurrent": 2,            // Max 2 sub-agents
@@ -53,6 +75,95 @@
           "softThresholdTokens": 1000
         }
       }
+    },
+
+    // ── INDIVIDUAL AGENT CONFIGS ──
+
+    "belichick": {
+      "skill": "belichick-strategy",
+      "description": "Admin / Strategy - orchestrates all other agents",
+      "models": {
+        "primary": "gemini-2.0-flash",           // FREE for daily tasks
+        "escalation": "claude-opus-4-6"          // Paid for complex decisions
+      },
+      "escalationTriggers": ["strategy", "go-no-go", "budget", "launch"],
+      "canDelegate": ["mila", "atlas", "closer", "cipher", "nova", "sentinel", "scraper"]
+    },
+
+    "mila": {
+      "skill": "mila-carb-cs",
+      "description": "Customer service bot for CARB website",
+      "models": {
+        "primary": "gemini-2.0-flash",           // FREE
+        "fallback": "ollama/llama3"              // Local backup, $0
+      },
+      "sandbox": true,
+      "allowedDomains": [],                       // No external calls
+      "canDelegate": []
+    },
+
+    "atlas": {
+      "skill": "atlas-creative",
+      "description": "YouTube / creative / web dev",
+      "models": {
+        "primary": "gemini-2.0-flash",           // FREE for simple tasks
+        "escalation": "claude-sonnet-4-5-20250929" // Paid for complex code
+      },
+      "escalationTriggers": ["architecture", "complex-code", "deployment"],
+      "canDelegate": []
+    },
+
+    "closer": {
+      "skill": "closer-sales",
+      "description": "Sales agent - lead qualification and closing",
+      "models": {
+        "primary": "claude-sonnet-4-5-20250929"
+      },
+      "sandbox": true,
+      "allowedDomains": [],
+      "canDelegate": []
+    },
+
+    "cipher": {
+      "skill": "cipher-finance",
+      "description": "Finance / bookkeeping / invoicing / tax prep",
+      "models": {
+        "primary": "gemini-2.0-flash",           // FREE for Sheets/formulas
+        "escalation": "claude-sonnet-4-5-20250929" // Paid for tax analysis
+      },
+      "escalationTriggers": ["tax", "analysis", "forecast", "audit"],
+      "canDelegate": []
+    },
+
+    "nova": {
+      "skill": "nova-marketing",
+      "description": "Marketing / social media / SEO / content",
+      "models": {
+        "primary": "gemini-2.0-flash",           // FREE for drafts
+        "escalation": "claude-haiku-4-5-20251001" // Cheap for bulk content
+      },
+      "escalationTriggers": ["strategy", "campaign-plan"],
+      "canDelegate": []
+    },
+
+    "sentinel": {
+      "skill": "sentinel-legal",
+      "description": "Legal / regulatory research and opportunity identification",
+      "models": {
+        "primary": "gemini-2.0-flash",           // FREE for basic research
+        "escalation": "claude-opus-4-6"          // Paid for deep analysis
+      },
+      "escalationTriggers": ["legal-analysis", "regulatory-deep-dive", "risk-assessment"],
+      "canDelegate": []
+    },
+
+    "scraper": {
+      "skill": "gemini-lead-scraper",
+      "description": "Google Maps data extraction for leads",
+      "models": {
+        "primary": "gemini-2.0-flash"            // FREE only
+      },
+      "canDelegate": []
     }
   },
 
@@ -60,7 +171,27 @@
   "cron": {
     "enabled": true,
     "maxConcurrentRuns": 1,            // One cron job at a time
-    "sessionRetention": "6h"           // Clean up cron sessions after 6 hours
+    "sessionRetention": "6h",          // Clean up cron sessions after 6 hours
+    "jobs": [
+      {
+        "name": "carb-regulation-check",
+        "agent": "sentinel",
+        "schedule": "0 8 * * 1",       // Every Monday at 8 AM
+        "task": "Check CARB website for new regulations, enforcement actions, or program changes"
+      },
+      {
+        "name": "weekly-financial-summary",
+        "agent": "cipher",
+        "schedule": "0 9 * * 5",       // Every Friday at 9 AM
+        "task": "Generate weekly financial summary from expense and revenue tracking sheets"
+      },
+      {
+        "name": "content-calendar-review",
+        "agent": "nova",
+        "schedule": "0 7 * * 0",       // Every Sunday at 7 AM
+        "task": "Review last week's content metrics and draft next week's content calendar"
+      }
+    ]
   },
 
   // ── CHANNELS (enable what you need) ──
