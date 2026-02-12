@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team Status - Round Table</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root{
+    --bg:#0e1117;
+    --table:#1a1e2a;
+    --table-rim:#2a3045;
+    --text:#c9d1d9;
+    --text-dim:#6e7681;
+    --halo:#58a6ff;
+    --halo-glow:rgba(88,166,255,.45);
+    --trouble:#f85149;
+    --trouble-glow:rgba(248,81,73,.45);
+    --yarmulke:#21262d;
+    --yarmulke-dark:#0d1117;
+    --avatar-bg:#30363d;
+  }
+
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    overflow:hidden;
+  }
+
+  h1{
+    font-size:1.4rem;
+    font-weight:600;
+    letter-spacing:.04em;
+    margin-bottom:.3rem;
+    color:var(--text);
+  }
+
+  .subtitle{
+    font-size:.8rem;
+    color:var(--text-dim);
+    margin-bottom:2rem;
+  }
+
+  /* ---------- round table ---------- */
+  .table-container{
+    position:relative;
+    width:min(90vw,640px);
+    height:min(90vw,640px);
+  }
+
+  .round-table{
+    position:absolute;
+    top:50%;left:50%;
+    width:55%;height:55%;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    background:radial-gradient(circle,var(--table) 60%,var(--table-rim));
+    box-shadow:0 0 60px rgba(0,0,0,.5),inset 0 0 30px rgba(0,0,0,.3);
+  }
+
+  .round-table::after{
+    content:'';position:absolute;
+    top:12%;left:12%;right:12%;bottom:12%;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,.04);
+  }
+
+  .table-label{
+    position:absolute;
+    top:50%;left:50%;
+    transform:translate(-50%,-50%);
+    font-size:.7rem;
+    text-transform:uppercase;
+    letter-spacing:.15em;
+    color:var(--text-dim);
+    opacity:.6;
+    pointer-events:none;
+    text-align:center;
+    line-height:1.5;
+  }
+
+  /* ---------- agent seat ---------- */
+  .agent{
+    position:absolute;
+    width:90px;height:120px;
+    transform:translate(-50%,-50%);
+    display:flex;flex-direction:column;
+    align-items:center;
+    cursor:default;
+    user-select:none;
+  }
+
+  .avatar-ring{
+    position:relative;
+    width:68px;height:68px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    transition:box-shadow .4s,border-color .4s;
+    border:3px solid transparent;
+  }
+
+  .avatar{
+    width:56px;height:56px;
+    border-radius:50%;
+    background:var(--avatar-bg);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.3rem;
+    position:relative;
+    overflow:visible;
+    z-index:1;
+  }
+
+  .agent-name{
+    margin-top:6px;
+    font-size:.7rem;
+    font-weight:500;
+    white-space:nowrap;
+    color:var(--text);
+  }
+
+  .agent-role{
+    font-size:.6rem;
+    color:var(--text-dim);
+    white-space:nowrap;
+  }
+
+  /* ---------- ACTIVE  (halo) ---------- */
+  .agent[data-status="active"] .avatar-ring{
+    border-color:var(--halo);
+    box-shadow:0 0 18px 4px var(--halo-glow),
+               0 0 40px 8px rgba(88,166,255,.15);
+    animation:pulse-halo 2.4s ease-in-out infinite;
+  }
+
+  @keyframes pulse-halo{
+    0%,100%{box-shadow:0 0 18px 4px var(--halo-glow),0 0 40px 8px rgba(88,166,255,.15)}
+    50%{box-shadow:0 0 24px 8px var(--halo-glow),0 0 56px 14px rgba(88,166,255,.2)}
+  }
+
+  /* halo arc decoration */
+  .agent[data-status="active"] .avatar::before{
+    content:'';position:absolute;
+    top:-14px;left:50%;width:36px;height:18px;
+    transform:translateX(-50%);
+    border:2.5px solid var(--halo);
+    border-bottom:none;
+    border-radius:36px 36px 0 0;
+    opacity:.9;
+    filter:drop-shadow(0 0 4px var(--halo));
+    animation:bob-halo 2.4s ease-in-out infinite;
+  }
+
+  @keyframes bob-halo{
+    0%,100%{top:-14px}
+    50%{top:-17px}
+  }
+
+  /* ---------- INACTIVE (yarmulke) ---------- */
+  .agent[data-status="inactive"] .avatar-ring{
+    border-color:var(--yarmulke);
+    box-shadow:none;
+    opacity:.65;
+  }
+
+  .agent[data-status="inactive"] .avatar::before{
+    content:'';position:absolute;
+    top:-6px;left:50%;
+    width:38px;height:16px;
+    transform:translateX(-50%);
+    background:var(--yarmulke-dark);
+    border:2px solid var(--yarmulke);
+    border-radius:50% 50% 45% 45% / 60% 60% 40% 40%;
+    z-index:2;
+    box-shadow:inset 0 -2px 4px rgba(0,0,0,.4);
+  }
+
+  .agent[data-status="inactive"] .agent-name{
+    color:var(--text-dim);
+  }
+
+  /* ---------- TROUBLE ---------- */
+  .agent[data-status="trouble"] .avatar-ring{
+    border-color:var(--trouble);
+    box-shadow:0 0 18px 4px var(--trouble-glow),
+               0 0 40px 8px rgba(248,81,73,.15);
+    animation:pulse-trouble 1.2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-trouble{
+    0%,100%{box-shadow:0 0 18px 4px var(--trouble-glow),0 0 40px 8px rgba(248,81,73,.15)}
+    50%{box-shadow:0 0 28px 10px var(--trouble-glow),0 0 56px 16px rgba(248,81,73,.25)}
+  }
+
+  .agent[data-status="trouble"] .avatar::before{
+    content:'!';position:absolute;
+    top:-16px;left:50%;
+    transform:translateX(-50%);
+    width:22px;height:22px;
+    background:var(--trouble);
+    color:#fff;
+    font-weight:700;font-size:.8rem;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    z-index:3;
+    animation:shake .4s ease-in-out infinite alternate;
+    box-shadow:0 0 8px var(--trouble-glow);
+  }
+
+  @keyframes shake{
+    0%{transform:translateX(-50%) rotate(-6deg)}
+    100%{transform:translateX(-50%) rotate(6deg)}
+  }
+
+  /* ---------- legend ---------- */
+  .legend{
+    display:flex;gap:1.6rem;
+    margin-top:2rem;
+    font-size:.72rem;
+    color:var(--text-dim);
+  }
+
+  .legend-item{
+    display:flex;align-items:center;gap:6px;
+    cursor:pointer;
+    transition:color .2s;
+  }
+  .legend-item:hover{color:var(--text)}
+
+  .legend-dot{
+    width:10px;height:10px;border-radius:50%;
+  }
+  .legend-dot.active{background:var(--halo);box-shadow:0 0 6px var(--halo-glow)}
+  .legend-dot.inactive{background:var(--yarmulke-dark);border:1.5px solid var(--yarmulke)}
+  .legend-dot.trouble{background:var(--trouble);box-shadow:0 0 6px var(--trouble-glow)}
+
+  /* ---------- controls ---------- */
+  .controls{
+    margin-top:1.2rem;
+    display:flex;gap:.6rem;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  .controls button{
+    font-size:.68rem;
+    padding:5px 12px;
+    border:1px solid var(--table-rim);
+    border-radius:6px;
+    background:var(--table);
+    color:var(--text-dim);
+    cursor:pointer;
+    transition:all .2s;
+  }
+  .controls button:hover{
+    border-color:var(--halo);
+    color:var(--text);
+  }
+
+  /* tooltip */
+  .tooltip{
+    position:fixed;
+    padding:8px 12px;
+    background:#161b22;
+    border:1px solid var(--table-rim);
+    border-radius:8px;
+    font-size:.72rem;
+    color:var(--text);
+    pointer-events:none;
+    opacity:0;
+    transition:opacity .15s;
+    z-index:100;
+    max-width:200px;
+    line-height:1.4;
+  }
+  .tooltip.show{opacity:1}
+</style>
+</head>
+<body>
+
+<h1>Agent Round Table</h1>
+<p class="subtitle">Team status at a glance</p>
+
+<div class="table-container" id="tableContainer">
+  <div class="round-table">
+    <div class="table-label">ROUND<br>TABLE</div>
+  </div>
+  <!-- agents injected by JS -->
+</div>
+
+<div class="legend">
+  <div class="legend-item" onclick="setAllStatus('active')">
+    <span class="legend-dot active"></span> Active (Halo)
+  </div>
+  <div class="legend-item" onclick="setAllStatus('inactive')">
+    <span class="legend-dot inactive"></span> Inactive (Yarmulke)
+  </div>
+  <div class="legend-item" onclick="setAllStatus('trouble')">
+    <span class="legend-dot trouble"></span> Trouble
+  </div>
+</div>
+
+<div class="controls" id="controls"></div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+// ── Agent roster ──────────────────────────────────────────────
+const agents = [
+  { id: 'belichick', name: 'Belichick',  emoji: '🏈', role: 'Strategist',   status: 'active'   },
+  { id: 'margo',     name: 'Margo',      emoji: '🔬', role: 'Researcher',   status: 'active'   },
+  { id: 'jesus',     name: 'Jesus',       emoji: '🕊️', role: 'Coordinator',  status: 'active'   },
+  { id: 'atlas',     name: 'Atlas',       emoji: '🗺️', role: 'Navigator',    status: 'inactive' },
+  { id: 'nova',      name: 'Nova',        emoji: '⚡', role: 'Builder',      status: 'active'   },
+  { id: 'sentinel',  name: 'Sentinel',    emoji: '🛡️', role: 'Guardian',     status: 'trouble'  },
+  { id: 'cipher',    name: 'Cipher',      emoji: '🔐', role: 'Security',     status: 'active'   },
+  { id: 'spark',     name: 'Spark',       emoji: '✨', role: 'Creative',     status: 'inactive' },
+];
+
+const STATUS_CYCLE = ['active', 'inactive', 'trouble'];
+
+// ── Layout helpers ────────────────────────────────────────────
+function positionAgents () {
+  const container = document.getElementById('tableContainer');
+  const cx = container.offsetWidth  / 2;
+  const cy = container.offsetHeight / 2;
+  const radius = Math.min(cx, cy) * 0.82;
+
+  document.querySelectorAll('.agent').forEach((el, i) => {
+    const angle = (2 * Math.PI * i) / agents.length - Math.PI / 2;
+    const x = cx + radius * Math.cos(angle);
+    const y = cy + radius * Math.sin(angle);
+    el.style.left = x + 'px';
+    el.style.top  = y + 'px';
+  });
+}
+
+// ── Render ────────────────────────────────────────────────────
+function render () {
+  const container = document.getElementById('tableContainer');
+
+  // clear old agents
+  container.querySelectorAll('.agent').forEach(a => a.remove());
+
+  agents.forEach((a, i) => {
+    const el = document.createElement('div');
+    el.className = 'agent';
+    el.dataset.status = a.status;
+    el.dataset.id = a.id;
+    el.innerHTML = `
+      <div class="avatar-ring">
+        <div class="avatar">${a.emoji}</div>
+      </div>
+      <span class="agent-name">${a.name}</span>
+      <span class="agent-role">${a.role}</span>
+    `;
+
+    // click to cycle status
+    el.addEventListener('click', () => {
+      const idx = STATUS_CYCLE.indexOf(a.status);
+      a.status = STATUS_CYCLE[(idx + 1) % STATUS_CYCLE.length];
+      el.dataset.status = a.status;
+      renderControls();
+    });
+
+    // hover tooltip
+    el.addEventListener('mouseenter', e => showTooltip(e, a));
+    el.addEventListener('mouseleave', hideTooltip);
+
+    container.appendChild(el);
+  });
+
+  positionAgents();
+  renderControls();
+}
+
+// ── Per-agent control buttons ─────────────────────────────────
+function renderControls () {
+  const wrap = document.getElementById('controls');
+  wrap.innerHTML = agents.map(a =>
+    `<button onclick="cycleAgent('${a.id}')">${a.emoji} ${a.name}: ${a.status}</button>`
+  ).join('');
+}
+
+function cycleAgent (id) {
+  const a = agents.find(x => x.id === id);
+  if (!a) return;
+  const idx = STATUS_CYCLE.indexOf(a.status);
+  a.status = STATUS_CYCLE[(idx + 1) % STATUS_CYCLE.length];
+  const el = document.querySelector(`.agent[data-id="${id}"]`);
+  if (el) el.dataset.status = a.status;
+  renderControls();
+}
+
+function setAllStatus (status) {
+  agents.forEach(a => a.status = status);
+  document.querySelectorAll('.agent').forEach(el => el.dataset.status = status);
+  renderControls();
+}
+
+// ── Tooltip ───────────────────────────────────────────────────
+const tooltip = document.getElementById('tooltip');
+
+function showTooltip (e, agent) {
+  const labels = { active: 'Working', inactive: 'Offline', trouble: 'Trouble' };
+  tooltip.innerHTML = `<strong>${agent.name}</strong> &mdash; ${agent.role}<br>Status: ${labels[agent.status] || agent.status}`;
+  tooltip.classList.add('show');
+  moveTooltip(e);
+  document.addEventListener('mousemove', moveTooltip);
+}
+
+function moveTooltip (e) {
+  tooltip.style.left = (e.clientX + 14) + 'px';
+  tooltip.style.top  = (e.clientY + 14) + 'px';
+}
+
+function hideTooltip () {
+  tooltip.classList.remove('show');
+  document.removeEventListener('mousemove', moveTooltip);
+}
+
+// ── Init ──────────────────────────────────────────────────────
+render();
+window.addEventListener('resize', positionAgents);
+</script>
+</body>
+</html>

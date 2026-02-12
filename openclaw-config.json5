@@ -1,0 +1,78 @@
+// OpenClaw Configuration for BelichickGillisMusk
+// Drop this into ~/.openclaw/openclaw.json on your Mac
+// Agents: Mila (Research/Legal), Atlas (YouTube/Creative), Closer (Sales), Belichick (Strategy)
+{
+  "gateway": {
+    "bind": "loopback",          // ONLY accessible from your machine - not the internet
+    "port": 18789,
+    "auth": {
+      "token": "GENERATE-WITH: openssl rand -hex 32"
+    }
+  },
+
+  // ── IDENTITY ──
+  "identity": {
+    "name": "BelichickGillisMusk HQ",
+    "systemPrompt": "You are part of the BelichickGillisMusk agent team. You operate within strict budgets and guardrails. Never exceed your role boundaries."
+  },
+
+  // ── COST CONTROLS (the kill switches) ──
+  "auth": {
+    "cooldowns": {
+      "billingBackoffHours": 1,        // Disable API key 1 hour after billing error
+      "billingMaxHours": 12,           // Max 12 hour cooldown
+      "failureWindowHours": 6          // Track failures over 6 hours
+    }
+  },
+
+  // ── AGENT DEFAULTS (apply to ALL agents) ──
+  "agents": {
+    "defaults": {
+      "maxConcurrent": 2,              // Max 2 agents running at once
+      "contextTokens": 60000,          // Cap context to 60K tokens per turn
+      "timeoutSeconds": 300,           // Kill any agent after 5 minutes of silence
+      "bootstrapMaxChars": 15000,      // Limit bootstrap prompt size
+
+      "subagents": {
+        "maxConcurrent": 2,            // Max 2 sub-agents
+        "archiveAfterMinutes": 30      // Auto-kill idle sub-agents after 30 min
+      },
+
+      "contextPruning": {
+        "mode": "cache-ttl",
+        "ttl": "20m",                  // Prune old context after 20 min
+        "softTrimRatio": 0.70,
+        "hardClearRatio": 0.85
+      },
+
+      "compaction": {
+        "reserveTokensFloor": 2000,
+        "maxHistoryShare": 0.4,
+        "memoryFlush": {
+          "enabled": true,
+          "softThresholdTokens": 1000
+        }
+      }
+    }
+  },
+
+  // ── CRON (scheduled tasks) ──
+  "cron": {
+    "enabled": true,
+    "maxConcurrentRuns": 1,            // One cron job at a time
+    "sessionRetention": "6h"           // Clean up cron sessions after 6 hours
+  },
+
+  // ── CHANNELS (enable what you need) ──
+  "channels": {
+    "discord": {
+      "enabled": false
+    },
+    "telegram": {
+      "enabled": false
+    },
+    "slack": {
+      "enabled": false
+    }
+  }
+}
