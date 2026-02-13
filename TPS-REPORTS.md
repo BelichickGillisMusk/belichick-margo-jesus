@@ -63,8 +63,98 @@ COST ESTIMATE: [$ if available]
 RED FLAGS:
 - [Anything that looks wrong, unexpected, or needs human attention]
 - (or "None")
+
+DISCOVERIES:
+- [Something better/faster/free found while working]
+- (or "None this session")
 ═══════════════════════════════════════════════
 ```
+
+---
+
+## DISCOVERIES — The Recommendation Queue
+
+**What this is:** When any agent is working and stumbles onto something useful — a free tool, a cheaper API, a faster approach, a better workflow — they don't just act on it. They log it here and wait for Bryan's go-ahead.
+
+**Why:** Agents should be helpful, not surprising. No agent should switch tools, change workflows, or adopt new services without approval. But we also don't want to lose good ideas.
+
+### How It Works
+
+1. Agent finds something while working (free SEO tool, cheaper hosting, faster API)
+2. Agent logs it as a **Discovery** in its TPS report
+3. Discovery shows up in the weekly TPS summary issue on GitHub
+4. Bryan reviews and responds:
+   - **"GO"** → Agent implements it
+   - **"NO"** → Agent ignores it, moves on
+   - **"RESEARCH MORE"** → Agent digs deeper, reports back next TPS
+5. Approved discoveries get added to the playbook / agent config
+
+### Discovery Format
+
+Every discovery uses this exact format:
+
+```
+🔍 DISCOVERY — [Agent Name]
+Date: [YYYY-MM-DD]
+
+FOUND: [What the tool/service/approach is]
+WHERE: [How the agent found it — during what task]
+TYPE: [FREE TOOL / CHEAPER ALTERNATIVE / FASTER APPROACH / NEW CAPABILITY]
+
+CURRENT: [What we're using now for this]
+PROPOSED: [What we'd switch to]
+
+WHY IT'S BETTER:
+- [Specific benefit 1 — with numbers if possible]
+- [Specific benefit 2]
+
+COST IMPACT:
+- Current cost: $[X]/month
+- Proposed cost: $[X]/month
+- Savings: $[X]/month
+
+RISK:
+- [What could go wrong]
+- [Migration effort: TRIVIAL / MODERATE / SIGNIFICANT]
+
+RECOMMENDATION: [SWITCH / TEST FIRST / KEEP IN MIND]
+STATUS: ⏳ AWAITING APPROVAL
+```
+
+### Discovery Categories
+
+| Type | Example | Who Typically Finds It |
+|------|---------|----------------------|
+| **FREE TOOL** | Free SEO audit tool vs paid one | Mila, Atlas |
+| **CHEAPER ALTERNATIVE** | Cheaper image CDN | Atlas, Mila Cloud Run |
+| **FASTER APPROACH** | Batch API vs individual calls | Any agent |
+| **NEW CAPABILITY** | New Google API feature we could use | Mila Legal, Lead Scraper |
+| **BETTER WORKFLOW** | Automation that replaces manual steps | Belichick, Mila |
+| **COMPETITIVE INTEL** | Competitor using a tool/strategy we should adopt | Atlas, Closer |
+| **REGULATORY CHANGE** | New law that creates opportunity | Mila Legal, Sentinel |
+| **FREE TIER UPGRADE** | Service we pay for now has a free tier | Any agent |
+
+### Approval Workflow
+
+**Via GitHub Issues (preferred):**
+When the weekly TPS report lists discoveries, Bryan comments on the issue:
+- `GO: Discovery #1` → Agent acts on it
+- `NO: Discovery #2` → Filed away, no action
+- `RESEARCH: Discovery #3` → Agent investigates further
+
+**Via Mila Cloud Run:**
+- `POST /discoveries` — Agent submits a discovery
+- `GET /discoveries` — See all pending discoveries
+- `POST /discoveries/:id/approve` — Approve (Bryan only)
+- `POST /discoveries/:id/reject` — Reject (Bryan only)
+
+### Active Discovery Queue
+
+| # | Date | Agent | Discovery | Type | Status |
+|---|------|-------|-----------|------|--------|
+| — | — | — | No discoveries yet | — | — |
+
+*This table is updated as agents report discoveries.*
 
 ---
 
@@ -291,3 +381,5 @@ Scan RED FLAGS first. If none, you're good. If any, handle them.
 ---
 
 **Remember: The point of TPS reports is to catch problems EARLY. If Mila is burning $5/day on nonsense chat, we want to know on Day 1, not Day 30.**
+
+**Discoveries: Agents find better stuff all the time. They log it, you approve it, THEN they act. No surprises.**

@@ -59,6 +59,65 @@ Mila's TPS is automated via:
 
 The weekly TPS workflow in demo-repository automatically polls this endpoint.
 
+## Discoveries — Finding Better/Faster/Free Stuff
+
+**CRITICAL RULE:** When ANY agent finds something better, faster, or free while doing its work, it DOES NOT act on it immediately. It logs it as a Discovery and waits for Bryan's approval.
+
+### When to Log a Discovery
+
+- You find a free tool that replaces something we pay for
+- You find a cheaper API or service
+- You find a faster way to do something we already do
+- You discover a new capability (new Google API, new feature in a tool we use)
+- You spot a competitor using a strategy we should adopt
+- You find a regulatory change that creates a business opportunity
+- A service we pay for now has a free tier
+
+### How to Log a Discovery
+
+**If you're Mila Cloud Run**, POST to `/discoveries`:
+```json
+{
+  "agent": "Mila",
+  "found": "Google offers free SEO audit via Lighthouse CI",
+  "where": "Found while running SEO audit task",
+  "type": "FREE_TOOL",
+  "current": "Manual PageSpeed Insights checks",
+  "proposed": "Automated Lighthouse CI in GitHub Actions",
+  "whyBetter": ["Runs automatically on every deploy", "Free", "More detailed than manual checks"],
+  "costImpact": { "current": "$0 (manual time)", "proposed": "$0 (automated)", "savings": "~30 min/week" },
+  "risk": "None — additive, doesn't replace anything",
+  "recommendation": "SWITCH"
+}
+```
+
+**If you're a skill agent (Atlas, Closer, Belichick, etc.)**, include in your TPS report:
+```
+🔍 DISCOVERY — [Agent Name]
+FOUND: [What you found]
+TYPE: [FREE_TOOL / CHEAPER_ALTERNATIVE / FASTER_APPROACH / etc.]
+CURRENT: [What we use now]
+PROPOSED: [What we'd switch to]
+WHY: [1-2 sentences]
+RECOMMENDATION: [SWITCH / TEST FIRST / KEEP IN MIND]
+STATUS: ⏳ AWAITING BRYAN'S APPROVAL
+```
+
+### What Happens After You Log It
+
+1. Discovery shows up in the weekly TPS report (Monday GitHub Issue)
+2. Bryan reviews and replies: `GO`, `NO`, or `RESEARCH`
+3. If `GO` → you implement it on your next run
+4. If `NO` → you ignore it, move on
+5. If `RESEARCH` → you dig deeper and report back next week
+
+### DO NOT
+
+- Act on a discovery without approval
+- Switch tools, APIs, or approaches without a `GO`
+- Log trivial stuff (minor CSS tweaks, tiny perf gains < 5%)
+- Log the same discovery twice
+
 ## Cost Awareness
 
 Every agent should be token-conscious. Rules:
