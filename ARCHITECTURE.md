@@ -264,3 +264,59 @@ Everything runs on your Mac. Period.
 The only thing that touches the internet:
 1. Claude API calls (when using Claude, not local models)
 2. The Mila chat widget on your website (proxied through Vercel)
+3. Slack API (RECON mission dispatch and reporting)
+
+---
+
+## Slack RECON Integration
+
+### Overview
+
+Slack is the mission command center. Agents are dispatched via slash commands and report findings back to dedicated channels.
+
+### Channel Map
+
+| Channel | Purpose | Agents |
+|---------|---------|--------|
+| `#recon-command` | Mission dispatch | Belichick (receives) |
+| `#recon-leads` | Prospect/lead intelligence | Lead Scraper |
+| `#recon-legal` | Regulatory intel | Sentinel, Mila-Legal |
+| `#recon-market` | Market research | Nova, Atlas |
+| `#recon-sales` | Prospect dossiers | Closer |
+| `#recon-compliance` | Vehicle/fleet compliance | Mila-CARB |
+| `#agent-status` | Agent status dashboard | All agents |
+| `#alerts` | Budget warnings, failures | Belichick, Cipher |
+
+### Slash Commands
+
+| Command | What It Does |
+|---------|-------------|
+| `/recon-leads [query]` | Scrape business leads from Google Maps |
+| `/recon-legal [topic]` | Research regulations and find opportunities |
+| `/recon-market [industry]` | Competitor and market intelligence |
+| `/recon-compliance [vin]` | Check vehicle compliance status |
+| `/recon-prospect [company]` | Deep dive dossier on a prospect |
+| `/dispatch [agent] [task]` | Direct dispatch to any agent |
+| `/agent-status` | All agent statuses |
+| `/budget` | Token spend report |
+| `/kill [agent]` | Emergency stop |
+
+### Data Flow
+
+```
+Slack Slash Command
+  → Make.com Webhook (bridge)
+    → OpenClaw Gateway (localhost:18789)
+      → Belichick dispatches agent
+        → Agent runs mission
+          → Results → Make.com → Slack channel
+```
+
+### Security
+- Authorized Slack users only (allowlist)
+- Max 10 missions/hour, 2 concurrent
+- No PII posted to Slack channels
+- All missions logged with user, time, agent, cost
+- Kill switch via `/kill` command
+
+Full skill documentation: `skills/slack-recon-agent/SKILL.md`
