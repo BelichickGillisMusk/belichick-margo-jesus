@@ -314,7 +314,8 @@
 <script>
 const bots = [
   {
-    name: 'Jon Jones',
+    name: 'Jones',
+    slack: '@jones',
     emoji: '\u{1F6E1}\uFE0F',
     role: 'Security Guardian',
     desc: 'Gatekeeps all outbound actions. PII scan, legal review, tone check.',
@@ -325,6 +326,7 @@ const bots = [
   },
   {
     name: 'Belichick',
+    slack: '@belichick',
     emoji: '\u{1F3C8}',
     role: 'Strategy & Operations',
     desc: 'Orchestrates all agents. Email, calendar, task delegation, decision-making.',
@@ -334,7 +336,19 @@ const bots = [
     power: 90,
   },
   {
-    name: 'Closer',
+    name: 'Musk',
+    slack: '@musk',
+    emoji: '\u{1F680}',
+    role: 'Innovation & Growth',
+    desc: 'Big-picture thinking, product ideas, moonshots, tech stack. Thinks 10x.',
+    status: 'deployed',
+    skills: { security: 70, prompts: 88, tools: 72 },
+    projects: ['Product Ideas', 'Tech Stack', 'Growth Hacks', 'Moonshots'],
+    power: 80,
+  },
+  {
+    name: 'Kesha',
+    slack: '@kesha',
     emoji: '\u{1F4BC}',
     role: 'Sales Agent',
     desc: 'A.C.E.S. framework. Cold calls, email sequences, objection handling.',
@@ -345,6 +359,7 @@ const bots = [
   },
   {
     name: 'Mila',
+    slack: '@mila',
     emoji: '\u{1F4CA}',
     role: 'Customer Service & Legal',
     desc: 'CARB compliance CS bot + regulatory research for business opps.',
@@ -355,6 +370,7 @@ const bots = [
   },
   {
     name: 'Nova',
+    slack: '@nova',
     emoji: '\u{1F3AC}',
     role: 'Marketing & Content',
     desc: 'YouTube, social, SEO, animation planning, content calendar.',
@@ -365,6 +381,7 @@ const bots = [
   },
   {
     name: 'Cipher',
+    slack: '@cipher',
     emoji: '\u{1F4B0}',
     role: 'Finance & Accounting',
     desc: 'Bookkeeping, invoicing (Stripe), tax prep, budget forecasting.',
@@ -375,6 +392,7 @@ const bots = [
   },
   {
     name: 'Atlas',
+    slack: '@atlas',
     emoji: '\u{1F5FA}\uFE0F',
     role: 'Web Dev & Technical',
     desc: 'Website builds, deployments, bug fixes, API integrations.',
@@ -385,6 +403,7 @@ const bots = [
   },
   {
     name: 'Sentinel',
+    slack: '@sentinel',
     emoji: '\u2696\uFE0F',
     role: 'Legal & Regulatory',
     desc: 'Finds business opps in laws. Federal, state, local research.',
@@ -394,7 +413,8 @@ const bots = [
     power: 42,
   },
   {
-    name: 'Lead Scraper',
+    name: 'Scraper',
+    slack: '@scraper',
     emoji: '\u{1F50D}',
     role: 'Google Maps Data',
     desc: 'Pulls business contacts from Google Maps/Places API for lead lists.',
@@ -426,7 +446,7 @@ function renderBots(filter) {
     <div class="bot-row" data-status="${b.status}">
       <div class="bot-rank">${i + 1}</div>
       <div class="bot-info">
-        <div class="name">${b.emoji} ${b.name}</div>
+        <div class="name">${b.emoji} ${b.name} <span style="color:var(--accent);font-size:.7rem;font-weight:400;opacity:.7">${b.slack}</span></div>
         <div class="role">${b.role}</div>
         <div class="desc">${b.desc}</div>
       </div>
