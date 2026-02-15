@@ -25,6 +25,13 @@
     }
   },
 
+  // ── API KEYS (model providers) ──
+  "apiKeys": {
+    "anthropic": "PASTE-YOUR-KEY-HERE",    // Claude (Opus, Sonnet, Haiku)
+    "google": "CONFIGURE: your-gemini-api-key",  // Gemini (free tier)
+    "openai": ""                            // Optional — leave blank if not using
+  },
+
   // ── AGENT DEFAULTS (apply to ALL agents) ──
   "agents": {
     "defaults": {
