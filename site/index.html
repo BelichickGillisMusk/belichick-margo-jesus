@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GIA - Gillis Intelligence Agency</title>
+<meta name="description" content="Gillis Intelligence Agency deploys autonomous AI agent teams that handle sales, compliance, marketing, and operations. Elite. Deploy. Iterate. Dominate.">
+<meta property="og:title" content="GIA - Gillis Intelligence Agency">
+<meta property="og:description" content="Autonomous AI agent teams. Security-first. Results-only.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://silverbackai.agency">
+<link rel="canonical" href="https://silverbackai.agency">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root{
+    --bg:#0a0d12;
+    --bg2:#0e1117;
+    --panel:#161b22;
+    --border:#21262d;
+    --text:#e6edf3;
+    --text-dim:#7d8590;
+    --accent:#58a6ff;
+    --accent-glow:rgba(88,166,255,.25);
+    --green:#3fb950;
+    --green-glow:rgba(63,185,80,.2);
+    --gold:#d29922;
+    --gold-glow:rgba(210,153,34,.2);
+    --red:#f85149;
+    --gradient:linear-gradient(135deg,#58a6ff 0%,#3fb950 100%);
+  }
+
+  html{scroll-behavior:smooth}
+
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+
+  /* ── NAV ── */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    background:rgba(10,13,18,.85);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);
+    padding:0 24px;
+  }
+
+  .nav-inner{
+    max-width:1200px;margin:0 auto;
+    display:flex;align-items:center;justify-content:space-between;
+    height:64px;
+  }
+
+  .logo{
+    font-size:1.3rem;font-weight:800;
+    letter-spacing:.08em;
+  }
+
+  .logo .gia{
+    background:var(--gradient);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;
+  }
+
+  .logo .full{
+    color:var(--text-dim);
+    font-weight:400;font-size:.75rem;
+    margin-left:10px;letter-spacing:.06em;
+    text-transform:uppercase;
+  }
+
+  .nav-links{display:flex;gap:28px;align-items:center}
+
+  .nav-links a{
+    color:var(--text-dim);text-decoration:none;font-size:.85rem;
+    transition:color .2s;
+  }
+  .nav-links a:hover{color:var(--text)}
+
+  .nav-cta{
+    padding:8px 20px;
+    background:var(--accent);
+    color:#fff !important;
+    border:none;border-radius:6px;
+    font-size:.82rem;font-weight:600;
+    text-decoration:none;
+    transition:box-shadow .2s;
+  }
+  .nav-cta:hover{box-shadow:0 0 20px var(--accent-glow)}
+
+  /* ── HERO ── */
+  .hero{
+    min-height:100vh;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    text-align:center;
+    padding:120px 24px 80px;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .hero::before{
+    content:'';position:absolute;
+    top:-200px;left:50%;transform:translateX(-50%);
+    width:800px;height:800px;
+    background:radial-gradient(circle,rgba(88,166,255,.08) 0%,transparent 70%);
+    pointer-events:none;
+  }
+
+  .hero-badge{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:6px 16px;
+    background:rgba(63,185,80,.1);
+    border:1px solid rgba(63,185,80,.25);
+    border-radius:20px;
+    font-size:.75rem;
+    color:var(--green);
+    margin-bottom:24px;
+    letter-spacing:.03em;
+  }
+
+  .hero-badge::before{
+    content:'';width:6px;height:6px;
+    border-radius:50%;background:var(--green);
+    box-shadow:0 0 8px var(--green-glow);
+    animation:pulse-dot 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot{
+    0%,100%{opacity:1}50%{opacity:.3}
+  }
+
+  .hero h1{
+    font-size:clamp(2.4rem,6vw,4.5rem);
+    font-weight:800;
+    line-height:1.05;
+    letter-spacing:-.03em;
+    max-width:800px;
+    margin-bottom:12px;
+  }
+
+  .hero h1 .gradient{
+    background:var(--gradient);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;
+  }
+
+  .hero .tagline{
+    font-size:1.1rem;
+    color:var(--gold);
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    font-weight:600;
+    margin-bottom:20px;
+  }
+
+  .hero p{
+    font-size:1.15rem;
+    color:var(--text-dim);
+    max-width:580px;
+    margin-bottom:36px;
+    line-height:1.7;
+  }
+
+  .hero-actions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+
+  .btn-primary{
+    padding:14px 32px;
+    background:var(--accent);
+    color:#fff;
+    border:none;border-radius:8px;
+    font-size:.95rem;font-weight:600;
+    cursor:pointer;text-decoration:none;
+    transition:all .2s;
+  }
+  .btn-primary:hover{box-shadow:0 0 30px var(--accent-glow);transform:translateY(-1px);color:#fff}
+
+  .btn-secondary{
+    padding:14px 32px;
+    background:transparent;
+    color:var(--text);
+    border:1px solid var(--border);
+    border-radius:8px;
+    font-size:.95rem;font-weight:500;
+    cursor:pointer;text-decoration:none;
+    transition:all .2s;
+  }
+  .btn-secondary:hover{border-color:var(--text-dim);color:#fff}
+
+  /* ── MOTTO BAR ── */
+  .motto{
+    padding:20px 24px;
+    text-align:center;
+    font-size:.8rem;
+    letter-spacing:.25em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    border-top:1px solid var(--border);
+    border-bottom:1px solid var(--border);
+    background:var(--bg2);
+  }
+
+  .motto strong{color:var(--accent)}
+
+  /* ── SECTIONS ── */
+  section{padding:100px 24px}
+
+  .section-inner{max-width:1100px;margin:0 auto}
+
+  .section-label{
+    font-size:.7rem;
+    text-transform:uppercase;
+    letter-spacing:.15em;
+    color:var(--accent);
+    margin-bottom:12px;
+  }
+
+  .section-title{
+    font-size:clamp(1.8rem,4vw,2.6rem);
+    font-weight:700;
+    letter-spacing:-.02em;
+    margin-bottom:16px;
+    line-height:1.2;
+  }
+
+  .section-subtitle{
+    font-size:1rem;
+    color:var(--text-dim);
+    max-width:600px;
+    margin-bottom:48px;
+    line-height:1.7;
+  }
+
+  /* ── AGENT GRID ── */
+  .agent-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:20px;
+  }
+
+  .agent-card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:28px;
+    transition:all .3s;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .agent-card:hover{
+    border-color:var(--accent);
+    box-shadow:0 0 30px rgba(88,166,255,.08);
+    transform:translateY(-2px);
+  }
+
+  .agent-card .emoji{font-size:2rem;margin-bottom:12px;display:block}
+
+  .agent-card h3{
+    font-size:1.1rem;margin-bottom:4px;font-weight:600;
+  }
+
+  .agent-card .role{
+    font-size:.78rem;
+    color:var(--accent);
+    margin-bottom:12px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+  }
+
+  .agent-card p{
+    font-size:.88rem;
+    color:var(--text-dim);
+    line-height:1.6;
+  }
+
+  .agent-card .status{
+    position:absolute;top:20px;right:20px;
+    width:10px;height:10px;border-radius:50%;
+    background:var(--green);
+    box-shadow:0 0 8px var(--green-glow);
+  }
+
+  /* ── SERVICES / HOW IT WORKS ── */
+  .steps{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:24px;
+    counter-reset:step;
+  }
+
+  .step{
+    background:var(--bg2);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:28px;
+    counter-increment:step;
+    position:relative;
+  }
+
+  .step::before{
+    content:counter(step);
+    position:absolute;top:20px;right:20px;
+    font-size:2.5rem;font-weight:800;
+    color:rgba(88,166,255,.1);
+    line-height:1;
+  }
+
+  .step h4{
+    font-size:1rem;margin-bottom:8px;font-weight:600;
+  }
+
+  .step p{
+    font-size:.85rem;color:var(--text-dim);line-height:1.6;
+  }
+
+  /* ── SECURITY SECTION ── */
+  .security-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:16px;
+  }
+
+  .security-item{
+    display:flex;gap:12px;align-items:flex-start;
+    padding:16px;
+    background:var(--bg2);
+    border:1px solid var(--border);
+    border-radius:8px;
+  }
+
+  .security-icon{
+    width:36px;height:36px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    border-radius:8px;
+    background:rgba(63,185,80,.1);
+    font-size:1.1rem;
+  }
+
+  .security-item h4{font-size:.9rem;margin-bottom:2px}
+  .security-item p{font-size:.78rem;color:var(--text-dim);line-height:1.5}
+
+  /* ── CTA SECTION ── */
+  .cta-section{
+    text-align:center;
+    background:var(--bg2);
+    border-top:1px solid var(--border);
+    border-bottom:1px solid var(--border);
+  }
+
+  .cta-section h2{
+    font-size:clamp(1.8rem,4vw,2.8rem);
+    font-weight:700;margin-bottom:16px;
+    letter-spacing:-.02em;
+  }
+
+  .cta-section p{
+    color:var(--text-dim);
+    max-width:500px;margin:0 auto 32px;
+    font-size:1rem;
+  }
+
+  /* ── FOOTER ── */
+  footer{
+    padding:40px 24px;
+    text-align:center;
+    border-top:1px solid var(--border);
+  }
+
+  footer p{font-size:.78rem;color:var(--text-dim)}
+  footer a{color:var(--accent);text-decoration:none}
+  footer a:hover{text-decoration:underline}
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:640px){
+    .nav-links a:not(.nav-cta){display:none}
+    .hero{padding:100px 20px 60px}
+    .hero-actions{flex-direction:column;width:100%}
+    .btn-primary,.btn-secondary{width:100%;text-align:center}
+    section{padding:60px 20px}
+    .agent-grid,.steps,.security-grid{grid-template-columns:1fr}
+    .logo .full{display:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo"><span class="gia">GIA</span><span class="full">Gillis Intelligence Agency</span></div>
+    <div class="nav-links">
+      <a href="#agents">Agents</a>
+      <a href="/bots.html">Bot Rankings</a>
+      <a href="#services">Services</a>
+      <a href="#security">Security</a>
+      <a href="mailto:hello@silverbackai.agency" class="nav-cta">Get Started</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">Agents Online</div>
+  <h1>Gillis<br><span class="gradient">Intelligence Agency</span></h1>
+  <div class="tagline">Elite &middot; Deploy &middot; Iterate &middot; Dominate</div>
+  <p>We build and deploy autonomous AI agent teams that handle sales, compliance, marketing, and operations &mdash; so you can scale without adding headcount.</p>
+  <div class="hero-actions">
+    <a href="mailto:hello@silverbackai.agency" class="btn-primary">Deploy Your Team</a>
+    <a href="/bots.html" class="btn-secondary">Bot Rankings</a>
+  </div>
+</section>
+
+<!-- MOTTO -->
+<div class="motto">
+  <strong>ELITE</strong> &mdash; <strong>DEPLOY</strong> &mdash; <strong>ITERATE</strong> &mdash; <strong>DOMINATE</strong>
+</div>
+
+<!-- AGENTS -->
+<section id="agents">
+  <div class="section-inner">
+    <div class="section-label">The Roster</div>
+    <h2 class="section-title">Agents That Work 24/7</h2>
+    <p class="section-subtitle">Every agent is purpose-built with guardrails, security boundaries, and clear rules of engagement. No hallucinations. No rogue actions.</p>
+
+    <div class="agent-grid">
+      <div class="agent-card">
+        <span class="emoji">&#x1F3C8;</span>
+        <div class="status"></div>
+        <h3>Belichick</h3>
+        <div class="role">Strategy &amp; Operations</div>
+        <p>Your right hand. Manages email, calendar, task delegation, and coordinates every other agent. Thinks three moves ahead.</p>
+      </div>
+
+      <div class="agent-card">
+        <span class="emoji">&#x1F6E1;&#xFE0F;</span>
+        <div class="status"></div>
+        <h3>Jon Jones</h3>
+        <div class="role">Security Guardian</div>
+        <p>The bouncer. Every outbound message passes through Jon Jones first. Scans for PII, legal risk, tone issues, and credential leaks. Nothing leaves without approval.</p>
+      </div>
+
+      <div class="agent-card">
+        <span class="emoji">&#x1F4BC;</span>
+        <div class="status"></div>
+        <h3>Closer</h3>
+        <div class="role">Sales Agent</div>
+        <p>Aggressive but ethical. Qualifies leads, handles objections, and asks for the sale every single time. Follows the A.C.E.S. framework: Attention, Connect, Elevate, Seal.</p>
+      </div>
+
+      <div class="agent-card">
+        <span class="emoji">&#x1F4CA;</span>
+        <div class="status"></div>
+        <h3>Mila</h3>
+        <div class="role">Customer Service &amp; Legal</div>
+        <p>Dual-role agent. Handles 24/7 customer service from website content, plus deep regulatory research to find business opportunities hidden in the law.</p>
+      </div>
+
+      <div class="agent-card">
+        <span class="emoji">&#x1F4B0;</span>
+        <div class="status"></div>
+        <h3>Cipher</h3>
+        <div class="role">Finance &amp; Accounting</div>
+        <p>Tracks every dollar. Bookkeeping, invoice generation, revenue tracking, tax prep, and budget forecasting. Accurate. No shortcuts.</p>
+      </div>
+
+      <div class="agent-card">
+        <span class="emoji">&#x1F3AC;</span>
+        <div class="status"></div>
+        <h3>Nova</h3>
+        <div class="role">Marketing &amp; Content</div>
+        <p>Content machine. YouTube strategy, scripts, animation planning, social media, SEO optimization, and content calendar management.</p>
+      </div>
+
+      <div class="agent-card">
+        <span class="emoji">&#x1F5FA;&#xFE0F;</span>
+        <div class="status"></div>
+        <h3>Atlas</h3>
+        <div class="role">Web Dev &amp; Technical</div>
+        <p>Builds and maintains websites, handles deployments, fixes bugs, manages databases, and integrates APIs. Ships fast.</p>
+      </div>
+
+      <div class="agent-card">
+        <span class="emoji">&#x2696;&#xFE0F;</span>
+        <div class="status"></div>
+        <h3>Sentinel</h3>
+        <div class="role">Legal &amp; Regulatory</div>
+        <p>Finds business opportunities inside regulations. Researches federal, state, and local laws. Spots the friction. Builds the playbook.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services" style="background:var(--bg2)">
+  <div class="section-inner">
+    <div class="section-label">How It Works</div>
+    <h2 class="section-title">From Zero to Deployed in Days</h2>
+    <p class="section-subtitle">We don't sell software. We deploy teams. Your agents are configured, secured, and working before your competitors know what hit them.</p>
+
+    <div class="steps">
+      <div class="step">
+        <h4>Discovery</h4>
+        <p>We audit your business operations, identify bottlenecks, and map out which agents solve which problems. No fluff, no upsell.</p>
+      </div>
+      <div class="step">
+        <h4>Configure</h4>
+        <p>Each agent gets custom system prompts, guardrails, tool access, and security boundaries tailored to your industry and workflow.</p>
+      </div>
+      <div class="step">
+        <h4>Deploy</h4>
+        <p>Agents go live on your infrastructure. Slack, email, website chat, CRM &mdash; wherever your business runs, they run.</p>
+      </div>
+      <div class="step">
+        <h4>Dominate</h4>
+        <p>Monitor performance, iterate on prompts, add new agents. Your AI team compounds in value every single week.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECURITY -->
+<section id="security">
+  <div class="section-inner">
+    <div class="section-label">Security First</div>
+    <h2 class="section-title">Good Claw / Bad Claw Architecture</h2>
+    <p class="section-subtitle">Agents are free to think internally. But the moment they touch the outside world, Jon Jones reviews every action. Nothing gets out without approval.</p>
+
+    <div class="security-grid">
+      <div class="security-item">
+        <div class="security-icon">&#x1F512;</div>
+        <div>
+          <h4>Outbound Gating</h4>
+          <p>Every email, Slack message, and API call is reviewed before it sends. PII, credentials, and legal risk are caught automatically.</p>
+        </div>
+      </div>
+      <div class="security-item">
+        <div class="security-icon">&#x1F6A8;</div>
+        <div>
+          <h4>Rate Limiting</h4>
+          <p>Hard caps on emails (50/day), Slack posts (20/hr), and auto-approvals (50/hr). Circuit breakers kill runaway agents.</p>
+        </div>
+      </div>
+      <div class="security-item">
+        <div class="security-icon">&#x1F4DD;</div>
+        <div>
+          <h4>Immutable Audit Logs</h4>
+          <p>Every agent action is logged with timestamp, source, verdict, and content hash. 90-day retention. Full forensic trail.</p>
+        </div>
+      </div>
+      <div class="security-item">
+        <div class="security-icon">&#x1F510;</div>
+        <div>
+          <h4>Encrypted Vault</h4>
+          <p>Sensitive files locked behind AES-256-GCM encryption. Human password required. No agent can unlock without you.</p>
+        </div>
+      </div>
+      <div class="security-item">
+        <div class="security-icon">&#x1F6E1;&#xFE0F;</div>
+        <div>
+          <h4>Sandboxed Workspaces</h4>
+          <p>Each agent operates in an isolated workspace. No cross-contamination. Jon Jones can read all for review but cannot modify.</p>
+        </div>
+      </div>
+      <div class="security-item">
+        <div class="security-icon">&#x26A0;&#xFE0F;</div>
+        <div>
+          <h4>Human Escalation</h4>
+          <p>High-risk actions (new contacts, invoices over $500, legal docs, bulk email) always require human approval. 60-min timeout auto-rejects.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="section-inner">
+    <h2>Ready to Deploy Your Team?</h2>
+    <p>Stop hiring. Start deploying. Your AI agent team is one conversation away.</p>
+    <a href="mailto:hello@silverbackai.agency" class="btn-primary">Get Started Today</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>&copy; 2026 Gillis Intelligence Agency. All rights reserved. | <a href="/bots.html">Bot Rankings</a> | <a href="/dashboard.html">Agent Dashboard</a> | <a href="/salesbot.html">Sales Demo</a></p>
+  <p style="margin-top:8px;font-size:.7rem;color:var(--text-dim)">ELITE &mdash; DEPLOY &mdash; ITERATE &mdash; DOMINATE</p>
+</footer>
+
+</body>
+</html>
