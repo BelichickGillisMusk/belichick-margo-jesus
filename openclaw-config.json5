@@ -72,7 +72,27 @@
       "enabled": false
     },
     "slack": {
-      "enabled": false
+      "enabled": true,
+      "botName": "BelichickGillisMusk-HQ",
+      "channels": {
+        "reconCommand": "#recon-command",
+        "reconLeads": "#recon-leads",
+        "reconLegal": "#recon-legal",
+        "reconMarket": "#recon-market",
+        "reconSales": "#recon-sales",
+        "reconCompliance": "#recon-compliance",
+        "agentStatus": "#agent-status",
+        "alerts": "#alerts"
+      },
+      "rateLimits": {
+        "maxMissionsPerHour": 10,
+        "maxConcurrentMissions": 2
+      },
+      "auth": {
+        "tokenEnv": "SLACK_BOT_TOKEN",
+        "appTokenEnv": "SLACK_APP_TOKEN",
+        "signingSecretEnv": "SLACK_SIGNING_SECRET"
+      }
     }
   }
 }
