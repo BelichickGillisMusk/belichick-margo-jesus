@@ -66,13 +66,13 @@
   // ── CHANNELS (enable what you need) ──
   "channels": {
     "discord": {
-      "enabled": false
+      "enabled": true
     },
     "telegram": {
-      "enabled": false
+      "enabled": true
     },
     "slack": {
-      "enabled": false
+      "enabled": true
     }
   }
 }
