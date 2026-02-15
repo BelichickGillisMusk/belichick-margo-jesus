@@ -48,7 +48,7 @@ SECURITY:
 
 ---
 
-### 3. ATLAS (Technical / Web Dev)
+### 3. MUSK (Technical / Web Dev)
 **Builds and maintains the website, handles deployments, fixes bugs.**
 
 - Website development and maintenance
@@ -80,7 +80,7 @@ Fallback: None - finance needs accuracy
 
 ---
 
-### 5. NOVA (Marketing / Animation / YouTube)
+### 5. KESHA (Marketing / Animation / YouTube)
 **Content machine. Makes videos, designs, grows audience.**
 
 - YouTube content strategy and scripts
@@ -91,7 +91,7 @@ Fallback: None - finance needs accuracy
 - Content calendar management
 - Trend research
 
-Skills: atlas-creative, summarize, video-frames, openai-image-gen, canvas
+Skills: musk-creative, summarize, video-frames, openai-image-gen, canvas
 Model: Claude Sonnet for strategy, Haiku for bulk content
 Fallback: Local model for brainstorming
 
@@ -131,12 +131,12 @@ Fallback: Sonnet for basic searches
 | **Belichick** (Admin) | Complex strategy/decisions | Claude (on-demand) | $ only when needed |
 | **Mila** (Customer Svc) | CARB Q&A on website | **Gemini - FREE** | $0 |
 | **Mila** (Admin assist) | Schedule tests, organize Drive | **Gemini - FREE** | $0 |
-| **Atlas** (Web Dev) | Simple site updates | **Gemini - FREE** | $0 |
-| **Atlas** (Web Dev) | Complex code/architecture | Claude (on-demand) | $ only when needed |
+| **Musk** (Web Dev) | Simple site updates | **Gemini - FREE** | $0 |
+| **Musk** (Web Dev) | Complex code/architecture | Claude (on-demand) | $ only when needed |
 | **Cipher** (Finance) | Sheets formulas, invoice gen | **Gemini - FREE** | $0 |
 | **Cipher** (Finance) | Tax strategy, complex analysis | Claude (on-demand) | $ only when needed |
-| **Nova** (Marketing) | Content drafts, SEO, social | **Gemini - FREE** | $0 |
-| **Nova** (Marketing) | YouTube scripts, animation briefs | **Gemini - FREE** | $0 |
+| **Kesha** (Marketing) | Content drafts, SEO, social | **Gemini - FREE** | $0 |
+| **Kesha** (Marketing) | YouTube scripts, animation briefs | **Gemini - FREE** | $0 |
 | **Sentinel** (Legal) | Basic law research, summaries | **Gemini - FREE** | $0 |
 | **Sentinel** (Legal) | Deep regulatory analysis | Claude (on-demand) | $ only when needed |
 | **Lead Scraper** | Google Maps phone/address pulls | **Gemini - FREE** | $0 |
@@ -153,7 +153,7 @@ Use Make.com for everything that's a repeating pipeline:
 | **Test Results → Drive** | Tester submits results | Auto-file in customer's Drive folder |
 | **New CARB Regulation Alert** | RSS/web monitor on CARB site | Notify you + update Mila's knowledge |
 | **Invoice Generation** | Cipher creates invoice | Auto-send via email, log in Sheets |
-| **Social Media Posting** | Nova creates content | Auto-post to platforms on schedule |
+| **Social Media Posting** | Kesha creates content | Auto-post to platforms on schedule |
 | **Fleet Compliance Check** | Weekly cron | Pull fleet status, flag non-compliant |
 
 ### Revised Monthly Cost
@@ -218,9 +218,9 @@ YOUR MAC
 │   └── Agents:
 │       ├── Belichick ─── Gemini FREE (daily) / Claude (on-demand)
 │       ├── Mila ──────── Gemini FREE (CS bot) / Ollama (backup)
-│       ├── Atlas ─────── Gemini FREE (simple) / Claude (complex code)
+│       ├── Musk ──────── Gemini FREE (simple) / Claude (complex code)
 │       ├── Cipher ────── Gemini FREE (Sheets) / Claude (tax/analysis)
-│       ├── Nova ──────── Gemini FREE (content) / Claude (polish)
+│       ├── Kesha ─────── Gemini FREE (content) / Claude (polish)
 │       └── Sentinel ──── Gemini FREE (research) / Claude (deep analysis)
 │
 ├── Make.com (automation layer)
@@ -281,8 +281,8 @@ Slack is the mission command center. Agents are dispatched via slash commands an
 | `#recon-command` | Mission dispatch | Belichick (receives) |
 | `#recon-leads` | Prospect/lead intelligence | Lead Scraper |
 | `#recon-legal` | Regulatory intel | Sentinel, Mila-Legal |
-| `#recon-market` | Market research | Nova, Atlas |
-| `#recon-sales` | Prospect dossiers | Closer |
+| `#recon-market` | Market research | Kesha, Musk |
+| `#recon-sales` | Prospect dossiers | Jon Jones |
 | `#recon-compliance` | Vehicle/fleet compliance | Mila-CARB |
 | `#agent-status` | Agent status dashboard | All agents |
 | `#alerts` | Budget warnings, failures | Belichick, Cipher |

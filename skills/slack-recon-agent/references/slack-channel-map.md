@@ -14,10 +14,10 @@ Create these channels in your Slack workspace before enabling the integration.
 ### Intelligence Channels
 | Channel | Purpose | Who Posts | Who Reads |
 |---------|---------|-----------|-----------|
-| `#recon-leads` | Prospect lists, business contacts | Lead Scraper | Closer, You |
+| `#recon-leads` | Prospect lists, business contacts | Lead Scraper | Jon Jones, You |
 | `#recon-legal` | Regulation intel, compliance changes | Sentinel, Mila-Legal | Belichick, You |
-| `#recon-market` | Market research, competitor analysis | Nova, Atlas | Belichick, You |
-| `#recon-sales` | Prospect dossiers, pitch strategies | Closer | You |
+| `#recon-market` | Market research, competitor analysis | Kesha, Musk | Belichick, You |
+| `#recon-sales` | Prospect dossiers, pitch strategies | Jon Jones | You |
 | `#recon-compliance` | Vehicle/fleet compliance status | Mila-CARB | You, Fleet Owners |
 
 ## Channel Naming Convention
@@ -44,9 +44,9 @@ done
 ```
 /recon-leads    → Lead Scraper → #recon-leads
 /recon-legal    → Sentinel + Mila-Legal → #recon-legal
-/recon-market   → Nova + Atlas → #recon-market
+/recon-market   → Kesha + Musk → #recon-market
 /recon-compliance → Mila-CARB → #recon-compliance
-/recon-prospect → Closer + Lead Scraper → #recon-sales
+/recon-prospect → Jon Jones + Lead Scraper → #recon-sales
 /agent-status   → Belichick → #agent-status
 /budget         → Cipher → #alerts
 /kill           → Belichick → #alerts

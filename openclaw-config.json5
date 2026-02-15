@@ -1,6 +1,6 @@
 // OpenClaw Configuration for BelichickGillisMusk
 // Drop this into ~/.openclaw/openclaw.json on your Mac
-// Agents: Mila (Research/Legal), Atlas (YouTube/Creative), Closer (Sales), Belichick (Strategy)
+// Agents: Mila (Research/Legal), Musk (YouTube/Creative), Jon Jones (Sales), Kesha (Marketing), Belichick (Strategy)
 {
   "gateway": {
     "bind": "loopback",          // ONLY accessible from your machine - not the internet
@@ -88,7 +88,7 @@
       {
         "name": "competitor-watch",
         "schedule": "0 7 * * 3",       // Wednesday 7 AM
-        "agent": "atlas",
+        "agent": "musk",
         "task": "Check competitor websites for pricing/service changes, post to Slack",
         "slackChannel": "#recon-market"
       },
