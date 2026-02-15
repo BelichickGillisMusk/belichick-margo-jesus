@@ -112,6 +112,33 @@ Fallback: Sonnet for basic searches
 
 ---
 
+### 7. JON JONES (Guardian Bot - Good Claw / Bad Claw Firewall)
+**The bouncer. Nothing leaves the building without his approval.**
+
+- Reviews ALL outbound actions (email, Slack, Discord, Telegram, file shares)
+- Scans for PII, credential leaks, legal risk, tone problems
+- Auto-approves low-risk internal actions (fast lane)
+- Reviews and rewrites medium-risk customer communications
+- Escalates high-risk actions to human admin (invoices > $500, legal docs, new contacts)
+- Produces daily audit reports
+- Manages the encrypted file vault (human password required)
+- Enforces AI disclosure on all external communications
+
+Skills: jon-jones-guardian
+Model: Claude Sonnet (must be smart enough to catch problems)
+Fallback: Gemini Flash (routine auto-approvals only)
+
+SECURITY:
+- ONLY agent that can post to Slack/Discord/Telegram
+- ONLY agent (besides Belichick) that can read inbound email
+- Cannot approve its own outbound actions
+- Cannot unlock the vault without human password
+- Immutable audit logs (90-day retention)
+- Circuit breaker: max 50 auto-approvals/hour
+- Email hard caps: 10/hour, 50/day
+
+---
+
 ## Cost Breakdown - MAXIMIZED (Use What You Already Pay For)
 
 ### What You Already Have (Monthly Subs)
@@ -208,7 +235,146 @@ If you're on the paid Gemini tier, limits are much higher. Either way: plenty fo
 
 ---
 
-## Security Architecture
+## Security Architecture — Good Claw / Bad Claw Model
+
+### The Concept
+
+Every agent is a **Good Claw** internally — free to research, draft, brainstorm, calculate.
+But the moment an agent wants to touch the outside world, it becomes a **potential Bad Claw**.
+**Jon Jones** sits at the boundary and decides: safe or not?
+
+```
+                         GOOD CLAW ZONE (Internal - Unrestricted)
+                    ┌─────────────────────────────────────────────┐
+                    │                                             │
+                    │  Belichick ── strategy, planning, research  │
+                    │  Mila ─────── customer Q&A drafts           │
+                    │  Atlas ────── code, builds, deploys         │
+                    │  Cipher ───── accounting, invoices (draft)  │
+                    │  Nova ─────── content creation, scripts     │
+                    │  Sentinel ─── legal research, monitoring    │
+                    │  Lead Scraper  Google Maps data (read-only) │
+                    │                                             │
+                    │       ↓ All outbound actions queue here ↓   │
+                    │                                             │
+                    │  ┌─────────────────────────────────────┐    │
+                    │  │         JON JONES (Guardian)        │    │
+                    │  │                                     │    │
+                    │  │  Review → Approve / Rewrite / Block │    │
+                    │  │  Scan for: PII, creds, legal, tone  │    │
+                    │  │  Log EVERYTHING to audit trail       │    │
+                    │  └──────────────┬──────────────────────┘    │
+                    │                 │                            │
+                    └─────────────────┼────────────────────────────┘
+                                      │
+                         BAD CLAW ZONE │ (External - Gatekept)
+                    ┌─────────────────┼────────────────────────────┐
+                    │                 ▼                             │
+                    │  ┌──────────┐ ┌──────────┐ ┌──────────────┐  │
+                    │  │  Email   │ │  Slack   │ │   Discord    │  │
+                    │  │ (SMTP)   │ │  (Bot)   │ │  (Webhook)   │  │
+                    │  └──────────┘ └──────────┘ └──────────────┘  │
+                    │  ┌──────────┐ ┌──────────┐ ┌──────────────┐  │
+                    │  │ Telegram │ │  File    │ │   External   │  │
+                    │  │  (Bot)   │ │  Shares  │ │   API Calls  │  │
+                    │  └──────────┘ └──────────┘ └──────────────┘  │
+                    │                                              │
+                    │  Rate limits: 10 emails/hr, 20 Slack/hr     │
+                    │  Hard caps: 50 emails/day                    │
+                    │  High-risk → Human approval required         │
+                    │  Timeout: 60 min → auto-REJECT               │
+                    └──────────────────────────────────────────────┘
+```
+
+### Approval Tiers
+
+| Tier | Risk Level | Who Approves | Examples |
+|------|-----------|--------------|----------|
+| **Auto** | Low | Jon Jones (instant) | Internal Slack, self-reminders, read-only APIs |
+| **Agent** | Medium | Jon Jones (reviews content) | Customer emails, known contact file shares, invoices < $500 |
+| **Human** | High | YOU (admin) | New contacts, invoices > $500, legal docs, bulk email, vault access |
+
+### Communication Channels — How They Work
+
+#### Email (Gmail SMTP + IMAP)
+```
+Agent drafts email → Jon Jones reviews → APPROVE/REWRITE/BLOCK/ESCALATE
+                                              ↓
+                                     SMTP sends via Gmail
+                                              ↓
+                                     Logged to audit trail
+```
+- **Account:** Shared Gmail with app-specific password (NOT your main password)
+- **Reading:** Belichick + Jon Jones can read inbound via himalaya CLI (IMAP)
+- **Sending:** Only Jon Jones can trigger the actual send
+- **Auto-reply:** DISABLED. Every reply needs review.
+- **Rate limits:** 10/hour, 50/day hard caps
+
+#### Slack (Bot API)
+```
+Agent drafts message → Jon Jones reviews → Post to channel via Bot API
+```
+- **Account:** Slack Bot (xoxb token) — shows as "BelichickGillisMusk Bot"
+- **Reading:** Belichick + Jon Jones can read channels via Socket Mode
+- **Posting:** ONLY Jon Jones posts. Other agents draft messages for him.
+- **DMs:** DISABLED. Bots cannot DM people. Channel-only.
+- **@mentions:** Requires human approval
+- **Setup:** Create Slack App → Bot Token Scopes: `chat:write`, `channels:read`, `channels:history`
+
+#### Discord / Telegram
+- Same pattern as Slack — agents draft, Jon Jones sends
+- Webhook-based posting (simpler setup)
+- All messages logged and reviewed
+
+### File Security
+
+```
+~/.openclaw/
+├── workspaces/              # Isolated per-agent workspaces
+│   ├── belichick/           # Only Belichick can read/write
+│   ├── mila/                # Only Mila can read/write
+│   ├── atlas/               # ...
+│   ├── cipher/
+│   ├── nova/
+│   ├── sentinel/
+│   └── jon-jones/           # Jon Jones can READ all (for review)
+│
+├── vault/                   # Encrypted file vault (AES-256-GCM)
+│   ├── contracts/           # Human password required to open
+│   ├── credentials/         # API keys, tokens (NOT in agent context)
+│   └── legal/               # Sensitive legal documents
+│
+├── logs/                    # Immutable audit logs
+│   └── jon-jones-audit.jsonl  # 90-day retention, every action logged
+│
+└── sandbox/                 # Pre-approved tools agents can use
+    ├── himalaya             # Email CLI
+    ├── gh                   # GitHub CLI
+    ├── gcloud               # Google Cloud CLI
+    ├── make-cli             # Make.com CLI
+    ├── ollama               # Local models
+    ├── jq                   # JSON processing
+    └── curl                 # HTTP (logged, intercepted by JJ)
+```
+
+### The Failsafes (Why You Won't Get Sued)
+
+| Risk | Failsafe | What Happens |
+|------|----------|-------------|
+| Agent sends offensive email | Jon Jones content scan | Blocked. Logged. Admin notified. |
+| Agent leaks API key in Slack | Pattern matching (regex) | Blocked before it posts. |
+| Agent spams 100 people | Rate limiter (10/hr, 50/day) | Hard-capped. Circuit breaker trips. |
+| Agent promises something illegal | Legal keyword scan + disclosure | Blocked or rewritten with disclaimer. |
+| Agent goes rogue (infinite loop) | 5-min timeout + 60K token cap | Auto-killed by OpenClaw gateway. |
+| Agent tries to access vault | Human password required | Cannot unlock without you. |
+| Agent tries to DM strangers on Slack | DM policy: disabled | Action rejected. |
+| Multiple agents stampede | Max 2 concurrent + queue | Excess actions wait in line. |
+| Billing runaway | Auto-disable key after error + cooldowns | Spending stops automatically. |
+| You need forensics after an incident | 90-day immutable audit log | Full trail: who, what, when, why. |
+
+---
+
+## Full System Diagram
 
 ```
 YOUR MAC
@@ -221,7 +387,22 @@ YOUR MAC
 │       ├── Atlas ─────── Gemini FREE (simple) / Claude (complex code)
 │       ├── Cipher ────── Gemini FREE (Sheets) / Claude (tax/analysis)
 │       ├── Nova ──────── Gemini FREE (content) / Claude (polish)
-│       └── Sentinel ──── Gemini FREE (research) / Claude (deep analysis)
+│       ├── Sentinel ──── Gemini FREE (research) / Claude (deep analysis)
+│       └── Jon Jones ─── Claude Sonnet (guardian) / Gemini Flash (auto-approvals)
+│
+├── Jon Jones Guardian Layer
+│   ├── Intercepts: email, Slack, Discord, Telegram, file shares, ext. APIs
+│   ├── Auto-approve: internal Slack, self-reminders, read-only APIs
+│   ├── Agent-approve: customer emails, known contacts, invoices < $500
+│   ├── Human-approve: new contacts, legal, bulk email, invoices > $500
+│   ├── Content scan: PII, credentials, legal risk, tone, AI disclosure
+│   └── Audit log: ~/.openclaw/logs/jon-jones-audit.jsonl (90 days)
+│
+├── Communication Channels
+│   ├── Email (Gmail SMTP/IMAP) ─── Jon Jones gatekept
+│   ├── Slack (Bot API) ──────────── Jon Jones gatekept
+│   ├── Discord (Webhook) ────────── Jon Jones gatekept
+│   └── Telegram (Bot API) ───────── Jon Jones gatekept
 │
 ├── Make.com (automation layer)
 │   ├── Lead capture pipelines
@@ -230,8 +411,11 @@ YOUR MAC
 │   ├── Social media posting
 │   └── CARB regulation monitoring
 │
-├── Docker (optional sandboxing)
-│   └── Each agent can run in isolated container
+├── File Security
+│   ├── Isolated agent workspaces (strict mode)
+│   ├── Encrypted vault (AES-256, human password only)
+│   ├── App sandbox (pre-approved tools only)
+│   └── Blocked: rm -rf, sudo, ssh, scp, nc, nmap
 │
 ├── Kill Switches:
 │   ├── Max concurrent agents: 2
@@ -239,7 +423,10 @@ YOUR MAC
 │   ├── Context token cap: 60K per turn
 │   ├── Agent timeout: 5 min silence
 │   ├── Billing backoff: auto-disable key on errors
-│   └── Cron retention: 6 hours max
+│   ├── Cron retention: 6 hours max
+│   ├── Email rate limit: 10/hr, 50/day
+│   ├── Slack rate limit: 20/hr
+│   └── Auto-approval circuit breaker: 50/hr
 │
 └── Website Chat Widget (Mila only)
     ├── CSP: connect-src limited to YOUR domain only
@@ -259,8 +446,11 @@ Everything runs on your Mac. Period.
 - Data: your SSD
 - Logs: your SSD
 - Chat history: your SSD
-- API keys: your keychain
+- API keys: your keychain (or encrypted vault)
 
 The only thing that touches the internet:
 1. Claude API calls (when using Claude, not local models)
 2. The Mila chat widget on your website (proxied through Vercel)
+3. Email (SMTP/IMAP to Gmail — gatekept by Jon Jones)
+4. Slack Bot API (gatekept by Jon Jones)
+5. Discord/Telegram webhooks (gatekept by Jon Jones)

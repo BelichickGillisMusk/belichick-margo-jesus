@@ -1,6 +1,6 @@
 // OpenClaw Configuration for BelichickGillisMusk
 // Drop this into ~/.openclaw/openclaw.json on your Mac
-// Agents: Mila (Research/Legal), Atlas (YouTube/Creative), Closer (Sales), Belichick (Strategy)
+// Agents: Mila, Atlas, Closer, Belichick, Cipher, Nova, Sentinel, Jon Jones (Guardian)
 {
   "gateway": {
     "bind": "loopback",          // ONLY accessible from your machine - not the internet
@@ -13,7 +13,7 @@
   // ── IDENTITY ──
   "identity": {
     "name": "BelichickGillisMusk HQ",
-    "systemPrompt": "You are part of the BelichickGillisMusk agent team. You operate within strict budgets and guardrails. Never exceed your role boundaries."
+    "systemPrompt": "You are part of the BelichickGillisMusk agent team. You operate within strict budgets and guardrails. Never exceed your role boundaries. ALL outbound actions (email, Slack, file shares) MUST route through Jon Jones for approval."
   },
 
   // ── COST CONTROLS (the kill switches) ──
@@ -56,6 +56,210 @@
     }
   },
 
+  // ── JON JONES — GUARDIAN BOT (Good Claw / Bad Claw Firewall) ──
+  // Every outbound action passes through Jon Jones. He reads it, checks it,
+  // and either approves, rewrites, or blocks. Nothing leaves without his OK.
+  "guardian": {
+    "enabled": true,
+    "agent": "jon-jones",
+    "model": "claude-sonnet",          // Needs to be smart enough to catch problems
+    "fallback": "gemini-flash",        // Cheaper fallback for routine approvals
+
+    // What Jon Jones intercepts
+    "interceptActions": [
+      "email.send",                    // All outbound email
+      "slack.postMessage",             // All Slack messages
+      "discord.sendMessage",           // All Discord messages
+      "telegram.sendMessage",          // All Telegram messages
+      "file.share",                    // Any file shared externally
+      "file.export",                   // Any file exported/downloaded
+      "api.externalCall",              // Any call to a 3rd party API
+      "calendar.createEvent",          // Calendar invites (go to real people)
+      "invoice.send"                   // Money-related outbound
+    ],
+
+    // Approval rules — what gets auto-approved vs needs human review
+    "approvalPolicy": {
+      // LOW RISK: Jon Jones auto-approves (fast, no delay)
+      "autoApprove": {
+        "conditions": [
+          "internalSlackChannel",      // Messages to #internal channels
+          "scheduledContentPost",      // Pre-approved social media posts
+          "readOnlyApiCall",           // GET requests to external APIs
+          "calendarSelfReminder"       // Reminders to yourself
+        ],
+        "maxAutoApprovalsPerHour": 50  // Circuit breaker
+      },
+
+      // MEDIUM RISK: Jon Jones reviews, approves or rewrites
+      "agentApprove": {
+        "conditions": [
+          "customerEmail",             // Emails to known leads/customers
+          "slackExternalChannel",      // Messages to shared channels
+          "fileShareToKnownContact",   // Files to contacts in CRM
+          "invoiceUnder500"            // Invoices under $500
+        ],
+        "requireJonJonesReview": true,
+        "maxPendingQueue": 20          // Block new actions if 20 pending
+      },
+
+      // HIGH RISK: Requires YOUR approval (human in the loop)
+      "humanApprove": {
+        "conditions": [
+          "newContactFirstEmail",      // First email to someone new
+          "invoiceOver500",            // Invoices over $500
+          "legalDocument",             // Anything legal/contractual
+          "bulkEmailOver5",            // Mass emails (5+)
+          "fileWithPassword",          // Password-protected files
+          "apiWriteToExternalService", // POST/PUT/DELETE to external APIs
+          "unknownRecipient"           // Anyone not in contacts
+        ],
+        "notifyVia": ["slack", "email"],
+        "timeoutMinutes": 60,          // Auto-reject if no human response in 1 hour
+        "defaultOnTimeout": "reject"   // Never auto-approve high risk
+      }
+    },
+
+    // Jon Jones content scanning rules
+    "contentRules": {
+      "blockPatterns": [
+        "password.*plain",             // No passwords in plaintext
+        "ssn|social.security",         // No SSNs
+        "credit.card|\\b\\d{16}\\b",  // No card numbers
+        "api[_-]?key|secret[_-]?key",  // No API keys leaked
+        "private[_-]?key|bearer"       // No auth tokens leaked
+      ],
+      "requireDisclosure": true,       // Always disclose AI-generated content
+      "disclosureText": "This message was drafted by an AI assistant and reviewed before sending.",
+      "maxEmailLength": 5000,          // Prevent runaway-length emails
+      "maxAttachmentSizeMB": 25        // Cap file attachment size
+    },
+
+    // Audit log — everything Jon Jones sees gets logged
+    "auditLog": {
+      "enabled": true,
+      "path": "~/.openclaw/logs/jon-jones-audit.jsonl",
+      "retention": "90d",             // Keep 90 days of logs
+      "logFields": [
+        "timestamp",
+        "sourceAgent",                // Which agent tried to send
+        "actionType",                 // email, slack, file, etc.
+        "recipient",                  // Who it was going to
+        "verdict",                    // approved, rewritten, blocked, escalated
+        "reason",                     // Why
+        "contentHash"                 // SHA256 of content (for forensics, not the content itself)
+      ]
+    }
+  },
+
+  // ── OUTBOUND EMAIL ──
+  "email": {
+    "enabled": true,
+    "provider": "smtp",
+    "smtp": {
+      "host": "smtp.gmail.com",
+      "port": 587,
+      "secure": true,
+      "auth": {
+        "user": "CONFIGURE: your-email@gmail.com",
+        "pass": "CONFIGURE: app-specific-password (NOT your real password)"
+      }
+    },
+    "defaults": {
+      "from": "CONFIGURE: BelichickGillisMusk <your-email@gmail.com>",
+      "replyTo": "CONFIGURE: your-email@gmail.com",
+      "signature": "\n---\nBelichickGillisMusk | AI-Assisted Communication\nThis message was reviewed before sending."
+    },
+    // Inbound email reading (himalaya CLI)
+    "inbound": {
+      "enabled": true,
+      "provider": "imap",
+      "pollIntervalMinutes": 5,        // Check email every 5 min
+      "readOnly": true,                // Agents can READ but not delete/move
+      "allowedAgents": ["belichick", "jon-jones"],  // Only these agents read email
+      "autoReply": false               // NEVER auto-reply without Jon Jones approval
+    },
+    // Email guardrails
+    "guardrails": {
+      "maxOutboundPerHour": 10,        // Circuit breaker: max 10 emails/hour
+      "maxOutboundPerDay": 50,         // Hard cap: 50 emails/day
+      "blockedDomains": [],            // Add domains you never want to email
+      "requireApproval": true          // ALL emails route through Jon Jones
+    }
+  },
+
+  // ── SLACK INTEGRATION ──
+  "slack": {
+    "enabled": true,
+    "auth": {
+      "botToken": "CONFIGURE: xoxb-your-slack-bot-token",
+      "appToken": "CONFIGURE: xapp-your-slack-app-token",
+      "signingSecret": "CONFIGURE: your-signing-secret"
+    },
+    "bot": {
+      "name": "BelichickGillisMusk Bot",
+      "defaultChannel": "CONFIGURE: #general or your-channel-id",
+      "statusEmoji": ":robot_face:"
+    },
+    // Which agents can use Slack
+    "permissions": {
+      "postMessage": ["jon-jones"],              // ONLY Jon Jones can actually post
+      "draftMessage": ["belichick", "closer", "mila", "nova"],  // Others draft, JJ sends
+      "readChannels": ["belichick", "jon-jones"],  // Read access
+      "manageChannels": []                         // Nobody — human only
+    },
+    // Slack guardrails
+    "guardrails": {
+      "maxMessagesPerHour": 20,
+      "blockedChannels": [],           // Channels bots cannot touch
+      "requireApproval": true,         // Route through Jon Jones
+      "noDirectMessages": true,        // Bots cannot DM people — only post to channels
+      "noPeopleTagging": true          // Cannot @mention people without approval
+    }
+  },
+
+  // ── FILE SECURITY (The Sandbox) ──
+  "fileSecurity": {
+    // Each agent gets its own workspace — cannot access other agents' files
+    "agentWorkspaces": {
+      "enabled": true,
+      "basePath": "~/.openclaw/workspaces/",
+      "isolationMode": "strict"        // Agents cannot read each other's workspaces
+    },
+
+    // Password-protected file vault for sensitive docs
+    "vault": {
+      "enabled": true,
+      "path": "~/.openclaw/vault/",
+      "encryption": "aes-256-gcm",
+      "requirePasswordForAccess": true,
+      "allowedAgents": ["jon-jones"],  // Only Jon Jones can open the vault
+      "humanUnlockRequired": true      // Human must enter password — agents cannot
+    },
+
+    // App sandbox — agents get a "toolbox" of pre-approved apps
+    "appSandbox": {
+      "enabled": true,
+      "allowedTools": [
+        "himalaya",                    // Email CLI (read-only unless JJ approves)
+        "gh",                          // GitHub CLI
+        "gcloud",                      // Google Cloud CLI (for Sheets, Drive, Calendar)
+        "make-cli",                    // Make.com CLI for automation
+        "ollama",                      // Local model runner
+        "jq",                          // JSON processing
+        "curl"                         // HTTP requests (logged and intercepted by JJ)
+      ],
+      "blockedTools": [
+        "rm -rf",                      // No recursive deletes
+        "sudo",                        // No privilege escalation
+        "ssh",                         // No remote shell access
+        "scp",                         // No remote file copy
+        "nc",                          // No netcat
+        "nmap"                         // No port scanning
+      ]
+    }
+  },
+
   // ── CRON (scheduled tasks) ──
   "cron": {
     "enabled": true,
@@ -63,16 +267,19 @@
     "sessionRetention": "6h"           // Clean up cron sessions after 6 hours
   },
 
-  // ── CHANNELS (enable what you need) ──
+  // ── CHANNELS (enabled with Jon Jones gatekeeping) ──
   "channels": {
     "discord": {
-      "enabled": true
+      "enabled": true,
+      "requireGuardianApproval": true
     },
     "telegram": {
-      "enabled": true
+      "enabled": true,
+      "requireGuardianApproval": true
     },
     "slack": {
-      "enabled": true
+      "enabled": true,
+      "requireGuardianApproval": true
     }
   }
 }
