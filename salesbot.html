@@ -442,7 +442,7 @@
   <div class="config-section">
     <h3>Bot Persona</h3>
     <label>Name</label>
-    <input type="text" id="botName" value="Closer" maxlength="30">
+    <input type="text" id="botName" value="Jon Jones" maxlength="30">
     <label>Personality</label>
     <textarea id="botPersonality" rows="3">Aggressive closer. Never takes no for an answer. Uses urgency, scarcity, social proof. Always pivots objections into benefits. Asks for the sale on every response.</textarea>
   </div>
@@ -483,7 +483,7 @@
 <main class="chat-area">
   <div class="chat-header">
     <h1>
-      <span id="headerBotName">Closer</span>
+      <span id="headerBotName">Jon Jones</span>
       <span class="status-live">Live</span>
     </h1>
     <span class="demo-badge">Demo Mode - No API</span>
@@ -592,7 +592,7 @@ let config = loadConfig();
 
 function loadConfig() {
   return {
-    name: document.getElementById('botName')?.value || 'Closer',
+    name: document.getElementById('botName')?.value || 'Jon Jones',
     personality: document.getElementById('botPersonality')?.value || '',
     products: document.getElementById('botProducts')?.value || '',
     rules: document.getElementById('botRules')?.value || '',

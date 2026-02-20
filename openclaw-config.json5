@@ -1,6 +1,6 @@
 // OpenClaw Configuration for BelichickGillisMusk
 // Drop this into ~/.openclaw/openclaw.json on your Mac
-// Agents: Mila (Research/Legal), Atlas (YouTube/Creative), Closer (Sales), Belichick (Strategy)
+// Agents: Mila (Research/Legal), Musk (YouTube/Creative), Jon Jones (Sales), Kesha (Marketing), Belichick (Strategy)
 {
   "gateway": {
     "bind": "loopback",          // ONLY accessible from your machine - not the internet
@@ -60,7 +60,53 @@
   "cron": {
     "enabled": true,
     "maxConcurrentRuns": 1,            // One cron job at a time
-    "sessionRetention": "6h"           // Clean up cron sessions after 6 hours
+    "sessionRetention": "6h",          // Clean up cron sessions after 6 hours
+
+    // ── SCHEDULED RECON & STATUS PULSE ──
+    "jobs": [
+      {
+        "name": "agent-status-pulse",
+        "schedule": "0 8,10,12,14,16,18,20 * * *",  // Every 2h, 8AM-8PM
+        "agent": "belichick",
+        "task": "Post agent status pulse to #agent-status on Slack",
+        "slackChannel": "#agent-status"
+      },
+      {
+        "name": "carb-regulation-watch",
+        "schedule": "0 6 * * *",       // Daily 6 AM
+        "agent": "sentinel",
+        "task": "Check CARB site and eCFR for new HD I/M regulations, post to Slack",
+        "slackChannel": "#recon-legal"
+      },
+      {
+        "name": "weekly-lead-scrape",
+        "schedule": "0 7 * * 1",       // Monday 7 AM
+        "agent": "lead-scraper",
+        "task": "Scrape Google Places for new trucking/freight companies in CA, post to Slack",
+        "slackChannel": "#recon-leads"
+      },
+      {
+        "name": "competitor-watch",
+        "schedule": "0 7 * * 3",       // Wednesday 7 AM
+        "agent": "musk",
+        "task": "Check competitor websites for pricing/service changes, post to Slack",
+        "slackChannel": "#recon-market"
+      },
+      {
+        "name": "compliance-deadline-alerts",
+        "schedule": "0 8 * * *",       // Daily 8 AM
+        "agent": "mila-carb",
+        "task": "Check fleet compliance deadlines within 7 days, post alerts to Slack",
+        "slackChannel": "#recon-compliance"
+      },
+      {
+        "name": "weekly-budget-report",
+        "schedule": "0 17 * * 5",      // Friday 5 PM
+        "agent": "cipher",
+        "task": "Compile weekly token spend and cost breakdown by agent, post to Slack",
+        "slackChannel": "#alerts"
+      }
+    ]
   },
 
   // ── CHANNELS (enable what you need) ──
