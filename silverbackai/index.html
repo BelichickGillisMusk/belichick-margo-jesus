@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SilverbackAI | AI Agents That Run Your Business While You Sleep</title>
+<meta name="description" content="SilverbackAI builds autonomous AI agent teams that handle customer service, lead generation, compliance, and operations 24/7. Stop doing everything yourself.">
+<meta name="keywords" content="AI agents, business automation, AI customer service, AI lead generation, autonomous agents, SilverbackAI">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://silverbackai.agency/">
+<meta property="og:title" content="SilverbackAI | AI Agents That Run Your Business">
+<meta property="og:description" content="Autonomous AI agent teams for customer service, lead gen, compliance, and ops. 24/7. No babysitting.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://silverbackai.agency/">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "SilverbackAI",
+  "description": "AI agent development agency building autonomous business automation systems.",
+  "url": "https://silverbackai.agency",
+  "telephone": "+1-916-890-4427",
+  "address": {
+    "@type": "PostalAddress",
+    "addressRegion": "CA",
+    "addressCountry": "US"
+  },
+  "priceRange": "$$",
+  "serviceType": ["AI Agent Development", "Business Automation", "AI Customer Service", "Lead Generation Automation"]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#09090b;
+  --bg-subtle:#0f0f12;
+  --surface:#16161a;
+  --surface-2:#1e1e24;
+  --border:#27272a;
+  --border-light:#3f3f46;
+  --text:#fafafa;
+  --text-2:#a1a1aa;
+  --text-3:#71717a;
+  --silver:#c0c0c0;
+  --silver-bright:#e8e8e8;
+  --green:#22c55e;
+  --green-glow:rgba(34,197,94,.2);
+  --green-subtle:rgba(34,197,94,.08);
+  --blue:#3b82f6;
+  --purple:#a855f7;
+  --amber:#f59e0b;
+  --red:#ef4444;
+  --gradient:linear-gradient(135deg,#22c55e,#3b82f6);
+}
+
+html{scroll-behavior:smooth}
+
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  overflow-x:hidden;
+}
+
+h1,h2,h3,h4{font-family:'Space Grotesk','Inter',system-ui,sans-serif}
+
+.container{max-width:1120px;margin:0 auto;padding:0 24px}
+.section{padding:100px 0}
+.section-alt{background:var(--bg-subtle)}
+
+/* ── Nav ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  background:rgba(9,9,11,.88);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+}
+.nav-inner{
+  max-width:1120px;margin:0 auto;padding:0 24px;
+  display:flex;align-items:center;justify-content:space-between;
+  height:64px;
+}
+.nav-logo{
+  display:flex;align-items:center;gap:10px;
+  text-decoration:none;color:var(--text);
+  font-family:'Space Grotesk',sans-serif;
+  font-weight:700;font-size:1.15rem;
+}
+.logo-icon{
+  width:34px;height:34px;
+  background:var(--gradient);
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;font-weight:700;
+}
+.nav-links{display:flex;align-items:center;gap:28px;list-style:none}
+.nav-links a{color:var(--text-2);text-decoration:none;font-size:.88rem;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{
+  background:var(--green);color:var(--bg);
+  padding:8px 20px;border-radius:8px;
+  font-weight:600;font-size:.88rem;
+  text-decoration:none;transition:opacity .2s;
+}
+.nav-cta:hover{opacity:.9}
+.mobile-toggle{display:none;background:none;border:none;color:var(--text);font-size:1.4rem;cursor:pointer}
+
+/* ── Hero ── */
+.hero{
+  padding:140px 0 80px;
+  text-align:center;
+  position:relative;
+}
+.hero::before{
+  content:'';position:absolute;
+  top:60px;left:50%;transform:translateX(-50%);
+  width:600px;height:600px;
+  background:radial-gradient(circle,rgba(34,197,94,.06) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--green-subtle);
+  border:1px solid rgba(34,197,94,.15);
+  padding:6px 16px;border-radius:100px;
+  font-size:.78rem;font-weight:600;color:var(--green);
+  margin-bottom:28px;
+}
+.hero-badge::before{
+  content:'';width:6px;height:6px;
+  background:var(--green);border-radius:50%;
+  animation:blink 2s ease-in-out infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+.hero h1{
+  font-size:3.8rem;font-weight:700;
+  line-height:1.08;
+  margin-bottom:20px;
+  max-width:800px;margin-left:auto;margin-right:auto;
+  letter-spacing:-.03em;
+}
+.hero h1 .grad{
+  background:var(--gradient);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-sub{
+  font-size:1.15rem;color:var(--text-2);
+  max-width:560px;margin:0 auto 40px;
+  line-height:1.7;
+}
+.hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:13px 28px;border-radius:10px;
+  font-weight:600;font-size:.95rem;
+  text-decoration:none;cursor:pointer;
+  border:none;font-family:inherit;
+  transition:all .2s;
+}
+.btn-green{background:var(--green);color:var(--bg)}
+.btn-green:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 8px 24px var(--green-glow)}
+.btn-ghost{background:var(--surface);color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--border-light);color:var(--text)}
+
+/* ── WHAT KEEPS YOU UP AT NIGHT ── */
+.nightmares{
+  position:relative;
+  overflow:hidden;
+}
+.nightmares::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(34,197,94,.04) 0%,transparent 60%);
+  pointer-events:none;
+}
+
+.nightmares-header{text-align:center;margin-bottom:56px;position:relative}
+.nightmares-header h2{font-size:2.6rem;font-weight:700;letter-spacing:-.02em;margin-bottom:12px}
+.nightmares-header p{font-size:1rem;color:var(--text-2);max-width:520px;margin:0 auto}
+
+.nightmares-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  position:relative;
+}
+
+.nightmare-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:28px;
+  cursor:pointer;
+  transition:all .3s;
+  position:relative;
+  overflow:hidden;
+  user-select:none;
+}
+.nightmare-card::before{
+  content:'';position:absolute;inset:0;
+  background:var(--gradient);opacity:0;
+  transition:opacity .3s;
+  border-radius:14px;
+}
+.nightmare-card:hover{
+  border-color:var(--green);
+  transform:translateY(-2px);
+}
+.nightmare-card.selected{
+  border-color:var(--green);
+  box-shadow:0 0 30px var(--green-glow);
+}
+.nightmare-card.selected::before{opacity:.06}
+
+.nightmare-card .card-front{position:relative;z-index:1}
+.nightmare-card .card-answer{
+  position:relative;z-index:1;
+  display:none;
+}
+.nightmare-card.selected .card-front{display:none}
+.nightmare-card.selected .card-answer{display:block}
+
+.nightmare-emoji{font-size:2rem;margin-bottom:14px;display:block}
+.nightmare-title{font-size:1.05rem;font-weight:600;margin-bottom:8px}
+.nightmare-desc{font-size:.85rem;color:var(--text-3);line-height:1.6}
+
+.answer-label{
+  font-size:.7rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:.1em;
+  color:var(--green);margin-bottom:10px;
+  display:flex;align-items:center;gap:6px;
+}
+.answer-label::before{
+  content:'';width:16px;height:2px;background:var(--green);border-radius:1px;
+}
+.answer-title{font-size:1.05rem;font-weight:600;margin-bottom:8px}
+.answer-text{font-size:.85rem;color:var(--text-2);line-height:1.7}
+.answer-agent{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:14px;padding:5px 12px;
+  background:var(--green-subtle);
+  border:1px solid rgba(34,197,94,.15);
+  border-radius:100px;
+  font-size:.72rem;font-weight:600;color:var(--green);
+}
+
+.nightmares-cta{
+  text-align:center;
+  margin-top:48px;
+  position:relative;
+}
+.nightmares-cta p{color:var(--text-3);font-size:.95rem;margin-bottom:16px}
+.nightmares-cta .selected-count{
+  color:var(--green);font-weight:600;
+  transition:all .2s;
+}
+
+/* ── How It Works ── */
+.steps-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:20px;
+}
+.step-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:28px;
+  text-align:center;
+  position:relative;
+}
+.step-num{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:36px;height:36px;
+  background:var(--green-subtle);
+  border:1px solid rgba(34,197,94,.15);
+  border-radius:10px;
+  font-family:'Space Grotesk',sans-serif;
+  font-size:.9rem;font-weight:700;color:var(--green);
+  margin-bottom:16px;
+}
+.step-card h3{font-size:1rem;font-weight:600;margin-bottom:8px}
+.step-card p{font-size:.84rem;color:var(--text-3);line-height:1.65}
+
+/* ── Agents Roster ── */
+.agents-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+.agent-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:28px;
+  transition:border-color .3s,transform .2s;
+}
+.agent-card:hover{border-color:var(--border-light);transform:translateY(-2px)}
+.agent-emoji{font-size:1.8rem;margin-bottom:12px;display:block}
+.agent-name{font-size:1.05rem;font-weight:600;margin-bottom:2px}
+.agent-role{font-size:.78rem;color:var(--green);font-weight:500;margin-bottom:10px}
+.agent-desc{font-size:.84rem;color:var(--text-3);line-height:1.65}
+
+/* ── Pricing ── */
+.pricing-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+  max-width:1000px;
+  margin:0 auto;
+}
+.pricing-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:36px;
+  text-align:center;
+  transition:border-color .3s,transform .2s;
+  position:relative;
+}
+.pricing-card:hover{transform:translateY(-3px)}
+.pricing-card.featured{
+  border-color:var(--green);
+  box-shadow:0 0 40px var(--green-glow);
+}
+.pricing-card.featured::after{
+  content:'POPULAR';position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  background:var(--green);color:var(--bg);font-size:.65rem;font-weight:700;
+  padding:4px 16px;border-radius:100px;letter-spacing:.06em;
+}
+.pricing-tier{font-size:.82rem;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.pricing-price{font-size:2.8rem;font-weight:700;margin-bottom:4px}
+.pricing-price small{font-size:.9rem;font-weight:400;color:var(--text-3)}
+.pricing-note{font-size:.82rem;color:var(--text-3);margin-bottom:24px}
+.pricing-list{list-style:none;text-align:left;margin-bottom:28px}
+.pricing-list li{
+  padding:8px 0;font-size:.88rem;color:var(--text-2);
+  display:flex;align-items:flex-start;gap:8px;
+}
+.pricing-list li::before{
+  content:'';margin-top:6px;width:14px;height:14px;flex-shrink:0;border-radius:50%;
+  background:var(--green-subtle);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24' fill='none' stroke='%2322c55e' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:center;
+}
+
+/* ── CTA ── */
+.final-cta{
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.final-cta::before{
+  content:'';position:absolute;
+  bottom:-100px;left:50%;transform:translateX(-50%);
+  width:700px;height:350px;
+  background:radial-gradient(ellipse,var(--green-glow) 0%,transparent 70%);
+  pointer-events:none;
+}
+.final-cta h2{font-size:2.5rem;font-weight:700;margin-bottom:14px;position:relative;letter-spacing:-.02em}
+.final-cta p{font-size:1.05rem;color:var(--text-2);margin-bottom:32px;position:relative}
+.final-cta .phone-big{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:2.5rem;font-weight:700;
+  color:var(--green);text-decoration:none;
+  display:block;margin-bottom:12px;
+  position:relative;transition:opacity .2s;
+}
+.final-cta .phone-big:hover{opacity:.8}
+.final-cta .btn{position:relative;font-size:1rem;padding:15px 36px}
+
+/* ── Footer ── */
+footer{
+  border-top:1px solid var(--border);
+  padding:48px 0 28px;
+  background:var(--bg);
+}
+.footer-inner{
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:.82rem;color:var(--text-3);
+}
+.footer-inner a{color:var(--text-2);text-decoration:none}
+.footer-inner a:hover{color:var(--green)}
+.footer-links{display:flex;gap:24px}
+
+/* ── Responsive ── */
+@media(max-width:968px){
+  .nightmares-grid,.agents-grid,.pricing-grid{grid-template-columns:1fr}
+  .steps-grid{grid-template-columns:repeat(2,1fr)}
+  .hero h1{font-size:2.5rem}
+}
+@media(max-width:768px){
+  .nav-links{display:none}
+  .mobile-toggle{display:block}
+  .nav-links.open{
+    display:flex;flex-direction:column;
+    position:absolute;top:64px;left:0;right:0;
+    background:var(--bg);border-bottom:1px solid var(--border);
+    padding:20px 24px;gap:14px;
+  }
+  .hero{padding:110px 0 60px}
+  .hero h1{font-size:2rem}
+  .section{padding:64px 0}
+  .steps-grid{grid-template-columns:1fr}
+  .final-cta .phone-big{font-size:1.8rem}
+  .footer-inner{flex-direction:column;gap:16px;text-align:center}
+  .footer-links{flex-direction:column;gap:10px}
+}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <span class="logo-icon">S</span> SilverbackAI
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#nightmares">Pain Points</a></li>
+      <li><a href="#how">How It Works</a></li>
+      <li><a href="#agents">Agents</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="tel:+19168904427" class="nav-cta">Call (916) 890-4427</a></li>
+    </ul>
+    <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">&#9776;</button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">Now Deploying AI Agent Teams</div>
+    <h1>Stop Doing Everything.<br><span class="grad">Deploy Agents.</span></h1>
+    <p class="hero-sub">We build autonomous AI agent teams that handle your customer service, lead gen, compliance, and operations &mdash; 24/7. You run the business. They run the grind.</p>
+    <div class="hero-actions">
+      <a href="#nightmares" class="btn btn-green">What Keeps You Up at Night?</a>
+      <a href="#how" class="btn btn-ghost">See How It Works</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- WHAT KEEPS YOU UP AT NIGHT - Interactive Section -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="section nightmares" id="nightmares">
+  <div class="container">
+    <div class="nightmares-header">
+      <h2>What Keeps You Up <span class="grad">at Night</span>?</h2>
+      <p>Click anything that sounds like your life. We'll show you which agent kills that problem.</p>
+    </div>
+
+    <div class="nightmares-grid" id="nightmaresGrid">
+
+      <div class="nightmare-card" data-id="cs">
+        <div class="card-front">
+          <span class="nightmare-emoji">&#128548;</span>
+          <div class="nightmare-title">"Customers email at 2am and I'm the only one who answers."</div>
+          <div class="nightmare-desc">You're the support team, the sales team, and the janitor. There's no off switch.</div>
+        </div>
+        <div class="card-answer">
+          <div class="answer-label">Your Agent Fix</div>
+          <div class="answer-title">Deploy Mila &mdash; AI Customer Service</div>
+          <div class="answer-text">Mila answers customer questions 24/7 using ONLY your website content and docs. She collects leads, routes complex issues to you, and never sleeps. Fully sandboxed. No hallucinations about stuff you don't offer.</div>
+          <div class="answer-agent">&#129302; Mila &mdash; Customer Service Agent</div>
+        </div>
+      </div>
+
+      <div class="nightmare-card" data-id="leads">
+        <div class="card-front">
+          <span class="nightmare-emoji">&#128200;</span>
+          <div class="nightmare-title">"I know the leads are out there but I have zero time to find them."</div>
+          <div class="nightmare-desc">You're so busy doing the work you never have time to find the next job.</div>
+        </div>
+        <div class="card-answer">
+          <div class="answer-label">Your Agent Fix</div>
+          <div class="answer-title">Deploy Lead Scraper &mdash; AI Prospecting</div>
+          <div class="answer-text">Scrapes Google Maps, builds prospect lists with phone numbers and addresses, scores them by relevance, and delivers them to your CRM or a spreadsheet. You wake up to warm leads every morning.</div>
+          <div class="answer-agent">&#127919; Lead Scraper &mdash; Prospecting Agent</div>
+        </div>
+      </div>
+
+      <div class="nightmare-card" data-id="compliance">
+        <div class="card-front">
+          <span class="nightmare-emoji">&#128680;</span>
+          <div class="nightmare-title">"One missed deadline and I'm looking at a $10K fine."</div>
+          <div class="nightmare-desc">Regulations change constantly. You can't keep up. The penalties are brutal.</div>
+        </div>
+        <div class="card-answer">
+          <div class="answer-label">Your Agent Fix</div>
+          <div class="answer-title">Deploy Sentinel &mdash; Compliance Monitor</div>
+          <div class="answer-text">Sentinel tracks every regulation, deadline, and filing requirement for your industry. Sends reminders 90 days out. Flags changes in law. Turns compliance from a nightmare into a checklist.</div>
+          <div class="answer-agent">&#128737;&#65039; Sentinel &mdash; Compliance Agent</div>
+        </div>
+      </div>
+
+      <div class="nightmare-card" data-id="books">
+        <div class="card-front">
+          <span class="nightmare-emoji">&#128184;</span>
+          <div class="nightmare-title">"My books are a mess and tax season makes me want to disappear."</div>
+          <div class="nightmare-desc">Receipts everywhere. Invoices going out late. No idea what you actually made last month.</div>
+        </div>
+        <div class="card-answer">
+          <div class="answer-label">Your Agent Fix</div>
+          <div class="answer-title">Deploy Cipher &mdash; AI Bookkeeper</div>
+          <div class="answer-text">Cipher tracks expenses, generates invoices, monitors revenue across all your businesses, and prepares everything for tax time. Weekly financial reports land in your inbox without you lifting a finger.</div>
+          <div class="answer-agent">&#128176; Cipher &mdash; Finance Agent</div>
+        </div>
+      </div>
+
+      <div class="nightmare-card" data-id="content">
+        <div class="card-front">
+          <span class="nightmare-emoji">&#128247;</span>
+          <div class="nightmare-title">"I haven't posted in 3 months. My competitor posts every day."</div>
+          <div class="nightmare-desc">You know content matters but it falls to the bottom of the list every single week.</div>
+        </div>
+        <div class="card-answer">
+          <div class="answer-label">Your Agent Fix</div>
+          <div class="answer-title">Deploy Nova &mdash; Content Machine</div>
+          <div class="answer-text">Nova writes posts, plans content calendars, scripts YouTube videos, handles SEO, and queues everything for auto-posting. Your social media runs on autopilot while you run the business.</div>
+          <div class="answer-agent">&#9889; Nova &mdash; Marketing Agent</div>
+        </div>
+      </div>
+
+      <div class="nightmare-card" data-id="chaos">
+        <div class="card-front">
+          <span class="nightmare-emoji">&#129327;</span>
+          <div class="nightmare-title">"I'm drowning in emails, texts, and tasks. Nothing is organized."</div>
+          <div class="nightmare-desc">You use 12 apps. Nothing talks to each other. Important things slip through the cracks.</div>
+        </div>
+        <div class="card-answer">
+          <div class="answer-label">Your Agent Fix</div>
+          <div class="answer-title">Deploy Belichick &mdash; Chief of Staff</div>
+          <div class="answer-text">Your AI right hand. Manages email, calendar, reminders, and task delegation. Coordinates all other agents. Belichick is the gatekeeper &mdash; nothing falls through the cracks because he catches everything.</div>
+          <div class="answer-agent">&#127944; Belichick &mdash; Admin Agent</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="nightmares-cta" id="nightmaresCta">
+      <p id="ctaText">Click the problems that sound like yours.</p>
+      <a href="tel:+19168904427" class="btn btn-green" id="ctaButton" style="display:none">
+        Call (916) 890-4427 &mdash; Let's Fix <span id="ctaCount">This</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="section section-alt" id="how">
+  <div class="container">
+    <div class="nightmares-header">
+      <h2>How It <span class="grad">Works</span></h2>
+      <p>From first call to agents running. No fluff.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <h3>You Tell Us What Hurts</h3>
+        <p>15-minute call. You tell us what's eating your time, what's costing you money, what you wish someone else would handle.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <h3>We Design Your Team</h3>
+        <p>We pick the right agents, configure them for YOUR business, YOUR rules, YOUR data. No generic chatbot garbage.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <h3>We Deploy &amp; Train</h3>
+        <p>Agents go live on your systems. We train them on your content, products, and processes. You approve everything.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <h3>They Work. You Don't.</h3>
+        <p>Agents run 24/7. You get weekly reports. You focus on growing the business instead of running it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Agents Roster -->
+<section class="section" id="agents">
+  <div class="container">
+    <div class="nightmares-header">
+      <h2>The <span class="grad">Agent Roster</span></h2>
+      <p>Every agent is purpose-built, sandboxed, and only knows what you want it to know.</p>
+    </div>
+    <div class="agents-grid">
+      <div class="agent-card">
+        <span class="agent-emoji">&#127944;</span>
+        <div class="agent-name">Belichick</div>
+        <div class="agent-role">Chief of Staff / Admin</div>
+        <div class="agent-desc">Email, calendar, reminders, task delegation, file management. Coordinates all other agents. Your right hand.</div>
+      </div>
+      <div class="agent-card">
+        <span class="agent-emoji">&#129302;</span>
+        <div class="agent-name">Mila</div>
+        <div class="agent-role">Customer Service</div>
+        <div class="agent-desc">Lives on your website. Answers questions from YOUR content only. Collects leads. Routes complex issues. 24/7.</div>
+      </div>
+      <div class="agent-card">
+        <span class="agent-emoji">&#128737;&#65039;</span>
+        <div class="agent-name">Sentinel</div>
+        <div class="agent-role">Legal / Compliance</div>
+        <div class="agent-desc">Tracks regulations, deadlines, and filing requirements. Finds business opportunities hidden in new laws.</div>
+      </div>
+      <div class="agent-card">
+        <span class="agent-emoji">&#128176;</span>
+        <div class="agent-name">Cipher</div>
+        <div class="agent-role">Finance / Bookkeeping</div>
+        <div class="agent-desc">Expense tracking, invoicing, revenue monitoring, tax prep, budget forecasting, and financial reports.</div>
+      </div>
+      <div class="agent-card">
+        <span class="agent-emoji">&#9889;</span>
+        <div class="agent-name">Nova</div>
+        <div class="agent-role">Marketing / Content</div>
+        <div class="agent-desc">YouTube scripts, social media, SEO, content calendars, thumbnail concepts, trend research, auto-posting.</div>
+      </div>
+      <div class="agent-card">
+        <span class="agent-emoji">&#128640;</span>
+        <div class="agent-name">Atlas</div>
+        <div class="agent-role">Web Dev / Technical</div>
+        <div class="agent-desc">Website builds, maintenance, deployment, bug fixes, database management, API integrations.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="section section-alt" id="pricing">
+  <div class="container">
+    <div class="nightmares-header">
+      <h2>Simple <span class="grad">Pricing</span></h2>
+      <p>No hourly billing. No scope creep surprise invoices. You know what you're paying.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="pricing-tier">Starter</div>
+        <div class="pricing-price">$500 <small>/mo</small></div>
+        <div class="pricing-note">1 agent, fully deployed</div>
+        <ul class="pricing-list">
+          <li>One agent of your choice</li>
+          <li>Configured for your business</li>
+          <li>Trained on your content/data</li>
+          <li>Email support</li>
+          <li>Weekly performance report</li>
+        </ul>
+        <a href="tel:+19168904427" class="btn btn-ghost" style="width:100%;justify-content:center">Get Started</a>
+      </div>
+      <div class="pricing-card featured">
+        <div class="pricing-tier">Growth</div>
+        <div class="pricing-price">$1,200 <small>/mo</small></div>
+        <div class="pricing-note">3 agents, coordinated team</div>
+        <ul class="pricing-list">
+          <li>Three agents working together</li>
+          <li>Belichick coordination included</li>
+          <li>Custom workflows &amp; automations</li>
+          <li>Priority support</li>
+          <li>Slack/Discord command center</li>
+        </ul>
+        <a href="tel:+19168904427" class="btn btn-green" style="width:100%;justify-content:center">Get Started</a>
+      </div>
+      <div class="pricing-card">
+        <div class="pricing-tier">Full Team</div>
+        <div class="pricing-price">$2,500 <small>/mo</small></div>
+        <div class="pricing-note">All 6 agents, full deployment</div>
+        <ul class="pricing-list">
+          <li>Complete agent roster</li>
+          <li>Full Slack command center</li>
+          <li>Custom integrations</li>
+          <li>Dedicated account manager</li>
+          <li>Daily performance reports</li>
+        </ul>
+        <a href="tel:+19168904427" class="btn btn-ghost" style="width:100%;justify-content:center">Get Started</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Final CTA -->
+<section class="section final-cta" id="contact">
+  <div class="container">
+    <h2>Ready to Stop <span class="grad">Doing Everything</span>?</h2>
+    <p>15-minute call. Tell us what hurts. We'll show you the fix.</p>
+    <a href="tel:+19168904427" class="phone-big">(916) 890-4427</a>
+    <a href="tel:+19168904427" class="btn btn-green">Call Now &mdash; Free Consultation</a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <span>&copy; 2026 SilverbackAI. All rights reserved.</span>
+      <div class="footer-links">
+        <a href="#nightmares">Pain Points</a>
+        <a href="#agents">Agents</a>
+        <a href="#pricing">Pricing</a>
+        <a href="tel:+19168904427">(916) 890-4427</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── Mobile Nav ──
+document.getElementById('mobileToggle').addEventListener('click', function() {
+  document.getElementById('navLinks').classList.toggle('open');
+});
+document.querySelectorAll('.nav-links a').forEach(function(a) {
+  a.addEventListener('click', function() {
+    document.getElementById('navLinks').classList.remove('open');
+  });
+});
+
+// ── Smooth Scroll ──
+document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+  a.addEventListener('click', function(e) {
+    var t = document.querySelector(this.getAttribute('href'));
+    if (t) { e.preventDefault(); t.scrollIntoView({ behavior:'smooth', block:'start' }); }
+  });
+});
+
+// ══════════════════════════════════════════════════
+// WHAT KEEPS YOU UP AT NIGHT - Interactive Logic
+// ══════════════════════════════════════════════════
+(function() {
+  var cards = document.querySelectorAll('.nightmare-card');
+  var ctaText = document.getElementById('ctaText');
+  var ctaButton = document.getElementById('ctaButton');
+  var ctaCount = document.getElementById('ctaCount');
+  var selected = new Set();
+
+  var painLabels = {
+    cs: 'Customer Service',
+    leads: 'Lead Gen',
+    compliance: 'Compliance',
+    books: 'Bookkeeping',
+    content: 'Content',
+    chaos: 'Admin Chaos'
+  };
+
+  cards.forEach(function(card) {
+    card.addEventListener('click', function() {
+      var id = this.dataset.id;
+
+      if (selected.has(id)) {
+        selected.delete(id);
+        this.classList.remove('selected');
+      } else {
+        selected.add(id);
+        this.classList.add('selected');
+      }
+
+      updateCTA();
+    });
+  });
+
+  function updateCTA() {
+    var count = selected.size;
+
+    if (count === 0) {
+      ctaText.textContent = 'Click the problems that sound like yours.';
+      ctaButton.style.display = 'none';
+      return;
+    }
+
+    var labels = [];
+    selected.forEach(function(id) {
+      if (painLabels[id]) labels.push(painLabels[id]);
+    });
+
+    if (count === 1) {
+      ctaText.innerHTML = 'You picked <span class="selected-count">1 problem</span>. We have the agent for that.';
+    } else if (count < 6) {
+      ctaText.innerHTML = 'You picked <span class="selected-count">' + count + ' problems</span>. That\'s a full agent team.';
+    } else {
+      ctaText.innerHTML = '<span class="selected-count">All 6.</span> Yeah, you need the full team. Let\'s talk.';
+    }
+
+    if (count <= 2) {
+      ctaCount.textContent = labels.join(' & ');
+    } else {
+      ctaCount.textContent = 'All ' + count + ' Problems';
+    }
+
+    ctaButton.style.display = 'inline-flex';
+  }
+})();
+
+// ── FAQ accordion (reusable if FAQ added later) ──
+document.querySelectorAll('.faq-question').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var item = this.parentElement;
+    var answer = this.nextElementSibling;
+    var isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(function(fi) {
+      fi.classList.remove('open');
+      fi.querySelector('.faq-answer').style.maxHeight = null;
+    });
+    if (!isOpen) {
+      item.classList.add('open');
+      answer.style.maxHeight = answer.scrollHeight + 'px';
+    }
+  });
+});
+</script>
+
+</body>
+</html>
