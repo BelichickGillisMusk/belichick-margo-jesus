@@ -48,6 +48,12 @@ MULTI-AGENT MISSIONS (more than one agent deploys):
   /recon-legal    → Sentinel (analysis) + Mila-Legal (source gathering)
   /recon-market   → Kesha (trends/audience) + Musk (competitor sites)
   /recon-prospect → Lead Scraper (public info) + Jon Jones (pitch strategy)
+
+SESSION RECOVERY:
+  /teleport <id>   → Resume interrupted session from last checkpoint
+  /sessions        → List all recoverable sessions with status
+  /sessions purge  → Clean up expired session files
+  /sessions keep   → Extend session expiry by 12h
 ```
 
 ### Plain English Cheat Sheet
@@ -65,6 +71,9 @@ Don't remember the command? Just remember what you want:
 | See who's busy right now              | `/agent-status`                                | **Belichick**               |
 | Send any agent on a custom task       | `/dispatch Sentinel research Chicago zoning`   | **Whatever you pick**       |
 | Stop a runaway agent                  | `/kill Sentinel`                               | **Belichick** (kills it)    |
+| Resume a crashed/timed out mission    | `/teleport session_01UZeds1NUGCUm...`          | **Belichick** (via Teleport)|
+| See what sessions can be recovered    | `/sessions`                                    | **Belichick** (via Teleport)|
+| Keep a session alive longer           | `/sessions keep session_01UZeds1N...`          | **Belichick** (via Teleport)|
 | Forgot everything above               | `/roster`                                      | Prints this whole card      |
 
 ---
@@ -105,6 +114,10 @@ Register these slash commands in your Slack app:
 | `/dispatch [agent] [task]` | Direct dispatch to any agent | **Belichick** (router) |
 | `/kill [agent]` | Emergency stop an agent | **Belichick** |
 | `/budget` | Current token spend report | **Cipher** |
+| `/teleport [session_id]` | Resume an interrupted agent session | **Belichick** (via Teleport) |
+| `/sessions` | List all recoverable sessions | **Belichick** (via Teleport) |
+| `/sessions purge` | Delete all expired sessions | **Belichick** (via Teleport) |
+| `/sessions keep [session_id]` | Extend a session's expiry by 12h | **Belichick** (via Teleport) |
 
 ### 4. Event Subscriptions
 Subscribe to these events for real-time agent interaction:
@@ -286,6 +299,53 @@ SALES ANGLE (by Jon Jones):
 NEXT STEP: Outreach call or email via Jon Jones
 ```
 
+### MISSION: Teleport Session Recovery
+**Command:** `/teleport session_01UZeds1NUGCUmdcK2mtVMX5`
+**Agent:** Belichick (dispatches original agent via Teleport skill)
+**Channel:** #agent-status (recovery status) → original target channel (results)
+
+Workflow:
+1. User fires `/teleport` with a session ID
+2. Belichick loads session state from `~/.openclaw/sessions/`
+3. Validates: session exists, not expired, not corrupted, budget available
+4. Selects recovery strategy (resume checkpoint / partial restart / full restart with hints)
+5. Re-dispatches original agent(s) with recovered context
+6. Agent resumes from last checkpoint — does NOT redo completed work
+7. Recovery status posted to #agent-status
+8. Completed results delivered to original target channel
+
+Output in #agent-status:
+```
+[TELEPORT] Recovering session session_01UZeds1NUGCUmdcK2mtVMX5
+  Agent: Sentinel + Mila-Legal
+  Mission: /recon-legal "CARB 2027 quarterly testing"
+  Interrupted: 2h ago (timeout at checkpoint 3/4)
+  Strategy: Resume from checkpoint
+  Tokens saved: ~18,420 (resuming, not restarting)
+  Status: RESUMING...
+```
+
+Output on completion (posted to #agent-status):
+```
+[TELEPORT COMPLETE] session_01UZeds1NUGCUmdcK2mtVMX5
+  Agent: Sentinel + Mila-Legal
+  Recovery cost: 8,200 tokens (saved 18,420 by not restarting)
+  Results posted to: #recon-legal
+```
+
+Error cases:
+```
+[TELEPORT FAILED] session_01UZeds1NUGCUmdcK2mtVMX5
+  Reason: Session expired 2h ago. Use /sessions to see available sessions.
+```
+```
+[TELEPORT BLOCKED] session_01UZeds1NUGCUmdcK2mtVMX5
+  Reason: Insufficient token budget. Estimated 8,200 tokens needed, 3,000 remaining.
+  Post to #alerts for budget review.
+```
+
+---
+
 ## Belichick Dispatch Protocol
 
 When a RECON command comes through Slack, Belichick follows this protocol:
@@ -340,6 +400,15 @@ Every Slack message from the system follows this format so you always know WHO i
 [TIMEOUT] Sentinel — /recon-legal timed out after 5 min. Task killed.
 [ERROR] Lead Scraper — Google Places API returned 429 (rate limited). Retry in 60s.
 [KILL] Belichick killed Sentinel per @gillis command.
+```
+
+**Session recovery** (posted to #agent-status):
+```
+[TIMEOUT] Sentinel — session session_01UZ... saved at checkpoint 3/4. /teleport to resume.
+[KILL] Belichick killed Sentinel per @gillis. Session session_01UZ... saved. /teleport to resume.
+[TELEPORT] Recovering session session_01UZ... — Sentinel resuming from checkpoint 3/4.
+[TELEPORT COMPLETE] session_01UZ... — Results posted to #recon-legal. Saved 18,420 tokens.
+[TELEPORT FAILED] session_01UZ... — Session expired. Start a new mission.
 ```
 
 The pattern is always: `[AGENT NAME] what happened`. No exceptions.

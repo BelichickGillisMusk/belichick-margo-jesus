@@ -233,6 +233,15 @@ YOUR MAC
 ├── Docker (optional sandboxing)
 │   └── Each agent can run in isolated container
 │
+├── Session Recovery (Teleport):
+│   ├── Auto-checkpoint on timeout, kill, crash, token cap
+│   ├── Sessions stored: ~/.openclaw/sessions/
+│   ├── Recoverable TTL: 12 hours
+│   ├── Max recoverable sessions: 50
+│   ├── Recovery via: /teleport <session_id>
+│   ├── PII stripped (hashed references only)
+│   └── Local only — never synced to cloud
+│
 ├── Kill Switches:
 │   ├── Max concurrent agents: 2
 │   ├── Sub-agent auto-kill: 30 min idle
@@ -247,6 +256,65 @@ YOUR MAC
     ├── Knowledge: ONLY CARB website content
     └── No PII collection beyond name/email
 ```
+
+---
+
+## Teleport Session Recovery
+
+When agent missions are interrupted (timeout, kill, crash, token cap), session state is automatically checkpointed to disk. The `/teleport` command resumes interrupted sessions from where they left off, saving tokens and time.
+
+### How It Works
+
+```
+AGENT MISSION RUNNING
+  │
+  ├── Checkpoint 1: Mission parsed ──────── state saved
+  ├── Checkpoint 2: Data retrieved ──────── state saved
+  ├── Checkpoint 3: Analysis done ───────── state saved
+  ├── Checkpoint 4: Report drafted ──────── state saved
+  └── Complete: Results delivered ───────── session archived
+
+IF INTERRUPTED AT ANY POINT:
+  → Session state persisted to ~/.openclaw/sessions/
+  → Posted to #agent-status with session ID
+  → Recoverable via: /teleport <session_id>
+```
+
+### Storage Layout
+
+```
+~/.openclaw/sessions/
+├── active/           # Currently running (max 2)
+├── recoverable/      # Interrupted, can /teleport (max 50, 12h TTL)
+├── expired/          # Past TTL, degraded recovery (24h then deleted)
+└── completed/        # Finished, kept for audit (24h then deleted)
+```
+
+### Recovery Strategies
+
+| Session Age | Data Quality | Strategy | Token Cost |
+|-------------|-------------|----------|------------|
+| < 6 hours | Intact | Resume from checkpoint | Remaining work only |
+| 6-12 hours | Partial | Partial restart | Current + remaining phases |
+| > 12 hours | Any | Full restart with hints | Near full, but faster |
+
+### Slack Commands
+
+| Command | What It Does |
+|---------|-------------|
+| `/teleport <session_id>` | Resume interrupted session |
+| `/sessions` | List all recoverable sessions |
+| `/sessions purge` | Clean up expired sessions |
+| `/sessions keep <id>` | Extend session expiry by 12h |
+
+### Security
+
+- No PII stored in session files (hashed references only)
+- Session files are local only — never transmitted over network
+- Hard deletion on expiry — no recycle bin
+- Human must explicitly `/teleport` — no automatic recovery
+- Token budget verified before recovery attempt
+- One recovery attempt per session — prevents infinite retry loops
 
 ---
 
@@ -299,7 +367,9 @@ Slack is the mission command center. Agents are dispatched via slash commands an
 | `/dispatch [agent] [task]` | Direct dispatch to any agent |
 | `/agent-status` | All agent statuses |
 | `/budget` | Token spend report |
-| `/kill [agent]` | Emergency stop |
+| `/kill [agent]` | Emergency stop (session auto-saved) |
+| `/teleport [session_id]` | Resume interrupted session |
+| `/sessions` | List recoverable sessions |
 
 ### Data Flow
 

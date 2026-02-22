@@ -56,6 +56,41 @@
     }
   },
 
+  // ── TELEPORT SESSION RECOVERY ──
+  "sessions": {
+    "persistence": {
+      "enabled": true,
+      "storePath": "~/.openclaw/sessions",     // Where session state files live
+      "checkpointSync": true,                   // Synchronous writes (safe but slower)
+      "atomicWrites": true,                     // Write to temp then rename (prevents corruption)
+      "maxFileSize": 512000                     // 500KB max per session file
+    },
+    "recovery": {
+      "enabled": true,
+      "autoCheckpoint": true,                   // Agents auto-checkpoint at natural breakpoints
+      "checkpointOnKill": true,                 // Save state when /kill is issued
+      "checkpointOnTimeout": true,              // Save state on 5-min timeout
+      "checkpointOnTokenCap": true,             // Save state when 60K context cap hit
+      "maxRecoveryAttempts": 1,                 // One retry per session, then mark unrecoverable
+      "resumeStrategies": ["checkpoint", "partial_restart", "full_restart_with_hints"]
+    },
+    "retention": {
+      "activeMax": 2,                           // Matches maxConcurrent agents
+      "recoverableMax": 50,                     // Max interrupted sessions kept
+      "recoverableTTL": "12h",                  // Recoverable sessions expire after 12h
+      "expiredRetention": "24h",                // Expired sessions kept 24h (degraded recovery)
+      "completedRetention": "24h",              // Completed sessions kept 24h for audit
+      "completedMax": 100,                      // Max completed session files
+      "maxDiskUsageMB": 25                      // Hard cap on total session storage
+    },
+    "security": {
+      "stripPII": true,                         // Hash customer names, VINs, contacts in state files
+      "localOnly": true,                        // Never transmit session files over network
+      "hardDeleteOnExpiry": true,               // No recycle bin, no recovery after TTL
+      "requireAuthForTeleport": true            // Same Slack user allowlist as other commands
+    }
+  },
+
   // ── CRON (scheduled tasks) ──
   "cron": {
     "enabled": true,

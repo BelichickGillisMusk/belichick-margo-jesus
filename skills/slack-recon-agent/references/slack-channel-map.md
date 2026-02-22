@@ -42,15 +42,19 @@ done
 ## Agent-to-Channel Routing
 
 ```
-/recon-leads    → Lead Scraper → #recon-leads
-/recon-legal    → Sentinel + Mila-Legal → #recon-legal
-/recon-market   → Kesha + Musk → #recon-market
+/recon-leads      → Lead Scraper → #recon-leads
+/recon-legal      → Sentinel + Mila-Legal → #recon-legal
+/recon-market     → Kesha + Musk → #recon-market
 /recon-compliance → Mila-CARB → #recon-compliance
-/recon-prospect → Jon Jones + Lead Scraper → #recon-sales
-/agent-status   → Belichick → #agent-status
-/budget         → Cipher → #alerts
-/kill           → Belichick → #alerts
-/dispatch       → Belichick (routes to target agent) → agent's channel
+/recon-prospect   → Jon Jones + Lead Scraper → #recon-sales
+/agent-status     → Belichick → #agent-status
+/budget           → Cipher → #alerts
+/kill             → Belichick → #alerts (+ session saved for /teleport)
+/dispatch         → Belichick (routes to target agent) → agent's channel
+/teleport         → Belichick (via Teleport) → #agent-status (status) + original channel (results)
+/sessions         → Belichick (via Teleport) → #agent-status
+/sessions purge   → Belichick (via Teleport) → #agent-status
+/sessions keep    → Belichick (via Teleport) → #agent-status
 ```
 
 ## Notification Rules
@@ -64,3 +68,8 @@ done
 | Budget threshold hit (80%) | #alerts | Critical |
 | Kill switch triggered | #alerts | Critical |
 | Compliance deadline within 7 days | #recon-compliance + #alerts | High |
+| Session interrupted (timeout/kill/crash) | #agent-status | Normal |
+| Teleport recovery started | #agent-status | Normal |
+| Teleport recovery completed | #agent-status + target channel | Normal |
+| Teleport recovery failed | #agent-status + #alerts | High |
+| Session expiring soon (<2h remaining) | #agent-status | Normal |

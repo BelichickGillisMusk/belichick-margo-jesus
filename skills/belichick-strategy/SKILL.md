@@ -84,6 +84,41 @@ BLOCKED: [what's stuck and why]
 NEXT WEEK PRIORITIES: [top 3]
 ```
 
+## Session Recovery (Teleport)
+
+When an agent mission is interrupted, Belichick handles recovery:
+
+### On Interruption (Timeout, Kill, Crash)
+1. Ensure the interrupted agent's session state is checkpointed
+2. Post session ID to #agent-status with recovery instructions
+3. Log the interruption reason and checkpoint level
+
+### On `/teleport <session_id>` Request
+1. Load session state from `~/.openclaw/sessions/`
+2. Validate: session exists, not expired, budget available
+3. Select recovery strategy based on session age and data integrity:
+   - **< 6h, data intact** → Resume from checkpoint (cheapest)
+   - **6-12h or partial data** → Partial restart (redo current phase only)
+   - **> 12h or corrupted** → Full restart with hints (most expensive)
+4. Re-dispatch original agent(s) with recovered context
+5. Monitor recovery the same as any other mission
+6. Post results to original target channel when complete
+
+### Recovery Decision Format
+```
+TELEPORT ASSESSMENT: session_[id]
+  Agent: [who was running]
+  Mission: [original command]
+  Checkpoint: [X/4] ([label])
+  Age: [time since interruption]
+  Strategy: [resume/partial/full]
+  Est. cost: [tokens] (vs [tokens] to restart from scratch)
+  Decision: RECOVER / ABANDON
+```
+
+### On `/sessions` Request
+Post formatted list of all recoverable sessions to #agent-status.
+
 ## Guardrails
 
 - Never greenlight a business without Mila's legal review
@@ -91,3 +126,5 @@ NEXT WEEK PRIORITIES: [top 3]
 - Never deploy Jon Jones without verified product/pricing
 - Always keep Gillis (the human) in the loop on GO/NO-GO decisions
 - Track agent token spend - optimize for lowest cost per insight
+- Never auto-resume interrupted sessions — always require explicit `/teleport` from a human
+- Verify token budget before recovering a session — don't burn tokens on a session that will fail again

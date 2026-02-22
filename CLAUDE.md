@@ -35,10 +35,12 @@ belichick-margo-jesus/
     │   ├── SKILL.md         # Legal/regulatory research agent
     │   └── references/
     │       └── research-sources.md              # Federal, IL, Chicago legal databases
-    └── slack-recon-agent/
-        ├── SKILL.md         # Slack RECON mission command center
-        └── references/
-            └── slack-channel-map.md             # Channel routing and notification rules
+    ├── slack-recon-agent/
+    │   ├── SKILL.md         # Slack RECON mission command center
+    │   └── references/
+    │       └── slack-channel-map.md             # Channel routing and notification rules
+    └── teleport-recovery/
+        └── SKILL.md         # Session persistence and recovery (teleport) system
 ```
 
 ## Agent Roster
@@ -55,6 +57,7 @@ belichick-margo-jesus/
 | **Sentinel** | Legal/regulatory deep analysis | Gemini / Claude Opus | Uses `mila-legal` skill |
 | **Lead Scraper** | Google Maps business lead generation | Gemini (free) | `skills/gemini-lead-scraper/` |
 | **Slack RECON** | Mission dispatch & coordination via Slack | All agents | `skills/slack-recon-agent/` |
+| **Teleport** | Session persistence, recovery & resume | N/A (system skill) | `skills/teleport-recovery/` |
 
 ## Key Configuration
 
@@ -68,6 +71,10 @@ belichick-margo-jesus/
 - **Agent timeout:** 300 seconds (5 min silence)
 - **Sub-agent auto-kill:** 30 min idle
 - **Cron session retention:** 6 hours
+- **Teleport session recovery:** Enabled (auto-checkpoint on timeout/kill/crash)
+- **Recoverable session TTL:** 12 hours (extendable via `/sessions keep`)
+- **Max recoverable sessions:** 50
+- **Session storage:** `~/.openclaw/sessions/` (local only, PII stripped)
 - **Slack integration:** Enabled with 8 dedicated channels
 
 ### Slack Channels (RECON Operations)
@@ -143,6 +150,7 @@ Sandboxed sales bot demo for the Closer agent. Features:
 - **No PII collection:** Agents never collect credit cards, SSNs, or sensitive data
 - **Cost control:** Prefer Gemini free tier for 80% of work; Claude only for complex tasks
 - **Kill switches:** Max concurrent agents, idle timeouts, token caps, billing backoffs
+- **Session recovery:** Interrupted sessions auto-checkpointed, recoverable via `/teleport`
 - **Slack security:** User allowlist, rate limiting (10 missions/hr), channel isolation
 
 ### Agent Design Patterns
