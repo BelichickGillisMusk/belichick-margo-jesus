@@ -1,0 +1,16 @@
+# Google API credentials - NEVER commit these
+credentials.json
+token.json
+
+# Backup state files
+backup_progress.json
+backup.log
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# macOS
+.DS_Store
