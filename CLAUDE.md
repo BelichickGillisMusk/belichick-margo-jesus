@@ -16,16 +16,16 @@ belichick-margo-jesus/
 ├── README.md                # Brief project description
 ├── openclaw-config.json5    # OpenClaw gateway configuration (JSON5 with comments)
 ├── index.html               # "Agent Round Table" - interactive agent status dashboard UI
-├── salesbot.html            # "The Office" - sandboxed sales bot demo (Closer agent prototype)
+├── salesbot.html            # "The Office" - sandboxed sales bot demo (Jon Jones agent prototype)
 └── skills/                  # OpenClaw skill definitions (agent prompts and knowledge bases)
-    ├── atlas-creative/
-    │   └── SKILL.md         # YouTube/creative content agent
     ├── belichick-strategy/
-    │   └── SKILL.md         # Strategy & orchestration agent
-    ├── closer-sales/
-    │   └── SKILL.md         # Sales agent with A.C.E.S. framework
+    │   └── SKILL.md         # Chief of Staff & orchestration agent
+    ├── cipher-finance/
+    │   └── SKILL.md         # Finance, invoicing, tax prep agent
     ├── gemini-lead-scraper/
     │   └── SKILL.md         # Google Maps/Places API lead scraper
+    ├── jonjones-sales/
+    │   └── SKILL.md         # Sales agent with A.C.E.S. framework
     ├── mila-carb-cs/
     │   ├── SKILL.md         # CARB Clean Truck Check customer service agent
     │   └── references/
@@ -35,23 +35,27 @@ belichick-margo-jesus/
     │   ├── SKILL.md         # Legal/regulatory research agent
     │   └── references/
     │       └── research-sources.md              # Federal, IL, Chicago legal databases
-    └── slack-recon-agent/
-        ├── SKILL.md         # Slack RECON mission command center
-        └── references/
-            └── slack-channel-map.md             # Channel routing and notification rules
+    ├── musk-creative/
+    │   └── SKILL.md         # Websites, Xai, code & creative content agent
+    ├── slack-recon-agent/
+    │   ├── SKILL.md         # Slack RECON mission command center
+    │   └── references/
+    │       └── slack-channel-map.md             # Channel routing and notification rules
+    └── tps-report/
+        └── SKILL.md         # Agent status collection & discovery tracking
 ```
 
 ## Agent Roster
 
 | Agent | Role | Primary Model | Skill Directory |
 |-------|------|---------------|-----------------|
-| **Belichick** | Strategy & orchestration | Claude Opus (complex) / Gemini (daily) | `skills/belichick-strategy/` |
+| **Belichick** | Chief of Staff & orchestration | Claude Opus (complex) / Gemini (daily) | `skills/belichick-strategy/` |
+| **Musk** | Websites, Xai, code & creative | Gemini / Claude Sonnet | `skills/musk-creative/` |
+| **Jon Jones** | Sales conversations, lead qualification | Gemini / Claude Sonnet | `skills/jonjones-sales/` |
+| **Cipher** | Finance, bookkeeping, tax prep | Gemini / Claude Sonnet | `skills/cipher-finance/` |
+| **Kesha** | Marketing, animation, social media | Gemini / Claude Sonnet | Not yet implemented |
 | **Mila (CARB CS)** | Customer service for CARB compliance | Gemini / Haiku | `skills/mila-carb-cs/` |
 | **Mila (Legal)** | Regulatory research & business opportunity hunting | Gemini / Claude Opus | `skills/mila-legal/` |
-| **Atlas** | YouTube content, creative, SEO | Gemini / Claude Sonnet | `skills/atlas-creative/` |
-| **Closer** | Sales conversations, lead qualification | Gemini / Claude Sonnet | `skills/closer-sales/` |
-| **Cipher** | Finance, bookkeeping, tax prep | Gemini / Claude Sonnet | Not yet implemented |
-| **Nova** | Marketing, animation, social media | Gemini / Claude Sonnet | Not yet implemented |
 | **Sentinel** | Legal/regulatory deep analysis | Gemini / Claude Opus | Uses `mila-legal` skill |
 | **Lead Scraper** | Google Maps business lead generation | Gemini (free) | `skills/gemini-lead-scraper/` |
 | **Slack RECON** | Mission dispatch & coordination via Slack | All agents | `skills/slack-recon-agent/` |
@@ -119,9 +123,9 @@ Interactive status dashboard showing all agents arranged in a circle. Each agent
 
 Click an agent or use the bottom buttons to cycle status. Pure client-side HTML/CSS/JS with no dependencies.
 
-### `salesbot.html` - The Office (Closer Demo)
+### `salesbot.html` - The Office (Jon Jones Demo)
 
-Sandboxed sales bot demo for the Closer agent. Features:
+Sandboxed sales bot demo for the Jon Jones agent. Features:
 - Configurable sidebar: bot persona, products, sales rules, objection playbook
 - Pattern-matching response engine (no API calls, no network)
 - Strict Content Security Policy (`connect-src 'none'`)

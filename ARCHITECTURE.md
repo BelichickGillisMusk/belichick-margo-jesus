@@ -9,7 +9,7 @@ No Google Cloud. No surprise bills. Full control.
 
 ## The Roster
 
-### 1. BELICHICK (Admin / Personal Assistant)
+### 1. BELICHICK (Chief of Staff)
 **Your right hand. The bloated one. Has access to everything YOU need.**
 
 - Email management, calendar, reminders
@@ -48,8 +48,8 @@ SECURITY:
 
 ---
 
-### 3. MUSK (Technical / Web Dev)
-**Builds and maintains the website, handles deployments, fixes bugs.**
+### 3. MUSK (Websites / Xai / Code & Creative)
+**Builds everything. Websites, code, content, Xai integrations. If it needs to ship, Musk ships it.**
 
 - Website development and maintenance
 - Deployment to Vercel/hosting
@@ -57,10 +57,12 @@ SECURITY:
 - Database management
 - API integrations
 - Performance optimization
+- YouTube content strategy and scripts
+- Xai and AI integration work
 
-Skills: coding-agent, github, canvas
+Skills: coding-agent, github, canvas, musk-creative, summarize, video-frames, openai-image-gen
 Model: Claude Sonnet (fast coder, good value)
-Fallback: Local model for simple tasks
+Fallback: Gemini for simple tasks, local model for brainstorming
 
 ---
 
@@ -216,12 +218,13 @@ YOUR MAC
 │   ├── Auth: Token-based (timing-safe)
 │   ├── Bind: 127.0.0.1 ONLY
 │   └── Agents:
-│       ├── Belichick ─── Gemini FREE (daily) / Claude (on-demand)
-│       ├── Mila ──────── Gemini FREE (CS bot) / Ollama (backup)
-│       ├── Musk ──────── Gemini FREE (simple) / Claude (complex code)
-│       ├── Cipher ────── Gemini FREE (Sheets) / Claude (tax/analysis)
-│       ├── Kesha ─────── Gemini FREE (content) / Claude (polish)
-│       └── Sentinel ──── Gemini FREE (research) / Claude (deep analysis)
+│       ├── Belichick ─── Chief of Staff ─── Gemini FREE (daily) / Claude (on-demand)
+│       ├── Musk ──────── Websites/Xai/Code ── Gemini FREE (simple) / Claude (complex)
+│       ├── Cipher ────── Finance ─────────── Gemini FREE (Sheets) / Claude (tax/analysis)
+│       ├── Kesha ─────── Marketing ────────── Gemini FREE (content) / Claude (polish)
+│       ├── Jon Jones ─── Sales ──────────── Gemini FREE (outreach) / Claude (strategy)
+│       ├── Mila ──────── CARB CS / Legal ─── Gemini FREE (CS bot) / Ollama (backup)
+│       └── Sentinel ──── Legal Deep Dive ─── Gemini FREE (research) / Claude (deep analysis)
 │
 ├── Make.com (automation layer)
 │   ├── Lead capture pipelines

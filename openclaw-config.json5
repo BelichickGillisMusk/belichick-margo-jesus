@@ -1,6 +1,6 @@
 // OpenClaw Configuration for BelichickGillisMusk
 // Drop this into ~/.openclaw/openclaw.json on your Mac
-// Agents: Mila (Research/Legal), Musk (YouTube/Creative), Jon Jones (Sales), Kesha (Marketing), Belichick (Strategy)
+// Agents: Belichick (Chief of Staff), Musk (Websites/Xai/Code/Creative), Jon Jones (Sales), Cipher (Finance), Kesha (Marketing), Mila (CARB CS/Legal), Sentinel (Legal), Lead Scraper
 {
   "gateway": {
     "bind": "loopback",          // ONLY accessible from your machine - not the internet
