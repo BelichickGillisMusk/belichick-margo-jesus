@@ -82,7 +82,14 @@
         "name": "weekly-lead-scrape",
         "schedule": "0 7 * * 1",       // Monday 7 AM
         "agent": "lead-scraper",
-        "task": "Scrape Google Places for new trucking/freight companies in CA, post to Slack",
+        "task": "Scrape Google Places for new trucking/freight companies in CA. Post lead list to #recon-leads with approval prompt. Include weekly pipeline summary.",
+        "slackChannel": "#recon-leads"
+      },
+      {
+        "name": "lead-pipeline-update",
+        "schedule": "0 9 * * 3,5",     // Wednesday & Friday 9 AM
+        "agent": "lead-scraper",
+        "task": "Post lead pipeline status update: leads awaiting approval, outreach sent, responses received. Keep it short.",
         "slackChannel": "#recon-leads"
       },
       {
@@ -93,10 +100,10 @@
         "slackChannel": "#recon-market"
       },
       {
-        "name": "compliance-deadline-alerts",
+        "name": "mila-daily-update",
         "schedule": "0 8 * * *",       // Daily 8 AM
         "agent": "mila-carb",
-        "task": "Check fleet compliance deadlines within 7 days, post alerts to Slack",
+        "task": "Post daily status update to #recon-compliance: compliance deadline alerts (next 7 days), customer interactions (last 24h), regulation changes detected. If nothing to report, post 'standing by' status. Never skip this update.",
         "slackChannel": "#recon-compliance"
       },
       {

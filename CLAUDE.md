@@ -60,8 +60,6 @@ belichick-margo-jesus/
 ├── reports/                 # Snapshot TPS reports and discovery logs
 │   ├── discoveries-2026-02-13.md
 │   └── tps-2026-02-13.md
-├── carbteststockton/        # Static site for Cloudflare Pages (carbteststockton.com)
-├── cleantruckcheckroseville/ # Static site for Cloudflare Pages (cleantruckcheckroseville.com)
 └── skills/                  # OpenClaw skill definitions (agent prompts and knowledge bases)
     ├── belichick-strategy/
     │   └── SKILL.md         # Chief of Staff & orchestration agent
@@ -118,12 +116,13 @@ Slack slash command (e.g. /recon-leads)
           → Results posted to Make.com → Slack channel
 ```
 
-**Scheduled tasks** run via OpenClaw cron (6 jobs defined in `openclaw-config.json5`):
+**Scheduled tasks** run via OpenClaw cron (8 jobs defined in `openclaw-config.json5`):
 - Every 2h (8AM-8PM): `belichick` posts status to `#agent-status`
 - Daily 6AM: `sentinel` watches CARB/eCFR → `#recon-legal`
-- Monday 7AM: `lead-scraper` scrapes Google Maps → `#recon-leads`
+- Monday 7AM: `lead-scraper` scrapes Google Maps + pipeline summary → `#recon-leads`
+- Wed & Fri 9AM: `lead-scraper` pipeline status update → `#recon-leads`
 - Wednesday 7AM: `musk` competitor watch → `#recon-market`
-- Daily 8AM: `mila-carb` compliance deadlines → `#recon-compliance`
+- Daily 8AM: `mila-carb` daily status + compliance deadlines → `#recon-compliance`
 - Friday 5PM: `cipher` weekly budget report → `#alerts`
 
 **Skill routing:** OpenClaw reads the `description` field in each SKILL.md YAML frontmatter to match incoming prompts to agents via trigger words. The skill prompt (`# Agent Name...` section) becomes the agent's full system prompt.
@@ -202,14 +201,6 @@ Sandboxed sales bot demo for the Jon Jones agent. Features:
 - JavaScript sandbox: blocks `eval()`, `fetch()`, `XMLHttpRequest`, `WebSocket`, dynamic script injection
 - Security wall overlay on sandbox violation attempts
 - Prompt injection detection and deflection
-
-### Static Sites (Cloudflare Pages)
-
-Two production static sites in the repo root:
-- `carbteststockton/` — deployed to carbteststockton.com
-- `cleantruckcheckroseville/` — deployed to cleantruckcheckroseville.com
-
-Both are Cloudflare Pages deployments. No build step — static HTML/CSS/JS only.
 
 ## Development Conventions
 
