@@ -1,5 +1,43 @@
 # CLAUDE.md
 
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Commands
+
+There is no build system. This is a local-first agent config repo.
+
+**Generate an auth token for openclaw-config.json5:**
+```bash
+openssl rand -hex 32
+```
+
+**Install and start the OpenClaw gateway (Mac):**
+```bash
+npm install -g openclaw@latest
+cp openclaw-config.json5 ~/.openclaw/openclaw.json
+# Edit ~/.openclaw/openclaw.json — replace GENERATE-WITH token with your actual token
+openclaw start
+```
+
+**Install a local fallback model (optional):**
+```bash
+brew install ollama
+ollama pull llama3
+```
+
+**Preview the HTML UIs:**
+```bash
+open index.html       # Agent Round Table dashboard
+open salesbot.html    # Jon Jones sandboxed sales demo
+```
+
+**Build/preview the Jekyll documentation site locally:**
+```bash
+docker run --rm -v "$(pwd)":/site -p 4000:4000 jekyll/jekyll jekyll serve
+```
+
+**No automated test suite exists.** Agent skills are tested manually by sending prompts through OpenClaw or by reviewing output in Slack channels.
+
 ## Project Overview
 
 **BelichickGillisMusk** is a local-first multi-agent AI system built on the OpenClaw platform, designed to run on a Mac. It orchestrates a team of specialized AI agents for business operations including legal research, sales, marketing, customer service (CARB compliance), lead generation, and strategic coordination. The system uses Slack as its command center, Make.com for automation, and prioritizes free-tier Gemini for grunt work with Claude reserved for complex tasks.
@@ -14,9 +52,16 @@ belichick-margo-jesus/
 ├── CLAUDE.md                # This file - AI assistant guide
 ├── LICENSE                  # MIT License
 ├── README.md                # Brief project description
+├── TPS-REPORTS.md           # Agent status reporting system and discovery log format
+├── MILA-SEO-MASTER-PLAYBOOK.md  # Local SEO execution playbook (business reference)
 ├── openclaw-config.json5    # OpenClaw gateway configuration (JSON5 with comments)
 ├── index.html               # "Agent Round Table" - interactive agent status dashboard UI
 ├── salesbot.html            # "The Office" - sandboxed sales bot demo (Jon Jones agent prototype)
+├── reports/                 # Snapshot TPS reports and discovery logs
+│   ├── discoveries-2026-02-13.md
+│   └── tps-2026-02-13.md
+├── carbteststockton/        # Static site for Cloudflare Pages (carbteststockton.com)
+├── cleantruckcheckroseville/ # Static site for Cloudflare Pages (cleantruckcheckroseville.com)
 └── skills/                  # OpenClaw skill definitions (agent prompts and knowledge bases)
     ├── belichick-strategy/
     │   └── SKILL.md         # Chief of Staff & orchestration agent
@@ -59,6 +104,31 @@ belichick-margo-jesus/
 | **Sentinel** | Legal/regulatory deep analysis | Gemini / Claude Opus | Uses `mila-legal` skill |
 | **Lead Scraper** | Google Maps business lead generation | Gemini (free) | `skills/gemini-lead-scraper/` |
 | **Slack RECON** | Mission dispatch & coordination via Slack | All agents | `skills/slack-recon-agent/` |
+
+## Data Flow Architecture
+
+All commands flow through Slack to Make.com to OpenClaw to Agent, with results flowing back via Make.com to Slack:
+
+```
+Slack slash command (e.g. /recon-leads)
+  → Make.com webhook (bridges internet → localhost)
+    → OpenClaw Gateway (127.0.0.1:18789)
+      → Belichick dispatches task to specialist agent
+        → Agent runs with skill loaded from skills/<name>/SKILL.md
+          → Results posted to Make.com → Slack channel
+```
+
+**Scheduled tasks** run via OpenClaw cron (6 jobs defined in `openclaw-config.json5`):
+- Every 2h (8AM-8PM): `belichick` posts status to `#agent-status`
+- Daily 6AM: `sentinel` watches CARB/eCFR → `#recon-legal`
+- Monday 7AM: `lead-scraper` scrapes Google Maps → `#recon-leads`
+- Wednesday 7AM: `musk` competitor watch → `#recon-market`
+- Daily 8AM: `mila-carb` compliance deadlines → `#recon-compliance`
+- Friday 5PM: `cipher` weekly budget report → `#alerts`
+
+**Skill routing:** OpenClaw reads the `description` field in each SKILL.md YAML frontmatter to match incoming prompts to agents via trigger words. The skill prompt (`# Agent Name...` section) becomes the agent's full system prompt.
+
+**TPS reporting:** Every agent includes a structured TPS block in responses (see `TPS-REPORTS.md`). Discoveries (better tools, cheaper APIs) are logged for approval — agents must NOT act on discoveries without a `GO` from the operator.
 
 ## Key Configuration
 
@@ -132,6 +202,14 @@ Sandboxed sales bot demo for the Jon Jones agent. Features:
 - JavaScript sandbox: blocks `eval()`, `fetch()`, `XMLHttpRequest`, `WebSocket`, dynamic script injection
 - Security wall overlay on sandbox violation attempts
 - Prompt injection detection and deflection
+
+### Static Sites (Cloudflare Pages)
+
+Two production static sites in the repo root:
+- `carbteststockton/` — deployed to carbteststockton.com
+- `cleantruckcheckroseville/` — deployed to cleantruckcheckroseville.com
+
+Both are Cloudflare Pages deployments. No build step — static HTML/CSS/JS only.
 
 ## Development Conventions
 
