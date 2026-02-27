@@ -10,35 +10,57 @@
 
 ```
 belichick-margo-jesus/
-├── ARCHITECTURE.md          # Full system architecture, agent roster, cost breakdown, security model
-├── CLAUDE.md                # This file - AI assistant guide
-├── LICENSE                  # MIT License
-├── README.md                # Brief project description
-├── openclaw-config.json5    # OpenClaw gateway configuration (JSON5 with comments)
-├── index.html               # "Agent Round Table" - interactive agent status dashboard UI
-├── salesbot.html            # "The Office" - sandboxed sales bot demo (Closer agent prototype)
-└── skills/                  # OpenClaw skill definitions (agent prompts and knowledge bases)
-    ├── atlas-creative/
-    │   └── SKILL.md         # YouTube/creative content agent
+├── .github/
+│   └── workflows/
+│       └── jekyll-docker.yml    # GitHub Actions CI/CD for Jekyll site
+├── ARCHITECTURE.md              # Full system architecture, agent roster, cost breakdown, security model
+├── CLAUDE.md                    # This file - AI assistant guide
+├── LICENSE                      # MIT License
+├── MILA-SEO-MASTER-PLAYBOOK.md # Comprehensive local SEO execution playbook
+├── README.md                    # Brief project description
+├── TPS-REPORTS.md               # Agent status checkpoint tracking
+├── openclaw-config.json5        # OpenClaw gateway configuration (JSON5 with comments)
+├── index.html                   # "Agent Round Table" - interactive agent status dashboard UI
+├── salesbot.html                # "The Office" - sandboxed sales bot demo (Jon Jones agent prototype)
+├── carbteststockton/            # Cloudflare Pages landing site - CARB testing in Stockton, CA
+│   ├── index.html
+│   ├── 404.html
+│   ├── _headers
+│   ├── _redirects
+│   ├── robots.txt
+│   └── sitemap.xml
+├── cleantruckcheckroseville/    # Cloudflare Pages landing site - Clean Truck Check in Roseville, CA
+│   ├── index.html
+│   ├── 404.html
+│   ├── _headers
+│   └── _redirects
+├── reports/                     # Discovery reports and TPS status reports
+│   ├── discoveries-2026-02-13.md
+│   └── tps-2026-02-13.md
+└── skills/                      # OpenClaw skill definitions (agent prompts and knowledge bases)
     ├── belichick-strategy/
-    │   └── SKILL.md         # Strategy & orchestration agent
-    ├── closer-sales/
-    │   └── SKILL.md         # Sales agent with A.C.E.S. framework
+    │   └── SKILL.md             # Strategy & orchestration agent
     ├── gemini-lead-scraper/
-    │   └── SKILL.md         # Google Maps/Places API lead scraper
+    │   └── SKILL.md             # Google Maps/Places API lead scraper
+    ├── jonjones-sales/
+    │   └── SKILL.md             # Sales agent with A.C.E.S. framework
     ├── mila-carb-cs/
-    │   ├── SKILL.md         # CARB Clean Truck Check customer service agent
+    │   ├── SKILL.md             # CARB Clean Truck Check customer service agent
     │   └── references/
     │       ├── carb-resources-opportunities.md   # CARB programs and 10 business opportunities
     │       └── clean-truck-check-complete.md     # Full HD I/M regulation knowledge base
     ├── mila-legal/
-    │   ├── SKILL.md         # Legal/regulatory research agent
+    │   ├── SKILL.md             # Legal/regulatory research agent
     │   └── references/
     │       └── research-sources.md              # Federal, IL, Chicago legal databases
-    └── slack-recon-agent/
-        ├── SKILL.md         # Slack RECON mission command center
-        └── references/
-            └── slack-channel-map.md             # Channel routing and notification rules
+    ├── musk-creative/
+    │   └── SKILL.md             # YouTube/creative content agent
+    ├── slack-recon-agent/
+    │   ├── SKILL.md             # Slack RECON mission command center
+    │   └── references/
+    │       └── slack-channel-map.md             # Channel routing and notification rules
+    └── tps-report/
+        └── SKILL.md             # TPS (Task Progress Status) agent status collection
 ```
 
 ## Agent Roster
@@ -48,13 +70,14 @@ belichick-margo-jesus/
 | **Belichick** | Strategy & orchestration | Claude Opus (complex) / Gemini (daily) | `skills/belichick-strategy/` |
 | **Mila (CARB CS)** | Customer service for CARB compliance | Gemini / Haiku | `skills/mila-carb-cs/` |
 | **Mila (Legal)** | Regulatory research & business opportunity hunting | Gemini / Claude Opus | `skills/mila-legal/` |
-| **Atlas** | YouTube content, creative, SEO | Gemini / Claude Sonnet | `skills/atlas-creative/` |
-| **Closer** | Sales conversations, lead qualification | Gemini / Claude Sonnet | `skills/closer-sales/` |
+| **Musk** | YouTube content, creative, SEO | Gemini / Claude Sonnet | `skills/musk-creative/` |
+| **Jon Jones** | Sales conversations, lead qualification | Gemini / Claude Sonnet | `skills/jonjones-sales/` |
 | **Cipher** | Finance, bookkeeping, tax prep | Gemini / Claude Sonnet | Not yet implemented |
-| **Nova** | Marketing, animation, social media | Gemini / Claude Sonnet | Not yet implemented |
+| **Kesha** | Marketing, animation, social media | Gemini / Claude Sonnet | Not yet implemented |
 | **Sentinel** | Legal/regulatory deep analysis | Gemini / Claude Opus | Uses `mila-legal` skill |
 | **Lead Scraper** | Google Maps business lead generation | Gemini (free) | `skills/gemini-lead-scraper/` |
 | **Slack RECON** | Mission dispatch & coordination via Slack | All agents | `skills/slack-recon-agent/` |
+| **TPS Report** | Agent status collection & tracking | All agents | `skills/tps-report/` |
 
 ## Key Configuration
 
@@ -119,15 +142,41 @@ Interactive status dashboard showing all agents arranged in a circle. Each agent
 
 Click an agent or use the bottom buttons to cycle status. Pure client-side HTML/CSS/JS with no dependencies.
 
-### `salesbot.html` - The Office (Closer Demo)
+### `salesbot.html` - The Office (Jon Jones Demo)
 
-Sandboxed sales bot demo for the Closer agent. Features:
+Sandboxed sales bot demo for the Jon Jones agent. Features:
 - Configurable sidebar: bot persona, products, sales rules, objection playbook
 - Pattern-matching response engine (no API calls, no network)
 - Strict Content Security Policy (`connect-src 'none'`)
 - JavaScript sandbox: blocks `eval()`, `fetch()`, `XMLHttpRequest`, `WebSocket`, dynamic script injection
 - Security wall overlay on sandbox violation attempts
 - Prompt injection detection and deflection
+
+## Landing Pages (Cloudflare Pages)
+
+Two static landing sites deployed via Cloudflare Pages for local SEO lead generation:
+
+### `carbteststockton/` - CARB Test Stockton
+
+Landing page for CARB testing services in Stockton, CA. Includes SEO assets (`robots.txt`, `sitemap.xml`), custom headers, and redirects.
+
+### `cleantruckcheckroseville/` - Clean Truck Check Roseville
+
+Landing page for Clean Truck Check services in Roseville, CA. Includes custom headers and redirects.
+
+Both sites are static HTML with no build system. Cloudflare-specific files (`_headers`, `_redirects`) configure edge behavior.
+
+## Reports
+
+The `reports/` directory stores agent-generated discovery reports and TPS (Task Progress Status) reports. Files follow the naming convention `<type>-<date>.md`. The root-level `TPS-REPORTS.md` serves as the agent status checkpoint tracking file.
+
+## SEO Playbook
+
+`MILA-SEO-MASTER-PLAYBOOK.md` is a comprehensive local SEO execution playbook covering keyword strategy, landing page optimization, Google Business Profile management, and content calendars for the CARB compliance business.
+
+## CI/CD
+
+`.github/workflows/jekyll-docker.yml` provides a GitHub Actions workflow for Jekyll site CI.
 
 ## Development Conventions
 
