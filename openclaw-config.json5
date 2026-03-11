@@ -115,7 +115,28 @@
       "enabled": false
     },
     "telegram": {
-      "enabled": false
+      "enabled": true,
+      "botName": "BelichickGillisMusk-Bot",
+      "auth": {
+        "tokenEnv": "TELEGRAM_BOT_TOKEN"       // Get from @BotFather on Telegram
+      },
+      "allowedChatIds": [],                     // Empty = allow all. Add chat IDs to restrict.
+      "routeToAgent": "mila-carb",              // Default agent for incoming messages
+      "cloudRunBridge": {
+        "enabled": true,
+        "projectId": "mila-claude-2426-487008",
+        "serviceUrl": "PASTE-YOUR-CLOUD-RUN-URL-HERE",  // e.g. https://mila-cloudrun-xxxxx-uc.a.run.app
+        "endpoints": {
+          "chat": "/chat",
+          "lead": "/lead",
+          "health": "/health",
+          "tps": "/tps"
+        }
+      },
+      "rateLimits": {
+        "maxMessagesPerMinute": 10,
+        "maxMessagesPerHour": 100
+      }
     },
     "slack": {
       "enabled": true,

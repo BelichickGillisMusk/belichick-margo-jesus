@@ -17,6 +17,7 @@ belichick-margo-jesus/
 ├── openclaw-config.json5    # OpenClaw gateway configuration (JSON5 with comments)
 ├── index.html               # "Agent Round Table" - interactive agent status dashboard UI
 ├── salesbot.html            # "The Office" - sandboxed sales bot demo (Closer agent prototype)
+├── TELEGRAM-SETUP.md        # Step-by-step Telegram bot setup guide
 └── skills/                  # OpenClaw skill definitions (agent prompts and knowledge bases)
     ├── atlas-creative/
     │   └── SKILL.md         # YouTube/creative content agent
@@ -35,10 +36,12 @@ belichick-margo-jesus/
     │   ├── SKILL.md         # Legal/regulatory research agent
     │   └── references/
     │       └── research-sources.md              # Federal, IL, Chicago legal databases
-    └── slack-recon-agent/
-        ├── SKILL.md         # Slack RECON mission command center
-        └── references/
-            └── slack-channel-map.md             # Channel routing and notification rules
+    ├── slack-recon-agent/
+    │   ├── SKILL.md         # Slack RECON mission command center
+    │   └── references/
+    │       └── slack-channel-map.md             # Channel routing and notification rules
+    └── telegram-bot/
+        └── SKILL.md         # Telegram messaging gateway (routes to Mila Cloud Run + agents)
 ```
 
 ## Agent Roster
@@ -55,6 +58,7 @@ belichick-margo-jesus/
 | **Sentinel** | Legal/regulatory deep analysis | Gemini / Claude Opus | Uses `mila-legal` skill |
 | **Lead Scraper** | Google Maps business lead generation | Gemini (free) | `skills/gemini-lead-scraper/` |
 | **Slack RECON** | Mission dispatch & coordination via Slack | All agents | `skills/slack-recon-agent/` |
+| **Telegram Bot** | Messaging gateway - routes to Mila Cloud Run + agents | Gemini / Haiku | `skills/telegram-bot/` |
 
 ## Key Configuration
 
@@ -82,6 +86,14 @@ All RECON channels use the `#recon-` prefix. Key channels:
 - `#agent-status` - Agent status dashboard
 - `#alerts` - Budget warnings, kill switches, failures
 
+### Telegram Integration
+
+- **Enabled:** Yes (via OpenClaw channel)
+- **Bot:** Created via @BotFather on Telegram
+- **Routes to:** Mila on Cloud Run (`mila-claude-2426-487008`) for CARB questions, other agents via OpenClaw
+- **Setup guide:** See `TELEGRAM-SETUP.md`
+- **Rate limits:** 10 msg/min, 100 msg/hour per user
+
 ### Environment Variables Required
 
 ```
@@ -89,6 +101,7 @@ SLACK_BOT_TOKEN
 SLACK_APP_TOKEN
 SLACK_SIGNING_SECRET
 GOOGLE_PLACES_API_KEY
+TELEGRAM_BOT_TOKEN
 ```
 
 ## Skill File Format
