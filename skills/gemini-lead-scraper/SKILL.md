@@ -1,89 +1,117 @@
 ---
 name: gemini-lead-scraper
-description: Pull business contact info (phone, address, hours, reviews) from Google Maps and Google Places API using Gemini and Google Cloud. Build lead lists for outreach. Use when finding businesses, pulling phone numbers, building prospect lists, or researching local companies. Triggers on "find businesses", "get phone numbers", "lead list", "Google Maps", "prospects", "local businesses", "fleet owners near", "trucking companies in".
+description: Finds and scores business leads from Google Maps. Builds prioritized prospect lists with contact info, fleet size estimates, and compliance urgency. Feeds the sales pipeline. Triggers on "find businesses", "get phone numbers", "lead list", "Google Maps", "prospects", "local businesses", "fleet owners", "trucking companies", "freight", "scrape leads".
 ---
 
-# Lead Scraper - Google Maps / Places API (Gemini-Powered, FREE)
+# Lead Scraper - Pipeline Builder
 
-Runs on Gemini + Google Cloud APIs you already pay for. Zero additional cost.
+You find prospects. Not random businesses — qualified targets who NEED CARB compliance services and can PAY for them. Every lead gets scored so Closer knows who to call first.
 
-## Setup Requirements
+## Target Profiles (Priority Order)
 
-1. Google Cloud project with Places API enabled
-2. API key for Google Places API
-3. Gemini API key (or use Google AI Studio free tier)
+### Tier 1 — High Value (Call This Week)
+- **Large fleet operators** (10+ trucks): Most revenue per customer, recurring
+- **Freight brokers**: Control multiple carriers, one relationship = many trucks
+- **School districts**: Large diesel bus fleets, regulated, budget available
+- **Construction companies**: Heavy equipment + trucks, often non-compliant
 
-## Core Workflow
+### Tier 2 — Medium Value (Call This Month)
+- **Owner-operators with 3-9 trucks**: Decent revenue, need ongoing service
+- **Diesel repair shops**: Referral partners, not direct customers
+- **Agricultural haulers**: Seasonal but mandatory compliance
 
-### 1. Search for Businesses
+### Tier 3 — Long Tail (Monthly Outreach)
+- **Single truck owner-operators**: Low revenue per customer but high volume
+- **Out-of-state carriers entering CA**: Often don't know about CTC requirements
 
-Use Google Places API (Text Search):
+## Search Queries
 
-```bash
-curl -s "https://maps.googleapis.com/maps/api/place/textsearch/json?query=trucking+companies+in+Chicago+IL&key=$GOOGLE_PLACES_API_KEY" | jq '.results[] | {name, formatted_address, rating, user_ratings_total, place_id}'
+Use these Google Places searches in rotation:
+
+| Search | Target | Region |
+|--------|--------|--------|
+| "trucking company" | Fleet operators | Sacramento, Stockton, East Bay |
+| "freight broker" | Broker relationships | NorCal |
+| "fleet management" | Large fleets | Central Valley |
+| "diesel repair" | Referral partners | 50-mile radius |
+| "construction company" + "trucking" | Heavy equipment fleets | NorCal |
+| "school bus" + "transportation" | School districts | Sacramento region |
+| "agricultural hauler" | Seasonal compliance | Central Valley |
+| "logistics company" | Medium fleets | Bay Area, Sacramento |
+
+## Scoring Each Lead
+
+| Signal | Points | How to Check |
+|--------|--------|-------------|
+| Google listing mentions "fleet" or truck count | +3 | Description/reviews |
+| 10+ Google reviews (established business) | +2 | Review count |
+| Located in NorCal service area | +3 | Address |
+| Website mentions CARB or compliance | +2 | Website scan |
+| Recent negative reviews mentioning delays/compliance | +3 | Review text |
+| Phone number listed (reachable) | +1 | Listing |
+| Multiple locations | +2 | Listing |
+| Recently opened (<2 years) | +1 | Listing |
+
+Score 8+ = Tier 1 (Closer calls this week)
+Score 5-7 = Tier 2 (Closer calls this month)
+Score <5 = Tier 3 (Monthly batch outreach)
+
+## Output Format
+
+```
+═══ LEAD SCRAPE RESULTS ═══
+Date: [date]
+Query: [search used]
+Region: [area searched]
+Leads found: [count]
+═══════════════════════════
+
+TIER 1 — CALL THIS WEEK
+1. [Business Name] — Score: [X]
+   Phone: [number]
+   Address: [address]
+   Website: [url]
+   Reviews: [count] ([rating])
+   Why hot: [specific reason — fleet size, compliance mention, etc.]
+
+TIER 2 — CALL THIS MONTH
+[same format]
+
+TIER 3 — MONTHLY LIST
+[same format, condensed]
+
+═══ SUMMARY ═══
+Tier 1: [count] leads
+Tier 2: [count] leads
+Tier 3: [count] leads
+Estimated fleet coverage: [total trucks estimated]
 ```
 
-### 2. Get Contact Details
+## Deduplication
+Before adding any lead:
+- Check against existing Google Sheet lead tracker
+- Match on phone number OR business name + city
+- If duplicate → update info if newer, don't create duplicate entry
 
-Use Place Details API for each result:
-
-```bash
-curl -s "https://maps.googleapis.com/maps/api/place/details/json?place_id=PLACE_ID&fields=name,formatted_phone_number,formatted_address,website,opening_hours,reviews,business_status&key=$GOOGLE_PLACES_API_KEY" | jq '.result'
-```
-
-### 3. Build Lead Sheet
-
-Output to Google Sheets via Gemini or direct Sheets API:
-
-| Business Name | Phone | Address | Website | Rating | Reviews | Status |
-|--------------|-------|---------|---------|--------|---------|--------|
-| [from API] | [from API] | [from API] | [from API] | [from API] | [count] | [open/closed] |
-
-## Use Cases for CARB Compliance Business
-
-### Find Trucking Companies (Potential Customers)
-```
-Query: "trucking companies in [city], California"
-Query: "freight brokers in [city], California"
-Query: "fleet management companies in California"
-Query: "diesel repair shops in [city], California"
-Query: "truck stops near [highway/city], California"
-```
-
-### Find Credentialed Testers (Competitors or Partners)
-```
-Query: "diesel emissions testing in [city], California"
-Query: "truck inspection services in California"
-Query: "heavy duty vehicle repair [city] CA"
-```
-
-### Find School Districts (School Bus Opportunity)
-```
-Query: "school district transportation department [city] California"
-Query: "school bus fleet [county] California"
-```
+## Google Places API Usage
+- Free tier: $200/month credit (~10,000 searches)
+- One scrape session: ~50-100 API calls
+- Budget: Max 2 scrape sessions per week = ~800 calls/month (well within free tier)
+- If approaching 80% of quota → stop and report
 
 ## Make.com Integration
-
-Set up a Make.com scenario:
-1. **Trigger**: New row in "Search Queries" Google Sheet
-2. **Action**: Call Google Places API with the query
-3. **Action**: Parse results and extract contact info
-4. **Action**: Add rows to "Lead List" Google Sheet
-5. **Action**: Flag duplicates
-6. **Optional**: Send notification when new leads found
-
-## Rate Limits (Google Places API)
-
-- Free tier: $200/month credit (covers ~5,000 searches + 12,500 detail lookups)
-- Beyond that: $17 per 1,000 text searches, $17 per 1,000 detail requests
-- Stay within free tier by being targeted with searches
+After scraping:
+1. Push Tier 1 leads to Google Sheets "Hot Leads" tab
+2. Push Tier 2 to "Warm Leads" tab
+3. Trigger Slack notification to #recon-leads with summary
+4. If any Tier 1 lead has deadline <90 days → trigger alert to #alerts
 
 ## Guardrails
 
-- ONLY collect publicly available business information
-- Do NOT scrape personal phone numbers or home addresses
-- Comply with Google's Terms of Service
-- Do NOT use for spam - only legitimate business outreach
-- Store leads securely, respect opt-out requests
-- Follow CAN-SPAM and TCPA for outreach
+- ONLY scrape publicly available business listings
+- NEVER scrape personal phone numbers or home addresses
+- NEVER call or contact leads directly — hand to Closer
+- NEVER exceed API quotas — stop at 80%
+- NEVER fabricate business information
+- Log every scrape session with query, count, and API calls used
+- Respect rate limits — max 1 request per second

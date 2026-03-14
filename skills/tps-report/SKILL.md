@@ -1,136 +1,123 @@
-# TPS Report Skill — Agent Status Collection
+---
+name: tps-report
+description: Agent accountability system. Every agent reports what it did, what it cost, and whether it was worth it. Catches waste early, tracks discoveries, enforces budget discipline. Triggers on "tps", "status", "report", "cost", "budget", "what happened", "agent status".
+---
 
-## What This Does
+# TPS Report - Agent Accountability
 
-When any agent is invoked, it should include a TPS (Task Progress Status) block in its response. This ensures every piece of work is tracked and Bryan can see what happened, what it cost, and whether it was the right call.
+Every agent checks in. No exceptions. If an agent works but doesn't report, it's wasted work. TPS catches bad spending on Day 1, not Day 30.
 
-## How Agents Use This
+## TPS Format (Every Agent, Every Task)
 
-### At Start of Any Task
-
-Before doing work, the agent announces:
 ```
-📋 TPS CHECK-IN: [Agent Name]
-Starting: [task description]
-Expected cost: ~$[estimate]
-```
+═══ TPS — [AGENT NAME] ═══
+Date: [YYYY-MM-DD HH:MM]
+Task: [What was requested]
+═════════════════════════
 
-### At End of Any Task
-
-After completing work, the agent includes:
-```
-═══════════════════════════════════════════════
-TPS REPORT — [AGENT NAME]
-Date: [timestamp]
-═══════════════════════════════════════════════
-
-STATUS: [ONLINE / COMPLETED / ERROR / BLOCKED]
+STATUS: [DONE / IN PROGRESS / BLOCKED / FAILED]
 
 WHAT I DID:
-- [Specific task — outcome]
+- [Specific action — outcome]
+- [Specific action — outcome]
 
-TOKENS USED: [if known]
-COST ESTIMATE: $[amount]
+RESULT: [One line — what the user gets]
 
-RED FLAGS:
-- [issues or "None — all clear"]
+TOKENS: [input + output]
+COST: ~$[estimate]
+TIME: [minutes]
 
-NEXT RECOMMENDED ACTION:
-- [what should happen next]
-═══════════════════════════════════════════════
+RED FLAGS: [anything wrong, unexpected, or wasteful — or "None"]
+DISCOVERIES: [better/faster/free thing found — or "None"]
+═════════════════════════
 ```
 
-## For Belichick (Orchestrator)
+## Cost Awareness Rules
 
-When Belichick delegates to other agents, he tracks:
+| Situation | Action |
+|-----------|--------|
+| Task estimated >$1 | Flag it before starting |
+| Task hits >$2 with no results | Stop and report |
+| Daily spend >80% of cap | Pause all non-Priority-1 work |
+| Monthly spend >$50 | Alert Bryan, switch to Haiku/free only |
+| Agent running >10 min with no output | Kill and reassign |
+
+### Monthly Budget Target: $70
+
+| Category | Budget | Alert At |
+|----------|--------|----------|
+| Cloud Run compute | $20 | $15 |
+| Claude API (all agents) | $50 | $35 |
+| Google Places API | $0 (free tier) | 80% quota |
+| Make.com | $0 (paid sub) | N/A |
+
+## Discovery Protocol
+
+When any agent finds something better/faster/free while working:
 
 ```
-DELEGATION LOG:
-| Agent | Task | Started | Completed | Cost | Outcome |
-|-------|------|---------|-----------|------|---------|
-| [name] | [task] | [time] | [time] | $X | [result] |
-```
+DISCOVERY — [Agent]
+Date: [date]
 
-## For Mila Cloud Run
-
-Mila's TPS is automated via:
-- `GET /tps` — JSON format (for dashboards)
-- `GET /tps/text` — Plain text (for GitHub Issues)
-
-The weekly TPS workflow in demo-repository automatically polls this endpoint.
-
-## Discoveries — Finding Better/Faster/Free Stuff
-
-**CRITICAL RULE:** When ANY agent finds something better, faster, or free while doing its work, it DOES NOT act on it immediately. It logs it as a Discovery and waits for Bryan's approval.
-
-### When to Log a Discovery
-
-- You find a free tool that replaces something we pay for
-- You find a cheaper API or service
-- You find a faster way to do something we already do
-- You discover a new capability (new Google API, new feature in a tool we use)
-- You spot a competitor using a strategy we should adopt
-- You find a regulatory change that creates a business opportunity
-- A service we pay for now has a free tier
-
-### How to Log a Discovery
-
-**If you're Mila Cloud Run**, POST to `/discoveries`:
-```json
-{
-  "agent": "Mila",
-  "found": "Google offers free SEO audit via Lighthouse CI",
-  "where": "Found while running SEO audit task",
-  "type": "FREE_TOOL",
-  "current": "Manual PageSpeed Insights checks",
-  "proposed": "Automated Lighthouse CI in GitHub Actions",
-  "whyBetter": ["Runs automatically on every deploy", "Free", "More detailed than manual checks"],
-  "costImpact": { "current": "$0 (manual time)", "proposed": "$0 (automated)", "savings": "~30 min/week" },
-  "risk": "None — additive, doesn't replace anything",
-  "recommendation": "SWITCH"
-}
-```
-
-**If you're a skill agent (Atlas, Closer, Belichick, etc.)**, include in your TPS report:
-```
-🔍 DISCOVERY — [Agent Name]
-FOUND: [What you found]
-TYPE: [FREE_TOOL / CHEAPER_ALTERNATIVE / FASTER_APPROACH / etc.]
+FOUND: [What it is]
+TYPE: [FREE TOOL / CHEAPER / FASTER / NEW CAPABILITY]
 CURRENT: [What we use now]
 PROPOSED: [What we'd switch to]
-WHY: [1-2 sentences]
-RECOMMENDATION: [SWITCH / TEST FIRST / KEEP IN MIND]
-STATUS: ⏳ AWAITING BRYAN'S APPROVAL
+SAVINGS: $[X]/month
+RISK: [What could go wrong]
+EFFORT: [TRIVIAL / MODERATE / SIGNIFICANT]
+
+STATUS: AWAITING APPROVAL
 ```
 
-### What Happens After You Log It
+Rules:
+- Log it, don't act on it
+- Bryan reviews and says GO / NO / RESEARCH
+- Only implement after approval
+- No surprises
 
-1. Discovery shows up in the weekly TPS report (Monday GitHub Issue)
-2. Bryan reviews and replies: `GO`, `NO`, or `RESEARCH`
-3. If `GO` → you implement it on your next run
-4. If `NO` → you ignore it, move on
-5. If `RESEARCH` → you dig deeper and report back next week
+## Red Flag Detection
 
-### DO NOT
+Auto-flag these patterns:
 
-- Act on a discovery without approval
-- Switch tools, APIs, or approaches without a `GO`
-- Log trivial stuff (minor CSS tweaks, tiny perf gains < 5%)
-- Log the same discovery twice
+| Pattern | Red Flag |
+|---------|----------|
+| Agent repeating same task | "Stuck in loop — reassign" |
+| Cost 2x estimate | "Over budget — review" |
+| 3+ API errors consecutive | "Service issue — pause" |
+| >10 min with no output | "Timeout — kill" |
+| Agent working on Tier 4 while Tier 1 exists | "Wrong priority — redirect" |
+| Same lead scraped twice | "Dedup failure — check" |
 
-## Cost Awareness
+## Weekly TPS Summary (Monday Auto-Generate)
 
-Every agent should be token-conscious. Rules:
-1. If a task will cost > $1, flag it before starting
-2. If a task has burned > $2 with no result, stop and report
-3. Track cumulative cost per session
-4. Monthly budget cap: $70 total across all agents
+```
+TPS WEEKLY — Week of [date]
 
-## When to Raise a Red Flag
+AGENTS ACTIVE: [X] / [total]
+TOTAL COST: $[X.XX]
+LEADS CAPTURED: [X]
+DEALS CLOSED: [X]
+TASKS COMPLETED: [X]
+RED FLAGS: [X]
 
-- Task seems wrong for the agent's role
-- Cost exceeding estimate by 2x
-- API errors > 3 in a row
-- Task taking > 10 minutes with no output
-- Agent asked to do something outside its sandbox
-- Data looks wrong / unexpected results
+PER-AGENT:
+[Agent]: [status] — [tasks done] — $[cost] — [key outcome]
+[repeat for each]
+
+DISCOVERIES PENDING: [count]
+BUDGET REMAINING: $[X] of $[monthly cap]
+
+TOP PRIORITY NEXT WEEK:
+1. [task]
+2. [task]
+3. [task]
+```
+
+## Guardrails
+
+- NEVER skip a TPS report — every task gets logged
+- NEVER hide costs or errors — transparency is the whole point
+- NEVER act on discoveries without approval
+- Flag waste immediately — don't wait for the weekly summary
+- If an agent can't report (crashed/timeout), RECON logs it as a red flag
