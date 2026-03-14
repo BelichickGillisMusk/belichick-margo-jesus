@@ -116,21 +116,23 @@
     },
     "telegram": {
       "enabled": true,
-      "botName": "BelichickGillisMusk-Bot",
+      "botName": "Raven",
       "auth": {
-        "tokenEnv": "TELEGRAM_BOT_TOKEN"       // Get from @BotFather on Telegram
+        "tokenEnv": "TELEGRAM_BOT_TOKEN"       // @norcalro_bot — get from @BotFather
       },
       "allowedChatIds": [],                     // Empty = allow all. Add chat IDs to restrict.
-      "routeToAgent": "mila-carb",              // Default agent for incoming messages
+      "routeToAgent": "raven-taskbot",          // Default agent for incoming messages
       "cloudRunBridge": {
         "enabled": true,
         "projectId": "mila-claude-2426-487008",
-        "serviceUrl": "PASTE-YOUR-CLOUD-RUN-URL-HERE",  // e.g. https://mila-cloudrun-xxxxx-uc.a.run.app
+        "serviceName": "raven-cloudrun",
+        "serviceUrl": "PASTE-YOUR-CLOUD-RUN-URL-HERE",  // e.g. https://raven-cloudrun-xxxxx-uc.a.run.app
         "endpoints": {
           "chat": "/chat",
-          "lead": "/lead",
+          "task": "/task",
           "health": "/health",
-          "tps": "/tps"
+          "tps": "/tps",
+          "telegramWebhook": "/telegram/webhook"
         }
       },
       "rateLimits": {

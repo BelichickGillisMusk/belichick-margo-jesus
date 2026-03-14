@@ -1,127 +1,123 @@
-# Telegram Bot Setup - Step by Step
+# Raven (Telegram Bot) Setup - Step by Step
 
+**Bot:** `@norcalro_bot`
+**Agent:** Raven
 **Time needed:** ~10 minutes
-**Cost:** $0 (Telegram bots are free)
+**Cost:** $0 (Telegram bots are free, Cloud Run free tier)
 
 ---
 
-## Step 1: Create Your Bot on Telegram (2 minutes)
-
-1. Open Telegram on your phone
-2. Search for **@BotFather** (the official Telegram bot maker)
-3. Tap **Start**
-4. Send: `/newbot`
-5. BotFather asks: "What name for your bot?" → Type: `NorCal CARB Mobile`
-6. BotFather asks: "Choose a username" → Type something like: `norcalcarb_bot` (must end in `bot`)
-7. BotFather gives you a **token** that looks like: `7123456789:AAH1234567890abcdefghijklmnop`
-8. **COPY THAT TOKEN** — you need it in Step 2
-
-### Optional: Make the bot look nice
-While still talking to @BotFather:
-- Send `/setdescription` → Pick your bot → Type: `CARB Clean Truck Check compliance help. Ask me anything about emissions testing, deadlines, and fleet compliance.`
-- Send `/setabouttext` → Pick your bot → Type: `NorCal CARB Mobile - Compliance made easy`
-- Send `/setuserpic` → Pick your bot → Send your logo
-
----
-
-## Step 2: Save the Token on Your Mac (1 minute)
-
-Open Terminal on your Mac and run:
+## Step 1: Create Artifact Registry Repo (one-time)
 
 ```bash
-# Replace the token below with YOUR token from BotFather
-export TELEGRAM_BOT_TOKEN="7123456789:AAH1234567890abcdefghijklmnop"
-
-# Make it permanent (so it survives restarts)
-echo 'export TELEGRAM_BOT_TOKEN="7123456789:AAH1234567890abcdefghijklmnop"' >> ~/.zshrc
+gcloud artifacts repositories create raven-repo \
+  --repository-format=docker \
+  --location=us-central1 \
+  --project=mila-claude-2426-487008
 ```
 
 ---
 
-## Step 3: Get Your Mila Cloud Run URL (2 minutes)
+## Step 2: Deploy Raven to Cloud Run
 
-You need the URL where Mila is running on Google Cloud. Run this in Terminal:
+From the repo root:
 
 ```bash
-gcloud run services describe mila-cloudrun \
+cd belichick-margo-jesus
+
+gcloud builds submit \
+  --config=raven-cloudrun/cloudbuild.yaml \
+  --project=mila-claude-2426-487008 \
+  --substitutions=_ANTHROPIC_API_KEY="YOUR-ANTHROPIC-KEY",_TELEGRAM_BOT_TOKEN="8391551080:AAEe6MR-_y1EJkzpws8XdNLBtvCfW2Mm9Ag",_SMTP_HOST="",_SMTP_USER="",_SMTP_PASS="",_OWNER_EMAIL=""
+```
+
+Replace `YOUR-ANTHROPIC-KEY` with your actual Anthropic API key.
+
+**SMTP is optional** — leave blank for now. Emails will be queued until you configure SMTP later.
+
+---
+
+## Step 3: Get the Cloud Run URL
+
+```bash
+gcloud run services describe raven-cloudrun \
   --project=mila-claude-2426-487008 \
   --region=us-central1 \
   --format='value(status.url)'
 ```
 
-This gives you something like: `https://mila-cloudrun-abc123-uc.a.run.app`
+You'll get something like: `https://raven-cloudrun-abc123-uc.a.run.app`
 
-**If Mila isn't deployed yet**, deploy her first:
+---
+
+## Step 4: Set the Telegram Webhook
+
+Replace `<URL>` with your Cloud Run URL from Step 3:
 
 ```bash
-cd demo-repository
-gcloud builds submit --config=mila-cloudrun/cloudbuild.yaml --project=mila-claude-2426-487008
+curl "https://api.telegram.org/bot8391551080:AAEe6MR-_y1EJkzpws8XdNLBtvCfW2Mm9Ag/setWebhook?url=<URL>/telegram/webhook"
 ```
 
-Then run the describe command again to get the URL.
+Should return: `{"ok":true,"result":true,"description":"Webhook was set"}`
 
 ---
 
-## Step 4: Update the Config (1 minute)
+## Step 5: Update the Config
 
-Open `openclaw-config.json5` and find the telegram section. Replace `PASTE-YOUR-CLOUD-RUN-URL-HERE` with your actual Cloud Run URL from Step 3.
-
-Before:
-```json5
-"serviceUrl": "PASTE-YOUR-CLOUD-RUN-URL-HERE"
-```
-
-After:
-```json5
-"serviceUrl": "https://mila-cloudrun-abc123-uc.a.run.app"
-```
+Open `openclaw-config.json5` and replace `PASTE-YOUR-CLOUD-RUN-URL-HERE` with your actual URL.
 
 ---
 
-## Step 5: Restart OpenClaw (30 seconds)
-
-```bash
-# If OpenClaw is running, restart it to pick up the new config
-openclaw restart
-
-# Or if starting fresh:
-openclaw start
-```
-
----
-
-## Step 6: Test It (1 minute)
+## Step 6: Test It
 
 1. Open Telegram on your phone
-2. Search for your bot name (e.g., `@norcalcarb_bot`)
+2. Search for `@norcalro_bot`
 3. Tap **Start**
-4. Type: `Do I need to test my truck in California?`
-5. You should get a response from Mila about CARB compliance
+4. Type: `Email john@example.com about the meeting tomorrow`
+5. Raven should respond with a draft
 
 ### Test Commands:
-- `/start` — Should show welcome message
-- `/help` — Should show command list
-- `/status` — Should show agent status
-- `My truck is 2019 Freightliner, do I need OBD test?` — Should route to Mila
+- `/start` — Welcome message
+- `/help` — What Raven can do
+- `/status` — Uptime and task counts
+- `/tasks` — Pending tasks
+
+### Test the health endpoint:
+```bash
+curl https://<URL>/health
+```
 
 ---
 
-## Step 7: Lock It Down (Optional but Recommended)
+## Step 7: Lock It Down (Optional)
 
-To restrict who can use the bot, get your Telegram chat ID:
+Get your Telegram chat ID:
 
-1. Send any message to your bot
-2. In Terminal, run:
+1. Send any message to the bot
+2. Run:
 ```bash
-curl "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/getUpdates" | python3 -m json.tool
+curl "https://api.telegram.org/bot8391551080:AAEe6MR-_y1EJkzpws8XdNLBtvCfW2Mm9Ag/getUpdates" | python3 -m json.tool
 ```
-3. Find `"chat": {"id": 123456789}` — that's your chat ID
-4. Add it to `openclaw-config.json5`:
+3. Find `"chat": {"id": 123456789}`
+4. Add to `openclaw-config.json5`:
 ```json5
 "allowedChatIds": [123456789]
 ```
 
-Now only you can use the bot.
+---
+
+## Add Email Later
+
+When you want Raven to actually send emails, redeploy with SMTP:
+
+```bash
+gcloud builds submit \
+  --config=raven-cloudrun/cloudbuild.yaml \
+  --project=mila-claude-2426-487008 \
+  --substitutions=_ANTHROPIC_API_KEY="YOUR-KEY",_TELEGRAM_BOT_TOKEN="8391551080:AAEe6MR-_y1EJkzpws8XdNLBtvCfW2Mm9Ag",_SMTP_HOST="smtp.gmail.com",_SMTP_USER="you@gmail.com",_SMTP_PASS="your-app-password",_OWNER_EMAIL="you@gmail.com"
+```
+
+For Gmail, use an [App Password](https://myaccount.google.com/apppasswords) (not your regular password).
 
 ---
 
@@ -129,20 +125,19 @@ Now only you can use the bot.
 
 | Problem | Fix |
 |---------|-----|
-| Bot doesn't respond | Check `TELEGRAM_BOT_TOKEN` is set: `echo $TELEGRAM_BOT_TOKEN` |
-| Cloud Run errors | Check logs: `gcloud logging read --project=mila-claude-2426-487008 --limit=10` |
-| "Unauthorized" from Cloud Run | Make sure the Cloud Run service allows unauthenticated access, or set up IAM |
-| Bot responds but wrong answers | Check the Mila CARB CS skill in `skills/mila-carb-cs/SKILL.md` |
-| Rate limited | Wait a minute. Default is 10 messages/min |
+| Bot doesn't respond | Check webhook: `curl "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/getWebhookInfo"` |
+| Cloud Run errors | `gcloud logging read --project=mila-claude-2426-487008 --limit=10` |
+| "AI service unavailable" | Check `ANTHROPIC_API_KEY` is set correctly on Cloud Run |
+| Rate limited | Wait a minute. Default is 30 req/min |
 
 ---
 
 ## What You Get
 
-Once this is set up, you can text the bot from your phone and:
-- Ask CARB compliance questions → Mila answers instantly
-- Get fleet compliance info → No waiting for office hours
-- Capture leads → Customer info goes to your lead sheet
-- Check agent status → Quick pulse on what's running
+Text `@norcalro_bot` on Telegram and Raven will:
+- Draft and send emails for you
+- Track tasks you throw at it
+- Answer business and compliance questions
+- Give you status reports on demand
 
-The bot runs 24/7 through OpenClaw on your Mac. If your Mac sleeps, the bot sleeps too — so keep it plugged in or use a keep-alive utility.
+Runs 24/7 on Cloud Run. Scales to zero when idle (free). Wakes up in ~2 seconds when you message it.

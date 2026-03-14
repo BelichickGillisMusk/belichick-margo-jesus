@@ -18,6 +18,11 @@ belichick-margo-jesus/
 ├── index.html               # "Agent Round Table" - interactive agent status dashboard UI
 ├── salesbot.html            # "The Office" - sandboxed sales bot demo (Closer agent prototype)
 ├── TELEGRAM-SETUP.md        # Step-by-step Telegram bot setup guide
+├── raven-cloudrun/          # Raven task bot — Cloud Run service code
+│   ├── server.js            # Express server (chat, tasks, email, Telegram webhook)
+│   ├── package.json         # Dependencies
+│   ├── Dockerfile           # Container build
+│   └── cloudbuild.yaml      # Google Cloud Build deploy config
 └── skills/                  # OpenClaw skill definitions (agent prompts and knowledge bases)
     ├── atlas-creative/
     │   └── SKILL.md         # YouTube/creative content agent
@@ -40,8 +45,10 @@ belichick-margo-jesus/
     │   ├── SKILL.md         # Slack RECON mission command center
     │   └── references/
     │       └── slack-channel-map.md             # Channel routing and notification rules
+    ├── raven-taskbot/
+    │   └── SKILL.md         # Raven personal task bot (Cloud Run + Telegram @norcalro_bot)
     └── telegram-bot/
-        └── SKILL.md         # Telegram messaging gateway (routes to Mila Cloud Run + agents)
+        └── SKILL.md         # Telegram channel config (powered by Raven)
 ```
 
 ## Agent Roster
@@ -58,7 +65,7 @@ belichick-margo-jesus/
 | **Sentinel** | Legal/regulatory deep analysis | Gemini / Claude Opus | Uses `mila-legal` skill |
 | **Lead Scraper** | Google Maps business lead generation | Gemini (free) | `skills/gemini-lead-scraper/` |
 | **Slack RECON** | Mission dispatch & coordination via Slack | All agents | `skills/slack-recon-agent/` |
-| **Telegram Bot** | Messaging gateway - routes to Mila Cloud Run + agents | Gemini / Haiku | `skills/telegram-bot/` |
+| **Raven** | Personal task bot — Telegram @norcalro_bot, emails, tasks | Claude Haiku | `skills/raven-taskbot/` + `raven-cloudrun/` |
 
 ## Key Configuration
 
@@ -86,13 +93,13 @@ All RECON channels use the `#recon-` prefix. Key channels:
 - `#agent-status` - Agent status dashboard
 - `#alerts` - Budget warnings, kill switches, failures
 
-### Telegram Integration
+### Telegram / Raven
 
-- **Enabled:** Yes (via OpenClaw channel)
-- **Bot:** Created via @BotFather on Telegram
-- **Routes to:** Mila on Cloud Run (`mila-claude-2426-487008`) for CARB questions, other agents via OpenClaw
+- **Bot:** `@norcalro_bot` (Raven)
+- **Powered by:** Raven on Cloud Run (`mila-claude-2426-487008` / `raven-cloudrun`)
+- **Does:** Receives tasks via Telegram, sends emails, drafts messages, tracks tasks, answers questions
 - **Setup guide:** See `TELEGRAM-SETUP.md`
-- **Rate limits:** 10 msg/min, 100 msg/hour per user
+- **Code:** `raven-cloudrun/` directory
 
 ### Environment Variables Required
 
@@ -102,6 +109,11 @@ SLACK_APP_TOKEN
 SLACK_SIGNING_SECRET
 GOOGLE_PLACES_API_KEY
 TELEGRAM_BOT_TOKEN
+ANTHROPIC_API_KEY
+SMTP_HOST
+SMTP_USER
+SMTP_PASS
+OWNER_EMAIL
 ```
 
 ## Skill File Format
