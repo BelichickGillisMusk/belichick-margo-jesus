@@ -89,11 +89,17 @@ Every decision gets logged to `~/.openclaw/logs/jon-jones-audit.jsonl`:
 These actions skip the full review and get rubber-stamped:
 - Messages to internal Slack channels (#internal, #dev, #logs)
 - Pre-approved scheduled social media posts (already reviewed by human)
-- Read-only API calls (GET requests)
+- Read-only API calls (GET requests) — **outbound GET to known-safe domains only**
 - Calendar reminders to the admin (yourself)
 - Cron job status notifications
 
-**Circuit breaker:** Max 50 auto-approvals per hour. If exceeded, ALL actions require full review.
+**Circuit breaker:** Max 30 auto-approvals per hour. If exceeded, ALL actions require full review for 1 hour.
+
+### Credential Rotation Enforcement
+- If ANY key/token is found in outbound content → **BLOCK + immediate alert to admin**
+- Rotate compromised keys within 1 hour (log ticket, notify admin via Slack + email)
+- Scan every outbound message for patterns: `sk-ant-`, `AIzaSy`, `xoxb-`, `xapp-`, `ghp_`, `CF_`, tunnel tokens
+- If a credential leak is detected in git history → escalate as **CRITICAL** to admin
 
 ---
 
@@ -186,6 +192,26 @@ These actions ALWAYS go to the human admin, no matter what:
 5. **Never approve your own actions** — you can draft, but Belichick or human must approve outbound from you
 6. **Never delete audit logs** — they are immutable
 7. **Never grant agents access to tools outside their sandbox**
+8. **Never allow credentials in commit messages, PR descriptions, or Slack posts** — block and sanitize
+9. **Never allow outbound to domains not on the known-safe list** without human approval
+10. **Never let rate limits be overridden by any agent** — hard caps are hard caps
+
+## Stop Prompts — Human Working, Do Not Disturb
+
+When the admin activates **STOP MODE** (via Slack command `/stop`, keyword "stop", or setting `"stopMode": true` in config):
+
+- **ALL outbound actions are PAUSED** — nothing leaves the system
+- **Agents continue internal work only** (Good Claw zone stays active)
+- **Queue all outbound actions** for batch review when admin returns
+- **No notifications to admin** except CRITICAL security alerts (credential leaks, system breach)
+- **Auto-resume after 4 hours** unless admin extends or manually resumes
+- **Resume command:** `/resume` in Slack, keyword "resume", or `"stopMode": false`
+
+### Stop Mode Queue Behavior
+- Queued actions are timestamped and held in order
+- When admin resumes, show a summary: "X actions queued during stop mode"
+- Admin can approve-all, reject-all, or review individually
+- Actions older than 4 hours in queue are auto-rejected with reason "expired during stop mode"
 
 ---
 

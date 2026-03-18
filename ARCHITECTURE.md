@@ -426,7 +426,16 @@ YOUR MAC
 │   ├── Cron retention: 6 hours max
 │   ├── Email rate limit: 10/hr, 50/day
 │   ├── Slack rate limit: 20/hr
-│   └── Auto-approval circuit breaker: 50/hr
+│   ├── Auto-approval circuit breaker: 30/hr (tightened)
+│   ├── STOP MODE: /stop pauses ALL outbound, queues for batch review
+│   └── Credential scan: block sk-ant-, AIzaSy, xoxb-, xapp-, ghp_, CF_ patterns
+│
+├── Builder-Deploy Skill:
+│   ├── Platforms: Cloudflare Pages, Vercel, GitHub Pages (all free tier)
+│   ├── Every deploy gets a shareable preview link
+│   ├── Deploy cards posted to Slack #builds
+│   ├── Cost alerts at 80% of free tier limits
+│   └── NEVER auto-upgrade to paid — human approval required
 │
 └── Website Chat Widget (Mila only)
     ├── CSP: connect-src limited to YOUR domain only
