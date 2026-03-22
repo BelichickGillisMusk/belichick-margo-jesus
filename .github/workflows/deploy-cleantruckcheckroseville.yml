@@ -1,0 +1,25 @@
+name: Deploy cleantruckcheckroseville.com
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "cleantruckcheckroseville/**"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: cleantruckcheckroseville
+          directory: cleantruckcheckroseville
