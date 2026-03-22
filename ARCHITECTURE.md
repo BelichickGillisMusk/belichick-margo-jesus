@@ -52,7 +52,7 @@ SECURITY:
 **Builds and maintains the website, handles deployments, fixes bugs.**
 
 - Website development and maintenance
-- Deployment to Vercel/hosting
+- Local development and static site updates
 - Bug fixes and feature additions
 - Database management
 - API integrations
@@ -241,9 +241,8 @@ YOUR MAC
 │   ├── Billing backoff: auto-disable key on errors
 │   └── Cron retention: 6 hours max
 │
-└── Website Chat Widget (Mila only)
-    ├── CSP: connect-src limited to YOUR domain only
-    ├── Proxy: Vercel serverless function
+└── Mila Chatbot (localhost:3001)
+    ├── npm run mila — local Express server
     ├── Knowledge: ONLY CARB website content
     └── No PII collection beyond name/email
 ```
@@ -262,9 +261,9 @@ Everything runs on your Mac. Period.
 - API keys: your keychain
 
 The only thing that touches the internet:
-1. Claude API calls (when using Claude, not local models)
-2. The Mila chat widget on your website (proxied through Vercel)
-3. Slack API (RECON mission dispatch and reporting)
+1. Claude API calls (outbound only, from your Mac to api.anthropic.com)
+2. Slack API (outbound only, RECON mission dispatch and reporting)
+3. Google Places API (outbound only, manual lead scraper trigger)
 
 ---
 
