@@ -2,7 +2,7 @@
 
 ## Overview
 
-Local-first AI agent team running on OpenClaw on a Mac.
+Local-first AI agent team running on ClawdBot on a Mac.
 No Google Cloud. No surprise bills. Full control.
 
 ---
@@ -163,7 +163,7 @@ Use Make.com for everything that's a repeating pipeline:
 | Gemini Pro/Developer/Cloud | Already paying | Handles 80% of agent tasks |
 | Make.com | Already paying | Handles all automation |
 | Claude API (on-demand only) | ~$15-30/mo | ONLY for complex tasks |
-| OpenClaw (open source) | $0 | |
+| ClawdBot (local orchestration) | $0 | |
 | Ollama (backup local model) | $0 | |
 | Mac electricity | ~$5 | |
 | **TOTAL NEW COST** | **~$20-35/mo** | Down from $185/mo |
@@ -198,10 +198,10 @@ If you're on the paid Gemini tier, limits are much higher. Either way: plenty fo
 - Lowest risk (sandboxed, only knows site content)
 
 ### Steps:
-1. Install OpenClaw on Mac: `npm install -g openclaw@latest`
+1. Start ClawdBot on Mac (see clawdbot-config.json5)
 2. Install Ollama on Mac: `brew install ollama`
 3. Pull a local model: `ollama pull llama3`
-4. Configure OpenClaw with the config from this repo
+4. Configure ClawdBot with the config from this repo
 5. Scrape CARB website content into Mila's knowledge base
 6. Deploy chat widget to website
 7. Test with sample customer questions
@@ -212,7 +212,7 @@ If you're on the paid Gemini tier, limits are much higher. Either way: plenty fo
 
 ```
 YOUR MAC
-├── OpenClaw Gateway (port 18789, loopback only)
+├── ClawdBot Gateway (port 18789, loopback only)
 │   ├── Auth: Token-based (timing-safe)
 │   ├── Bind: 127.0.0.1 ONLY
 │   └── Agents:
@@ -306,7 +306,7 @@ Slack is the mission command center. Agents are dispatched via slash commands an
 ```
 Slack Slash Command
   → Make.com Webhook (bridge)
-    → OpenClaw Gateway (localhost:18789)
+    → ClawdBot Gateway (localhost:18789)
       → Belichick dispatches agent
         → Agent runs mission
           → Results → Make.com → Slack channel
