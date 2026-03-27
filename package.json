@@ -7,14 +7,23 @@
     "slack": "node src/slack-bot/index.js",
     "mila": "node src/mila-chatbot/index.js",
     "scrape": "node src/lead-scraper/index.js",
-    "start": "node src/slack-bot/index.js"
+    "start": "node src/slack-bot/index.js",
+    "audit": "node tools/audit.js",
+    "audit:verbose": "node tools/audit.js --verbose",
+    "audit:json": "node tools/audit.js --json"
   },
   "dependencies": {
-    "@slack/bolt": "^4.1.0",
     "@anthropic-ai/sdk": "^0.39.0",
-    "express": "^4.21.0",
-    "googleapis": "^144.0.0",
+    "@slack/bolt": "^4.1.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.0",
-    "cors": "^2.8.5"
+    "express": "^4.21.0",
+    "googleapis": "^144.0.0"
+  },
+  "devDependencies": {
+    "ajv": "^8.18.0",
+    "chalk": "^5.6.2",
+    "cheerio": "^1.2.0",
+    "cli-table3": "^0.6.5"
   }
 }
