@@ -7,6 +7,8 @@
     "slack": "node src/slack-bot/index.js",
     "mila": "node src/mila-chatbot/index.js",
     "scrape": "node src/lead-scraper/index.js",
+    "commotion": "node src/leads-db/server.js",
+    "commotion:seed": "node src/leads-db/seed.js",
     "start": "node src/slack-bot/index.js"
   },
   "dependencies": {
