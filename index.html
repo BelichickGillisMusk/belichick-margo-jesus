@@ -439,7 +439,6 @@
   }
 
   .feed-tag.tokens{background:rgba(88,166,255,.1);color:var(--halo)}
-  .feed-tag.cost{background:rgba(63,185,80,.1);color:var(--success)}
 
   .status-badge{
     display:inline-block;
@@ -494,6 +493,82 @@
     padding-left:4px;
   }
 
+  /* ---------- add agent ---------- */
+  .add-agent-bar{
+    display:flex;
+    gap:.5rem;
+    flex-wrap:wrap;
+    justify-content:center;
+    margin-top:1.2rem;
+    align-items:center;
+  }
+
+  .add-agent-bar input, .add-agent-bar select{
+    font-size:.72rem;
+    padding:6px 10px;
+    border:1px solid var(--table-rim);
+    border-radius:6px;
+    background:var(--panel-bg);
+    color:var(--text);
+    font-family:inherit;
+    outline:none;
+    transition:border-color .2s;
+  }
+
+  .add-agent-bar input:focus, .add-agent-bar select:focus{
+    border-color:var(--halo);
+  }
+
+  .add-agent-bar input::placeholder{color:var(--text-dim)}
+
+  .add-agent-bar select option{background:var(--panel-bg)}
+
+  .add-agent-btn{
+    font-size:.72rem;
+    padding:6px 16px;
+    border:1px solid var(--halo);
+    border-radius:6px;
+    background:rgba(88,166,255,.1);
+    color:var(--halo);
+    cursor:pointer;
+    font-family:inherit;
+    font-weight:600;
+    transition:all .2s;
+  }
+
+  .add-agent-btn:hover{
+    background:rgba(88,166,255,.2);
+    box-shadow:0 0 12px rgba(88,166,255,.2);
+  }
+
+  /* agent entrance animation */
+  @keyframes agent-enter{
+    0%{opacity:0;transform:translate(-50%,-50%) scale(0.3)}
+    60%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}
+    100%{transform:translate(-50%,-50%) scale(1)}
+  }
+
+  .agent.entering{
+    animation:agent-enter .6s ease-out forwards;
+  }
+
+  /* agent working animation (orbiting dots) */
+  .agent[data-status="active"] .agent-role.working::after{
+    content:'';
+    display:inline-block;
+    width:4px;height:4px;
+    background:var(--halo);
+    border-radius:50%;
+    margin-left:4px;
+    animation:blink-dot 1s steps(3,end) infinite;
+  }
+
+  @keyframes blink-dot{
+    0%{opacity:.2}
+    50%{opacity:1}
+    100%{opacity:.2}
+  }
+
   @media(max-width:640px){
     .mission-panel{padding:0 .5rem}
     .panel-header{flex-direction:column;align-items:flex-start}
@@ -529,6 +604,24 @@
 
 <div class="controls" id="controls"></div>
 
+<div class="add-agent-bar">
+  <input type="text" id="newAgentName" placeholder="Agent name" maxlength="16">
+  <select id="newAgentEmoji">
+    <option value="🤖">🤖 Robot</option>
+    <option value="🧠">🧠 Brain</option>
+    <option value="🦅">🦅 Eagle</option>
+    <option value="🔥">🔥 Fire</option>
+    <option value="💎">💎 Diamond</option>
+    <option value="⚡">⚡ Bolt</option>
+    <option value="🎯">🎯 Target</option>
+    <option value="🛠️">🛠️ Tools</option>
+    <option value="📊">📊 Charts</option>
+    <option value="🌐">🌐 Globe</option>
+  </select>
+  <input type="text" id="newAgentRole" placeholder="Role (e.g. Analyst)" maxlength="20">
+  <button class="add-agent-btn" onclick="addNewAgent()">+ Add Agent</button>
+</div>
+
 <section class="mission-panel" id="missionPanel">
   <div class="panel-header">
     <div class="panel-title">
@@ -546,7 +639,6 @@
     <span><span class="stat-value">11</span> agents built</span>
     <span><span class="stat-value green">2</span> running</span>
     <span><span class="stat-value yellow">6</span> discoveries pending</span>
-    <span>Cost this week: <span class="stat-value blue">~$0.50</span></span>
   </div>
   <div class="feed" id="feed"></div>
 </section>
@@ -672,6 +764,31 @@ function cycleAgent (id) {
   renderControls();
 }
 
+function addNewAgent () {
+  const nameEl = document.getElementById('newAgentName');
+  const emojiEl = document.getElementById('newAgentEmoji');
+  const roleEl = document.getElementById('newAgentRole');
+  const name = nameEl.value.trim();
+  const role = roleEl.value.trim() || 'Agent';
+  if (!name) { nameEl.focus(); return; }
+  const id = name.toLowerCase().replace(/\s+/g,'-');
+  if (agents.find(a => a.id === id)) { nameEl.value = ''; nameEl.placeholder = 'Name taken!'; return; }
+  agents.push({ id, name, emoji: emojiEl.value, role, status: 'active' });
+  nameEl.value = ''; roleEl.value = '';
+  render();
+  // animate the new agent entrance
+  const newEl = document.querySelector(`.agent[data-id="${id}"]`);
+  if (newEl) newEl.classList.add('entering');
+  // add an activity entry for the new agent
+  sampleActivity.unshift({
+    time: new Date().toISOString(),
+    agent: id, emoji: emojiEl.value,
+    task: `${name} joined the Round Table`,
+    tokens: 0, cost: 0, status: 'complete'
+  });
+  renderFeed();
+}
+
 function setAllStatus (status) {
   agents.forEach(a => a.status = status);
   document.querySelectorAll('.agent').forEach(el => el.dataset.status = status);
@@ -727,7 +844,6 @@ function renderFeed () {
         <div class="feed-body">${a.task}</div>
         <div class="feed-tags">
           <span class="feed-tag tokens">${a.tokens.toLocaleString()} tokens</span>
-          <span class="feed-tag cost">$${a.cost.toFixed(3)}</span>
         </div>
       </div>`;
     });
@@ -742,7 +858,6 @@ function renderFeed () {
         <div class="feed-row">
           <span class="feed-agent">${t.emoji} ${t.name}</span>
           <span class="status-badge ${t.status}">${t.status.replace('-',' ')}</span>
-          <span class="feed-time">${t.cost}</span>
         </div>
         <div class="feed-body">${t.summary}</div>
         ${t.blocked ? `<div class="blocked-note">Blocked: ${t.blocked}</div>` : ''}
