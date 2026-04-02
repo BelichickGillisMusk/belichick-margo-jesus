@@ -12,12 +12,31 @@ const app = new App({
   socketMode: true,
 });
 
+// ── User allowlist ────────────────────────────────────────────
+const ALLOWED_USER_IDS = (process.env.ALLOWED_USER_IDS || '')
+  .split(',')
+  .map(id => id.trim())
+  .filter(Boolean);
+
+function isAuthorized(userId) {
+  if (ALLOWED_USER_IDS.length === 0) return true; // open if not configured
+  return ALLOWED_USER_IDS.includes(userId);
+}
+
+async function guardCommand({ respond, command: cmd }, next) {
+  if (!isAuthorized(cmd.user_id)) {
+    await respond({ text: ':no_entry: Unauthorized. Contact the workspace admin to be added to the allowlist.' });
+    return;
+  }
+  await next();
+}
+
 // Track active missions for /agent-status
 const activeMissions = new Map();
 const missionLog = [];
 
 // ── /roster ──────────────────────────────────────────────────
-app.command('/roster', async ({ ack, respond }) => {
+app.command('/roster', guardCommand, async ({ ack, respond }) => {
   await ack();
   const roster = Object.entries(AGENTS)
     .map(([id, a]) => `*${a.name}* — ${a.systemPrompt.split('\n')[1]?.trim() || id}`)
@@ -30,7 +49,7 @@ app.command('/roster', async ({ ack, respond }) => {
 });
 
 // ── /agent-status ────────────────────────────────────────────
-app.command('/agent-status', async ({ ack, respond }) => {
+app.command('/agent-status', guardCommand, async ({ ack, respond }) => {
   await ack();
 
   const lines = Object.entries(AGENTS).map(([id, a]) => {
@@ -55,7 +74,7 @@ app.command('/agent-status', async ({ ack, respond }) => {
 // ── RECON Commands ───────────────────────────────────────────
 // Register a handler for each mission type
 for (const [command, mission] of Object.entries(MISSIONS)) {
-  app.command(`/${command}`, async ({ ack, respond, command: cmd, say }) => {
+  app.command(`/${command}`, guardCommand, async ({ ack, respond, command: cmd, say }) => {
     await ack();
 
     const task = cmd.text?.trim();
@@ -106,7 +125,7 @@ for (const [command, mission] of Object.entries(MISSIONS)) {
 }
 
 // ── /dispatch [agent] [task] ─────────────────────────────────
-app.command('/dispatch', async ({ ack, respond, command: cmd, say }) => {
+app.command('/dispatch', guardCommand, async ({ ack, respond, command: cmd, say }) => {
   await ack();
 
   const parts = cmd.text?.trim().split(/\s+/);
@@ -158,7 +177,7 @@ app.command('/dispatch', async ({ ack, respond, command: cmd, say }) => {
 });
 
 // ── /kill [agent] ────────────────────────────────────────────
-app.command('/kill', async ({ ack, respond, command: cmd }) => {
+app.command('/kill', guardCommand, async ({ ack, respond, command: cmd }) => {
   await ack();
   const agentId = cmd.text?.trim().toLowerCase();
 
