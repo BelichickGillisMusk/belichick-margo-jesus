@@ -144,7 +144,8 @@
         "reconSales": "#recon-sales",
         "reconCompliance": "#recon-compliance",
         "agentStatus": "#agent-status",
-        "alerts": "#alerts"
+        "alerts": "#alerts",
+        "reconCop": "#recon-cop"
       },
       "rateLimits": {
         "maxMissionsPerHour": 10,

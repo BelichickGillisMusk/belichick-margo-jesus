@@ -171,3 +171,53 @@ When an agent fails:
 - Always include the cost table in the Morning Briefing, even if all zeros
 - If total overnight spend exceeds $10, post an emergency alert to #alerts immediately
 - Keep Bryan in the loop — he's the human, he makes the decisions
+
+## Active Project: Clean Oakland Project (COP)
+
+During the COP research phase, Big Gilly adds a dedicated COP block to every nightly run.
+
+### COP Nightly Tasks (Added to Existing Phases)
+
+**Phase 1 — COP Intel:**
+```
+Sentinel     → Oakland municipal codes, BAAQMD regs, Port clean trucks program
+Mila-Legal   → Port of Oakland drayage requirements, AB 617 West Oakland plan
+Kesha        → Search trends for "CARB testing Oakland", competitor content gaps
+```
+
+**Phase 2 — COP Leads:**
+```
+Lead Scraper → Scrape "trucking company Oakland CA", "drayage Oakland port",
+               "logistics company East Bay CA", "construction company Oakland CA"
+Musk         → East Bay credentialed testers, their pricing, service gaps
+```
+
+**Phase 3 — COP Sales Prep:**
+```
+Jon Jones    → Dossiers on top drayage companies, construction fleets, school districts
+Mila-CARB    → Alameda County compliance rates, common test failures, I-880 violations
+```
+
+**Phase 4 — COP Financials:**
+```
+Cipher       → COP startup cost model, revenue projections, grant funding potential
+```
+
+### COP Morning Briefing Section
+
+Every Morning Briefing includes a COP block:
+```
+CLEAN OAKLAND PROJECT (COP) UPDATE:
+- Research Progress: [X of 8 agents reported COP findings]
+- New Intel: [Top findings from overnight COP research]
+- Leads Found: [New Oakland-area prospects]
+- Regulatory Notes: [Port/BAAQMD/AB 617 updates]
+- Financial Model: [Revenue projections, startup costs]
+- BLOCKERS: [What's missing or unclear]
+- NEXT COP PRIORITY: [What Bryan should review first]
+```
+
+### COP Research Reference
+
+Full project brief: `skills/big-gilly/references/clean-oakland-project.md`
+All COP findings are appended to that document as they come in

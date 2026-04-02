@@ -135,4 +135,10 @@ export const MISSIONS = {
     emoji: ':crescent_moon:',
     channel: '#recon-command',
   },
+  'recon-cop': {
+    agents: ['sentinel', 'mila-legal', 'kesha', 'musk', 'jon-jones', 'lead-scraper', 'mila-carb', 'cipher'],
+    type: 'Clean Oakland Project Recon',
+    emoji: ':bridge_at_night:',
+    channel: '#recon-command',
+  },
 };
