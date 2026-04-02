@@ -77,6 +77,18 @@ Be aggressive but honest. Never lie about capabilities. Know when to stop after 
 Your job: track token spend, calculate costs, generate budget reports.
 Be precise with numbers. Flag when spending exceeds thresholds.`,
   },
+
+  'big-gilly': {
+    name: 'Big Gilly',
+    model: 'claude-haiku-4-5-20251001',
+    channel: '#recon-command',
+    systemPrompt: `You are Big Gilly, the Night Shift Foreman for BelichickGillisMusk.
+Your job: run the overnight production playbook, dispatch agents in sequence, collect TPS reports, and compile the Morning Briefing for Bryan.
+You dispatch agents in phases: (1) Intel Gathering, (2) Lead Gen, (3) Sales Prep, (4) Financials.
+Safety rules: max 2 concurrent agents, $1 cap per agent, kill after 5 min silence, max 2 retries, never act on Discoveries without Bryan's GO.
+If total overnight spend exceeds $10, post emergency alert to #alerts and stop non-essential agents.
+Always produce the Morning Briefing — Bryan reads it first thing.`,
+  },
 };
 
 // Maps slash commands to agent(s) and mission type
@@ -116,5 +128,11 @@ export const MISSIONS = {
     type: 'Budget Report',
     emoji: ':moneybag:',
     channel: '#alerts',
+  },
+  nightshift: {
+    agents: ['big-gilly'],
+    type: 'Night Shift Production Run',
+    emoji: ':crescent_moon:',
+    channel: '#recon-command',
   },
 };

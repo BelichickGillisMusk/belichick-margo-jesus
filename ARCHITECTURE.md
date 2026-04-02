@@ -140,6 +140,8 @@ Fallback: Sonnet for basic searches
 | **Sentinel** (Legal) | Basic law research, summaries | **Gemini - FREE** | $0 |
 | **Sentinel** (Legal) | Deep regulatory analysis | Claude (on-demand) | $ only when needed |
 | **Lead Scraper** | Google Maps phone/address pulls | **Gemini - FREE** | $0 |
+| **Big Gilly** (Night Shift) | Overnight dispatch, TPS collection | **Gemini - FREE** | $0 |
+| **Big Gilly** (Night Shift) | Morning Briefing compilation | Claude Haiku (on-demand) | $ minimal |
 | **Data Sync** | Move data between systems | **Make.com** | $0 (already paid) |
 
 ### Make.com Automation Workflows
@@ -221,7 +223,8 @@ YOUR MAC
 │       ├── Musk ──────── Gemini FREE (simple) / Claude (complex code)
 │       ├── Cipher ────── Gemini FREE (Sheets) / Claude (tax/analysis)
 │       ├── Kesha ─────── Gemini FREE (content) / Claude (polish)
-│       └── Sentinel ──── Gemini FREE (research) / Claude (deep analysis)
+│       ├── Sentinel ──── Gemini FREE (research) / Claude (deep analysis)
+│       └── Big Gilly ─── Gemini FREE (dispatch) / Haiku (briefings)
 │
 ├── Make.com (automation layer)
 │   ├── Lead capture pipelines
@@ -299,6 +302,7 @@ Slack is the mission command center. Agents are dispatched via slash commands an
 | `/dispatch [agent] [task]` | Direct dispatch to any agent |
 | `/agent-status` | All agent statuses |
 | `/budget` | Token spend report |
+| `/nightshift` | Run Big Gilly's full overnight playbook on demand |
 | `/kill [agent]` | Emergency stop |
 
 ### Data Flow

@@ -105,6 +105,22 @@
         "agent": "cipher",
         "task": "Compile weekly token spend and cost breakdown by agent, post to Slack",
         "slackChannel": "#alerts"
+      },
+
+      // ── BIG GILLY — Night Shift Production ──
+      {
+        "name": "big-gilly-nightshift",
+        "schedule": "0 22 * * *",       // Every night at 10 PM
+        "agent": "big-gilly",
+        "task": "Run full overnight production playbook: Phase 1 (intel), Phase 2 (leads), Phase 3 (sales prep), Phase 4 (financials). Collect all TPS reports. Compile Morning Briefing. Post to #recon-command by 1:30 AM.",
+        "slackChannel": "#recon-command"
+      },
+      {
+        "name": "big-gilly-morning-briefing",
+        "schedule": "0 6 * * *",        // 6 AM — post briefing to Slack
+        "agent": "big-gilly",
+        "task": "Post the compiled Morning Briefing from last night's production run to #recon-command. Include highlights, new leads, compliance alerts, cost summary, and recommended actions for today.",
+        "slackChannel": "#recon-command"
       }
     ]
   },
