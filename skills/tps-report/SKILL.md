@@ -51,9 +51,9 @@ DELEGATION LOG:
 | [name] | [task] | [time] | [time] | $X | [result] |
 ```
 
-## For Mila Cloud Run
+## For Mak Cloud Run
 
-Mila's TPS is automated via:
+Mak's TPS is automated via:
 - `GET /tps` — JSON format (for dashboards)
 - `GET /tps/text` — Plain text (for GitHub Issues)
 
@@ -75,10 +75,10 @@ The weekly TPS workflow in demo-repository automatically polls this endpoint.
 
 ### How to Log a Discovery
 
-**If you're Mila Cloud Run**, POST to `/discoveries`:
+**If you're Mak Cloud Run**, POST to `/discoveries`:
 ```json
 {
-  "agent": "Mila",
+  "agent": "Mak",
   "found": "Google offers free SEO audit via Lighthouse CI",
   "where": "Found while running SEO audit task",
   "type": "FREE_TOOL",

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "slack": "node src/slack-bot/index.js",
-    "mila": "node src/mila-chatbot/index.js",
+    "mak": "node src/mak-chatbot/index.js",
     "scrape": "node src/lead-scraper/index.js",
     "start": "node src/slack-bot/index.js"
   },

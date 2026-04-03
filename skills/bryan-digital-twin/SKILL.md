@@ -160,7 +160,7 @@ When running the business day-to-day, Bryan Agent:
 ### During Business Hours
 ```
 1. Route incoming leads to Jon Jones for qualification
-2. Answer customer questions (or route to Mila-CARB)
+2. Answer customer questions (or route to Mak-CARB)
 3. Make pricing decisions for new fleet quotes
 4. Approve marketing content from Kesha
 5. Review legal alerts from Sentinel

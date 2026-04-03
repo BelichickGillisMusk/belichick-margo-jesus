@@ -9,9 +9,43 @@
 
 ## WHAT IS COP?
 
-The Clean Oakland Project is a focused expansion of NorCal Carb Mobile's CARB compliance testing business into Oakland and the greater East Bay. Oakland is ground zero for heavy-duty truck pollution in Northern California — the Port of Oakland is the 8th busiest container port in North America, and West Oakland neighborhoods sit directly in the diesel exhaust corridor.
+The Clean Oakland Project is a two-pronged community initiative:
 
-COP isn't just a business expansion — it's a community-focused clean air initiative that combines mobile CARB testing with grant assistance, fleet compliance management, and environmental justice advocacy.
+1. **Clean up Oakland** — Organize and execute cleanup of homeless encampment messes, illegal dumping, and neighborhood blight. Make Oakland look and feel better. Show up and do the work.
+
+2. **Clean the trucks** — Bring affordable CARB compliance testing to Oakland's trucking community, especially underserved owner-operators who can't afford $85-200 tests and are running non-compliant because they don't know where to go or can't afford it.
+
+COP is not just a business play — it's a community-first initiative. We clean the streets AND clean the air. The business comes from being the people who show up.
+
+### The $20 Sunday OBD Event
+
+**This is the signature move.** Every Sunday, we set up in a rural or underserved area and offer $20 OBD compliance tests. That's it. Twenty bucks.
+
+Why $20 Sundays work:
+- Most diesel owner-operators in rural areas are NOT compliant
+- They can't afford $85+ and don't know where to go
+- Sunday is their day off — only time they can come
+- $20 removes every excuse. It's less than a tank of diesel
+- We build trust, get them compliant, and they become long-term customers
+- Word of mouth in tight-knit rural trucking communities is EVERYTHING
+- When the 2027 quarterly mandate hits, they'll already know us
+
+**Event format:**
+```
+WHAT: $20 OBD Compliance Test Day
+WHEN: Every Sunday, rotating locations
+WHERE: Rural areas — think Lodi, Galt, Dixon, Winters, Woodland, Ione, Angels Camp
+WHO: Any diesel/alt-fuel vehicle over 14,000 lbs GVWR
+WHAT THEY GET: OBD test, compliance status, plain-English explanation of what they need
+WHAT WE GET: Customer relationships, fleet leads, community reputation, volume
+```
+
+**Upsell path (natural, not pushy):**
+- $20 OBD test on Sunday → they learn they need more
+- Full smoke opacity test at regular price ($200) booked for next week
+- Fleet owners bring their whole fleet for fleet pricing
+- Tell their trucker friends → word of mouth pipeline
+- When quarterly mandate hits (Oct 2027) → they call us first
 
 ---
 
@@ -61,28 +95,47 @@ Oakland truckers face MULTIPLE overlapping compliance requirements:
 
 ## COP SERVICE OFFERINGS
 
-### Tier 1: Mobile CARB Testing (Core Revenue)
+### Tier 0: Community Cleanup (Reputation + Goodwill)
+- Organize Oakland neighborhood cleanups (homeless messes, illegal dumping, blight)
+- Partner with local community groups, churches, neighborhood associations
+- Show up with trash bags, gloves, and a crew
+- Document and share on social media — this IS the marketing
+- Apply for city/county cleanup contracts and community grants
+- **Pricing:** Free / volunteer-based (sponsor-funded or grant-funded)
+- **Revenue path:** City contracts, cleanup grants, community goodwill → customers
+
+### Tier 1: $20 Sunday OBD Events (Community Entry Point)
+- Every Sunday, set up in a different rural/underserved area
+- $20 OBD compliance tests — removes every excuse for non-compliance
+- Target: rural diesel owner-operators who are NOT compliant
+- Rotating locations: Lodi, Galt, Dixon, Winters, Woodland, Ione, Angels Camp, Oakland
+- Plain-English explanation of results and what they need next
+- Build customer relationships and trust in underserved communities
+- **Pricing:** $20 flat per OBD test
+- **Revenue path:** Volume play + upsell to full testing + word of mouth
+
+### Tier 2: Mobile CARB Testing (Core Revenue)
 - On-site OBD testing for fleets at port, yards, warehouses
 - Smoke opacity testing for older diesel vehicles
 - Same-day results, certificates within 24 hours
 - Fleet discount pricing (5+ vehicles)
-- **Pricing:** $85 OBD / $200 smoke opacity (matching Stockton rates)
+- **Pricing:** $85 OBD / $200 smoke opacity (regular rates)
 
-### Tier 2: Compliance Management (Recurring Revenue)
+### Tier 3: Compliance Management (Recurring Revenue)
 - CTC-VIS account setup and management for fleets
 - Deadline tracking and automated reminders
 - TRUCRS/DOORS/PERP registration assistance
 - Affirmation of Fleetwide Compliance document preparation
 - **Pricing:** $25-50/vehicle/month managed
 
-### Tier 3: Grant Assistance (High-Margin Service)
+### Tier 4: Grant Assistance (High-Margin Service)
 - Carl Moyer Program grant applications (cleaner equipment funding)
 - School Bus Retrofit & Replacement grant writing
 - AB 617 community funding opportunities
 - Advanced Clean Fleets ZEV transition planning
 - **Pricing:** % of grant awarded or flat project fee ($500-2,000)
 
-### Tier 4: Training & Education
+### Tier 5: Training & Education
 - Fleet owner compliance workshops (English + Spanish)
 - Credentialed tester training prep courses
 - Freight broker compliance obligation seminars
@@ -107,7 +160,7 @@ RESEARCH TARGETS:
 - Alameda County health department diesel exposure reports
 ```
 
-### Mila-Legal (Regulatory Sources)
+### Mak-Legal (Regulatory Sources)
 ```
 RESEARCH TARGETS:
 - Pull actual text of Port of Oakland drayage truck requirements
@@ -166,7 +219,7 @@ SEARCH QUERIES:
 - "waste management Oakland CA"
 ```
 
-### Mila-CARB (Compliance Intel)
+### Mak-CARB (Compliance Intel)
 ```
 RESEARCH TARGETS:
 - Current compliance rates for Alameda County vehicles in CTC-VIS
@@ -193,12 +246,12 @@ RESEARCH TARGETS:
 | Organization | Why | Agent |
 |-------------|-----|-------|
 | Port of Oakland Environmental Programs | Clean trucks program, vendor requirements | Sentinel |
-| Bay Area Air Quality Management District (BAAQMD) | Permits, regulations, grant funding | Mila-Legal |
+| Bay Area Air Quality Management District (BAAQMD) | Permits, regulations, grant funding | Mak-Legal |
 | West Oakland Environmental Indicators Project (WOEIP) | Community partner, credibility | Kesha |
 | Oakland Chamber of Commerce | Business licensing, networking | Jon Jones |
 | AC Transit | Fleet compliance services opportunity | Lead Scraper |
 | Alameda County Transportation Commission | Infrastructure planning | Sentinel |
-| CARB Oakland Field Office | Local enforcement patterns | Mila-CARB |
+| CARB Oakland Field Office | Local enforcement patterns | Mak-CARB |
 
 ---
 

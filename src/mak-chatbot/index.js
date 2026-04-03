@@ -11,13 +11,13 @@ const PORT = process.env.MILA_PORT || 3001;
 
 // Load the full CARB knowledge base as context
 const knowledgeBase = readFileSync(
-  join(__dirname, '../../skills/mila-carb-cs/references/clean-truck-check-complete.md'),
+  join(__dirname, '../../skills/mak-carb-cs/references/clean-truck-check-complete.md'),
   'utf-8'
 );
 
 const anthropic = new Anthropic();
 
-const SYSTEM_PROMPT = `You are Mila, the customer service expert for Clean Truck Check compliance.
+const SYSTEM_PROMPT = `You are Makayla (Mak), the customer service expert for Clean Truck Check compliance.
 You know EVERY rule about California's Heavy-Duty Vehicle Inspection and Maintenance (HD I/M) program.
 
 KNOWLEDGE BASE (this is your source of truth — cite it):
@@ -43,7 +43,7 @@ app.use(express.json());
 
 // Health check
 app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', agent: 'Mila-CARB', sessions: sessions.size });
+  res.json({ status: 'ok', agent: 'Mak-CARB', sessions: sessions.size });
 });
 
 // Chat endpoint
@@ -85,9 +85,9 @@ app.post('/chat', async (req, res) => {
       tokens: response.usage.input_tokens + response.usage.output_tokens,
     });
   } catch (err) {
-    console.error('Mila error:', err.message);
+    console.error('Mak error:', err.message);
     res.status(500).json({
-      error: 'Mila is temporarily unavailable. Please try again or email hdim@arb.ca.gov',
+      error: 'Mak is temporarily unavailable. Please try again or email hdim@arb.ca.gov',
     });
   }
 });
@@ -104,7 +104,7 @@ app.get('/widget', (_req, res) => {
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Mila - Clean Truck Check Assistant</title>
+  <title>Mak - Clean Truck Check Assistant</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f5f5f5; height: 100vh; display: flex; flex-direction: column; }
@@ -123,11 +123,11 @@ app.get('/widget', (_req, res) => {
 </head>
 <body>
   <div class="header">
-    <h1>Mila - Compliance Assistant</h1>
+    <h1>Mak - Compliance Assistant</h1>
     <p>Clean Truck Check | CARB HD I/M Expert</p>
   </div>
   <div class="messages" id="messages">
-    <div class="msg bot">Hi! I'm Mila, your Clean Truck Check compliance assistant. I can help with testing requirements, deadlines, fees, and anything related to California's HD I/M program. What can I help you with?</div>
+    <div class="msg bot">Hi! I'm Mak, your Clean Truck Check compliance assistant. I can help with testing requirements, deadlines, fees, and anything related to California's HD I/M program. What can I help you with?</div>
   </div>
   <div class="input-row">
     <input id="input" placeholder="Ask about compliance, testing, deadlines..." autofocus>
@@ -145,7 +145,7 @@ app.get('/widget', (_req, res) => {
       if (!text) return;
       input.value = '';
       addMsg(text, 'user');
-      const typing = addMsg('Mila is checking...', 'bot typing');
+      const typing = addMsg('Mak is checking...', 'bot typing');
       try {
         const res = await fetch('/chat', {
           method: 'POST',
@@ -175,7 +175,7 @@ app.get('/widget', (_req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🤖 Mila CARB chatbot running on http://localhost:${PORT}`);
+  console.log(`🤖 Mak CARB chatbot running on http://localhost:${PORT}`);
   console.log(`💬 Chat API: POST http://localhost:${PORT}/chat`);
   console.log(`🖥️  Widget: http://localhost:${PORT}/widget`);
   console.log(`📋 Knowledge base loaded (${knowledgeBase.length} chars)`);

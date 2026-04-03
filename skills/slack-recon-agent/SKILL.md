@@ -14,10 +14,10 @@ SLACK WORKSPACE (BelichickGillisMusk HQ)
 │
 ├── #recon-command ──────── Belichick dispatches missions here
 ├── #recon-leads ────────── Lead Scraper drops prospect lists
-├── #recon-legal ────────── Sentinel/Mila report regulatory intel
+├── #recon-legal ────────── Sentinel/Mak report regulatory intel
 ├── #recon-market ───────── Kesha/Musk report market intelligence
 ├── #recon-sales ────────── Jon Jones reports on prospect engagement
-├── #recon-compliance ───── Mila-CARB posts compliance alerts
+├── #recon-compliance ───── Mak-CARB posts compliance alerts
 ├── #agent-status ───────── All agents report online/busy/done
 └── #alerts ─────────────── Kill switch triggers, budget warnings, failures
 ```
@@ -37,15 +37,15 @@ AGENT           HANDLES                         SLASH COMMAND
 Belichick       Dispatch, strategy, delegation  /dispatch, /kill, /agent-status
 Lead Scraper    Find businesses, pull contacts  /recon-leads
 Sentinel        Laws, regulations, compliance   /recon-legal
-Mila-Legal      Statute research, citations     /recon-legal (supports Sentinel)
-Mila-CARB       Clean Truck Check, VIN lookup   /recon-compliance
+Mak-Legal      Statute research, citations     /recon-legal (supports Sentinel)
+Mak-CARB       Clean Truck Check, VIN lookup   /recon-compliance
 Kesha           Trends, SEO, audience research  /recon-market
 Musk            Competitor sites, tech recon    /recon-market (supports Kesha)
 Jon Jones       Prospect dossiers, pitch craft  /recon-prospect
 Cipher          Token budget, cost tracking     /budget
 
 MULTI-AGENT MISSIONS (more than one agent deploys):
-  /recon-legal    → Sentinel (analysis) + Mila-Legal (source gathering)
+  /recon-legal    → Sentinel (analysis) + Mak-Legal (source gathering)
   /recon-market   → Kesha (trends/audience) + Musk (competitor sites)
   /recon-prospect → Lead Scraper (public info) + Jon Jones (pitch strategy)
 ```
@@ -57,9 +57,9 @@ Don't remember the command? Just remember what you want:
 | You Want To...                        | Say This                                      | Agent(s) On It              |
 |---------------------------------------|-----------------------------------------------|-----------------------------|
 | Find trucking companies in a city     | `/recon-leads trucking companies in Dallas TX` | **Lead Scraper**            |
-| Check if a new law creates a business | `/recon-legal CARB 2027 quarterly testing`     | **Sentinel** + **Mila-Legal** |
+| Check if a new law creates a business | `/recon-legal CARB 2027 quarterly testing`     | **Sentinel** + **Mak-Legal** |
 | See who's competing with you          | `/recon-market diesel emissions testing CA`    | **Kesha** + **Musk**          |
-| Check a truck's compliance status     | `/recon-compliance 1HGBH41JXMN109186`         | **Mila-CARB**               |
+| Check a truck's compliance status     | `/recon-compliance 1HGBH41JXMN109186`         | **Mak-CARB**               |
 | Build a pitch for a prospect          | `/recon-prospect Pacific Fleet LLC`            | **Jon Jones** + **Lead Scraper** |
 | See how much you're spending          | `/budget`                                      | **Cipher**                  |
 | See who's busy right now              | `/agent-status`                                | **Belichick**               |
@@ -96,9 +96,9 @@ Register these slash commands in your Slack app:
 | Command | Description | Dispatches To |
 |---------|-------------|---------------|
 | `/recon-leads [query]` | Scrape business leads | **Lead Scraper** (Gemini) |
-| `/recon-legal [topic]` | Research regulations | **Sentinel** + **Mila-Legal** |
+| `/recon-legal [topic]` | Research regulations | **Sentinel** + **Mak-Legal** |
 | `/recon-market [industry]` | Market intelligence | **Kesha** + **Musk** |
-| `/recon-compliance [vin]` | Check vehicle compliance | **Mila-CARB** |
+| `/recon-compliance [vin]` | Check vehicle compliance | **Mak-CARB** |
 | `/recon-prospect [company]` | Deep dive on a prospect | **Jon Jones** + **Lead Scraper** |
 | `/agent-status` | Get all agent statuses | **Belichick** |
 | `/roster` | Print full agent-to-task cheat sheet | **Belichick** (instant, no API cost) |
@@ -159,18 +159,18 @@ Full list: [lead-hunt-2025-01-15.csv attached]
 
 ### MISSION: Legal Recon
 **Command:** `/recon-legal new CARB regulations 2027 quarterly testing`
-**Agent:** Sentinel + Mila-Legal
+**Agent:** Sentinel + Mak-Legal
 **Channel:** #recon-legal
 
 Workflow:
 1. User fires `/recon-legal` in Slack
-2. Belichick dispatches to Sentinel (deep analysis) + Mila-Legal (source gathering)
-3. Agents run in parallel - Sentinel on legal databases, Mila on regulatory sites
+2. Belichick dispatches to Sentinel (deep analysis) + Mak-Legal (source gathering)
+3. Agents run in parallel - Sentinel on legal databases, Mak on regulatory sites
 4. Consolidated report posted to #recon-legal
 
 Output format in Slack:
 ```
-:scales: [Sentinel + Mila-Legal] LEGAL RECON COMPLETE: "CARB 2027 quarterly testing"
+:scales: [Sentinel + Mak-Legal] LEGAL RECON COMPLETE: "CARB 2027 quarterly testing"
 
 REGULATION: HD I/M Quarterly Testing Mandate
 EFFECTIVE: October 1, 2027
@@ -224,17 +224,17 @@ RECOMMENDATION: Mobile-first, bilingual, YouTube-driven brand
 
 ### MISSION: Compliance Check
 **Command:** `/recon-compliance 1HGBH41JXMN109186`
-**Agent:** Mila-CARB
+**Agent:** Mak-CARB
 **Channel:** #recon-compliance
 
 Workflow:
 1. User fires `/recon-compliance` with VIN
-2. Mila-CARB looks up vehicle details and compliance status
+2. Mak-CARB looks up vehicle details and compliance status
 3. Posts compliance summary with next deadlines and action items
 
 Output format in Slack:
 ```
-:clipboard: [Mila-CARB] COMPLIANCE CHECK: VIN ...9186
+:clipboard: [Mak-CARB] COMPLIANCE CHECK: VIN ...9186
 
 VEHICLE: 2021 Freightliner Cascadia | GVWR: 33,000 lbs
 STATUS: NON-COMPLIANT (test overdue)
@@ -323,15 +323,15 @@ Every Slack message from the system follows this format so you always know WHO i
 **Agent working** (posted to #agent-status):
 ```
 [BUSY] Lead Scraper — querying Google Places API (47 results so far)
-[BUSY] Sentinel + Mila-Legal — scanning eCFR + ILGA databases
+[BUSY] Sentinel + Mak-Legal — scanning eCFR + ILGA databases
 ```
 
 **Mission complete** (posted to target channel):
 ```
 [Lead Scraper] LEAD HUNT COMPLETE: "trucking companies in Dallas TX"
-[Sentinel + Mila-Legal] LEGAL RECON COMPLETE: "CARB 2027 quarterly testing"
+[Sentinel + Mak-Legal] LEGAL RECON COMPLETE: "CARB 2027 quarterly testing"
 [Kesha + Musk] MARKET INTEL: "diesel emissions testing California"
-[Mila-CARB] COMPLIANCE CHECK: VIN ...9186
+[Mak-CARB] COMPLIANCE CHECK: VIN ...9186
 [Jon Jones + Lead Scraper] PROSPECT DOSSIER: Pacific Fleet LLC
 ```
 
@@ -384,15 +384,15 @@ AGENT           STATUS     LAST MISSION                              AGO
 Belichick       IDLE       Dispatched Sentinel to /recon-legal       2h
 Lead Scraper    IDLE       /recon-leads "trucking cos Dallas TX"     4h
 Sentinel        BUSY       /recon-legal "CARB 2027 quarterly"        12m
-Mila-Legal      BUSY       Supporting Sentinel (source gathering)    12m
-Mila-CARB       IDLE       /recon-compliance VIN ...9186             1d
+Mak-Legal      BUSY       Supporting Sentinel (source gathering)    12m
+Mak-CARB       IDLE       /recon-compliance VIN ...9186             1d
 Kesha           IDLE       /recon-market "diesel emissions CA"       3d
 Musk            IDLE       Supporting Kesha (competitor sites)       3d
 Jon Jones       IDLE       /recon-prospect "Pacific Fleet LLC"       5d
 Cipher          IDLE       /budget (weekly report)                   2d
 
 ACTIVE MISSIONS: 1
-  Sentinel + Mila-Legal → /recon-legal "CARB 2027 quarterly" (12m, ~1,200 tokens)
+  Sentinel + Mak-Legal → /recon-legal "CARB 2027 quarterly" (12m, ~1,200 tokens)
 
 TODAY: 3 missions completed | 4,800 tokens used | $0.07 spent
 THIS WEEK: 14 missions | 32,000 tokens | $0.48 spent
@@ -419,7 +419,7 @@ Automated recon that runs on schedule - you wake up and the intel is already in 
 | New CARB regulation check | Daily 6 AM | Sentinel | #recon-legal |
 | Lead scrape: new trucking companies | Weekly Monday 7 AM | Lead Scraper | #recon-leads |
 | Competitor website changes | Weekly Wednesday 7 AM | Musk | #recon-market |
-| Fleet compliance deadline alerts | Daily 8 AM | Mila-CARB | #recon-compliance |
+| Fleet compliance deadline alerts | Daily 8 AM | Mak-CARB | #recon-compliance |
 | Token budget report | Weekly Friday 5 PM | Cipher | #alerts |
 
 **Cron config for all recurring missions:**

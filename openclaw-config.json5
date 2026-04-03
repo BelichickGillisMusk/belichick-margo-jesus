@@ -1,6 +1,6 @@
 // OpenClaw Configuration for BelichickGillisMusk
 // Drop this into ~/.openclaw/openclaw.json on your Mac
-// Agents: Mila (Research/Legal), Musk (YouTube/Creative), Jon Jones (Sales), Kesha (Marketing), Belichick (Strategy)
+// Agents: Mak (Research/Legal), Musk (YouTube/Creative), Jon Jones (Sales), Kesha (Marketing), Belichick (Strategy)
 {
   "gateway": {
     "bind": "loopback",          // ONLY accessible from your machine - not the internet
@@ -95,7 +95,7 @@
       {
         "name": "compliance-deadline-alerts",
         "schedule": "0 8 * * *",       // Daily 8 AM
-        "agent": "mila-carb",
+        "agent": "mak-carb",
         "task": "Check fleet compliance deadlines within 7 days, post alerts to Slack",
         "slackChannel": "#recon-compliance"
       },
