@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clean Truck Check Fairfield | CARB HD I/M Compliance Testing</title>
+<meta name="description" content="CARB credentialed Clean Truck Check testing in Fairfield, CA. Mobile heavy-duty emissions compliance testing, OBD scans, smoke opacity tests. Serving Vacaville, Vallejo, and surrounding Solano County cities.">
+<meta name="keywords" content="Clean Truck Check, CARB, HD I/M, emissions testing, Fairfield CA, heavy duty truck inspection, OBD test, smoke opacity, credentialed tester, Solano County, Vacaville, Vallejo, Benicia">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://cleantruckcheckfairfield.com/">
+<meta property="og:title" content="Clean Truck Check Fairfield | CARB Compliance Testing">
+<meta property="og:description" content="CARB credentialed mobile testing for heavy-duty vehicles in the greater Fairfield & Sacramento area. Stay compliant. Avoid $10,000/day fines.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cleantruckcheckfairfield.com/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --black:#0a0a0a;
+  --black-light:#141414;
+  --black-card:#1a1a1a;
+  --black-border:#2a2a2a;
+  --accent:#003087;
+  --accent-dark:#002266;
+  --accent-light:#1A4FAF;
+  --accent-glow:rgba(0,48,135,.3);
+  --accent-subtle:rgba(0,48,135,.08);
+  --white:#f5f5f5;
+  --gray:#a3a3a3;
+  --gray-dark:#737373;
+  --red:#ef4444;
+}
+
+html{scroll-behavior:smooth}
+
+body{
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  background:var(--black);
+  color:var(--white);
+  line-height:1.6;
+  overflow-x:hidden;
+}
+
+/* ── Utility ── */
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+.section{padding:80px 0}
+.section-dark{background:var(--black-light)}
+.text-orange{color:var(--accent)}
+.text-gray{color:var(--gray)}
+.text-center{text-align:center}
+
+/* ── Navigation ── */
+nav{
+  position:fixed;top:0;left:0;right:0;
+  background:rgba(10,10,10,.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--black-border);
+  z-index:1000;
+  padding:0 24px;
+}
+
+.nav-inner{
+  max-width:1200px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  height:72px;
+}
+
+.nav-logo{
+  font-size:1.25rem;font-weight:800;
+  color:var(--white);text-decoration:none;
+  display:flex;align-items:center;gap:10px;
+}
+
+.nav-logo .logo-icon{
+  width:40px;height:40px;
+  background:var(--accent);
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;font-weight:900;
+  color:var(--black);
+}
+
+.nav-links{display:flex;align-items:center;gap:32px;list-style:none}
+.nav-links a{color:var(--gray);text-decoration:none;font-size:.9rem;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--accent)}
+
+.nav-cta{
+  background:var(--accent);color:var(--black);
+  padding:10px 24px;border-radius:8px;
+  font-weight:700;font-size:.9rem;
+  text-decoration:none;
+  transition:background .2s,transform .1s;
+}
+.nav-cta:hover{background:var(--accent-dark);transform:translateY(-1px)}
+
+.mobile-toggle{display:none;background:none;border:none;color:var(--white);font-size:1.5rem;cursor:pointer}
+
+/* ── Hero ── */
+.hero{
+  padding:160px 0 100px;
+  position:relative;
+  overflow:hidden;
+}
+
+.hero::before{
+  content:'';position:absolute;
+  top:-200px;right:-200px;
+  width:600px;height:600px;
+  background:radial-gradient(circle,var(--accent-glow) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+.hero-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:60px;align-items:center;
+}
+
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--accent-subtle);
+  border:1px solid rgba(0,48,135,.2);
+  padding:8px 16px;border-radius:100px;
+  font-size:.8rem;font-weight:600;color:var(--accent);
+  margin-bottom:24px;
+}
+
+.hero-badge::before{
+  content:'';width:8px;height:8px;
+  background:var(--accent);border-radius:50%;
+  animation:pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot{
+  0%,100%{opacity:1}
+  50%{opacity:.4}
+}
+
+.hero h1{
+  font-size:3.5rem;font-weight:900;
+  line-height:1.1;
+  margin-bottom:20px;
+}
+
+.hero h1 span{
+  background:linear-gradient(135deg,var(--accent),var(--accent-light));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.hero-sub{
+  font-size:1.15rem;color:var(--gray);
+  margin-bottom:36px;max-width:520px;
+  line-height:1.7;
+}
+
+.hero-actions{display:flex;gap:16px;flex-wrap:wrap}
+
+.btn-primary{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--accent);color:var(--black);
+  padding:14px 32px;border-radius:10px;
+  font-weight:700;font-size:1rem;
+  text-decoration:none;border:none;cursor:pointer;
+  transition:background .2s,transform .1s,box-shadow .2s;
+  box-shadow:0 0 0 0 var(--accent-glow);
+}
+.btn-primary:hover{
+  background:var(--accent-dark);
+  transform:translateY(-2px);
+  box-shadow:0 8px 30px var(--accent-glow);
+}
+
+.btn-outline{
+  display:inline-flex;align-items:center;gap:8px;
+  background:transparent;color:var(--white);
+  padding:14px 32px;border-radius:10px;
+  font-weight:700;font-size:1rem;
+  text-decoration:none;
+  border:2px solid var(--black-border);
+  cursor:pointer;
+  transition:border-color .2s,color .2s;
+}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+
+.hero-visual{
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+}
+
+.hero-card{
+  background:var(--black-card);
+  border:1px solid var(--black-border);
+  border-radius:16px;
+  padding:40px;width:100%;
+  position:relative;
+  overflow:hidden;
+}
+
+.hero-card::before{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,var(--accent),var(--accent-light));
+}
+
+.hero-stat{margin-bottom:28px}
+.hero-stat:last-child{margin-bottom:0}
+.hero-stat-label{font-size:.8rem;color:var(--gray-dark);font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.hero-stat-value{font-size:2rem;font-weight:800;color:var(--accent)}
+.hero-stat-sub{font-size:.85rem;color:var(--gray);margin-top:2px}
+
+/* ── Warning Banner ── */
+.warning-banner{
+  background:linear-gradient(135deg,rgba(239,68,68,.12),rgba(0,48,135,.12));
+  border:1px solid rgba(239,68,68,.25);
+  border-radius:12px;
+  padding:24px 32px;
+  display:flex;align-items:center;gap:16px;
+  max-width:1200px;margin:-20px auto 0;
+  position:relative;z-index:1;
+}
+
+.warning-icon{
+  font-size:2rem;flex-shrink:0;
+}
+
+.warning-text{font-size:.95rem;color:var(--gray)}
+.warning-text strong{color:var(--red);font-weight:700}
+
+/* ── Services ── */
+.section-header{margin-bottom:60px}
+.section-header h2{font-size:2.5rem;font-weight:800;margin-bottom:12px}
+.section-header p{font-size:1.05rem;color:var(--gray);max-width:600px}
+.section-header.text-center p{margin:0 auto}
+
+.services-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:24px;
+}
+
+.service-card{
+  background:var(--black-card);
+  border:1px solid var(--black-border);
+  border-radius:16px;
+  padding:36px;
+  transition:border-color .3s,transform .2s;
+}
+.service-card:hover{
+  border-color:var(--accent);
+  transform:translateY(-4px);
+}
+
+.service-icon{
+  width:56px;height:56px;
+  background:var(--accent-subtle);
+  border:1px solid rgba(0,48,135,.15);
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;
+  margin-bottom:20px;
+}
+
+.service-card h3{font-size:1.2rem;font-weight:700;margin-bottom:10px}
+.service-card p{font-size:.9rem;color:var(--gray);line-height:1.7}
+
+.service-tag{
+  display:inline-block;
+  background:var(--accent-subtle);
+  color:var(--accent);
+  font-size:.75rem;font-weight:600;
+  padding:4px 12px;border-radius:100px;
+  margin-top:16px;
+}
+
+/* ── Pricing ── */
+.pricing-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:24px;
+}
+
+.pricing-card{
+  background:var(--black-card);
+  border:1px solid var(--black-border);
+  border-radius:16px;
+  padding:40px;
+  text-align:center;
+  transition:border-color .3s,transform .2s;
+  position:relative;
+}
+
+.pricing-card.featured{
+  border-color:var(--accent);
+  box-shadow:0 0 40px var(--accent-glow);
+}
+
+.pricing-card.featured::before{
+  content:'MOST POPULAR';
+  position:absolute;top:-14px;left:50%;
+  transform:translateX(-50%);
+  background:var(--accent);color:var(--black);
+  font-size:.7rem;font-weight:800;
+  padding:6px 20px;border-radius:100px;
+  letter-spacing:.05em;
+}
+
+.pricing-card:hover{transform:translateY(-4px)}
+
+.pricing-name{font-size:1rem;font-weight:600;color:var(--gray);margin-bottom:8px}
+.pricing-price{font-size:3rem;font-weight:900;margin-bottom:4px}
+.pricing-price span{font-size:1rem;font-weight:500;color:var(--gray)}
+.pricing-desc{font-size:.85rem;color:var(--gray-dark);margin-bottom:28px}
+
+.pricing-features{
+  list-style:none;text-align:left;
+  margin-bottom:32px;
+}
+
+.pricing-features li{
+  padding:10px 0;
+  border-bottom:1px solid var(--black-border);
+  font-size:.9rem;color:var(--gray);
+  display:flex;align-items:center;gap:10px;
+}
+
+.pricing-features li::before{
+  content:'';width:20px;height:20px;flex-shrink:0;
+  background:var(--accent-subtle);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23003087' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:center;
+}
+
+/* ── Deadlines ── */
+.deadline-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:24px;
+}
+
+.deadline-card{
+  background:var(--black-card);
+  border:1px solid var(--black-border);
+  border-radius:16px;
+  padding:32px;
+  display:flex;gap:20px;
+}
+
+.deadline-date{
+  flex-shrink:0;
+  width:72px;height:72px;
+  background:var(--accent-subtle);
+  border:1px solid rgba(0,48,135,.15);
+  border-radius:12px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+}
+
+.deadline-date .year{font-size:.65rem;font-weight:600;color:var(--accent);letter-spacing:.08em}
+.deadline-date .period{font-size:1.3rem;font-weight:800;color:var(--accent)}
+
+.deadline-info h3{font-size:1.05rem;font-weight:700;margin-bottom:6px}
+.deadline-info p{font-size:.85rem;color:var(--gray);line-height:1.6}
+
+/* ── FAQ ── */
+.faq-list{max-width:800px;margin:0 auto}
+
+.faq-item{
+  border-bottom:1px solid var(--black-border);
+}
+
+.faq-question{
+  width:100%;
+  background:none;border:none;
+  color:var(--white);
+  font-size:1.05rem;font-weight:600;
+  text-align:left;
+  padding:24px 0;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;
+  font-family:inherit;
+}
+
+.faq-question:hover{color:var(--accent)}
+
+.faq-question::after{
+  content:'+';
+  font-size:1.5rem;font-weight:300;
+  color:var(--accent);
+  flex-shrink:0;
+  transition:transform .2s;
+}
+
+.faq-item.open .faq-question::after{
+  transform:rotate(45deg);
+}
+
+.faq-answer{
+  max-height:0;overflow:hidden;
+  transition:max-height .3s ease;
+}
+
+.faq-answer-inner{
+  padding:0 0 24px;
+  font-size:.95rem;color:var(--gray);
+  line-height:1.7;
+}
+
+/* ── CTA ── */
+.cta-section{
+  background:linear-gradient(135deg,var(--black-light),var(--black));
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+
+.cta-section::before{
+  content:'';position:absolute;
+  bottom:-100px;left:50%;transform:translateX(-50%);
+  width:800px;height:400px;
+  background:radial-gradient(ellipse,var(--accent-glow) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+.cta-section h2{font-size:2.5rem;font-weight:900;margin-bottom:16px;position:relative}
+.cta-section p{font-size:1.1rem;color:var(--gray);margin-bottom:36px;position:relative}
+.cta-section .btn-primary{font-size:1.1rem;padding:16px 40px;position:relative}
+
+/* ── Footer ── */
+footer{
+  background:var(--black);
+  border-top:1px solid var(--black-border);
+  padding:60px 0 32px;
+}
+
+.footer-grid{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:40px;
+  margin-bottom:40px;
+}
+
+.footer-brand p{font-size:.85rem;color:var(--gray);margin-top:12px;line-height:1.7;max-width:320px}
+
+.footer-col h4{font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px;color:var(--accent)}
+.footer-col a{display:block;color:var(--gray);text-decoration:none;font-size:.9rem;margin-bottom:10px;transition:color .2s}
+.footer-col a:hover{color:var(--accent)}
+
+.footer-bottom{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:24px;
+  border-top:1px solid var(--black-border);
+  font-size:.8rem;color:var(--gray-dark);
+}
+
+/* ── Responsive ── */
+@media(max-width:968px){
+  .hero-grid{grid-template-columns:1fr;gap:40px}
+  .hero h1{font-size:2.5rem}
+  .services-grid,.pricing-grid{grid-template-columns:1fr}
+  .deadline-grid{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:32px}
+}
+
+@media(max-width:768px){
+  .nav-links{display:none}
+  .mobile-toggle{display:block}
+  .nav-links.open{
+    display:flex;flex-direction:column;
+    position:absolute;top:72px;left:0;right:0;
+    background:var(--black);
+    border-bottom:1px solid var(--black-border);
+    padding:24px;gap:16px;
+  }
+  .hero{padding:120px 0 60px}
+  .hero h1{font-size:2rem}
+  .hero-actions{flex-direction:column}
+  .section{padding:60px 0}
+  .section-header h2{font-size:1.8rem}
+  .warning-banner{flex-direction:column;text-align:center}
+  .footer-grid{grid-template-columns:1fr}
+  .footer-bottom{flex-direction:column;gap:8px;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <span class="logo-icon">CTC</span>
+      Clean Truck Check Fairfield
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#deadlines">Deadlines</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="tel:+19168904427" class="nav-cta">Call Now</a></li>
+    </ul>
+    <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">&#9776;</button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-badge">CARB Credentialed Tester &bull; Fairfield, CA</div>
+        <h1>Heavy-Duty <span>Emissions Testing</span> Done Right</h1>
+        <p class="hero-sub">CARB-credentialed mobile testing for trucks, buses, and fleets in Fairfield, Vacaville, Suisun City, and the greater Solano County area. Stay compliant. Avoid fines up to $10,000/day.</p>
+        <div class="hero-actions">
+          <a href="#contact" class="btn-primary">Schedule a Test</a>
+          <a href="#services" class="btn-outline">View Services</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-card">
+          <div class="hero-stat">
+            <div class="hero-stat-label">Penalty for Non-Compliance</div>
+            <div class="hero-stat-value">$10,000/day</div>
+            <div class="hero-stat-sub">Per vehicle. Don't risk it.</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">2025 Annual Compliance Fee</div>
+            <div class="hero-stat-value">$31.18</div>
+            <div class="hero-stat-sub">Per vehicle, paid through CTC-VIS</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Testing Frequency (2025-2026)</div>
+            <div class="hero-stat-value">2x / Year</div>
+            <div class="hero-stat-sub">Increases to 4x/year in Oct 2027</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Warning Banner -->
+<div class="container">
+  <div class="warning-banner">
+    <div class="warning-icon">&#9888;&#65039;</div>
+    <div class="warning-text">
+      <strong>Effective January 1, 2025:</strong> All heavy-duty vehicles over 14,000 lbs GVWR operating in California must pass a CARB emissions compliance test. Out-of-state vehicles are NOT exempt. No low-use exemption exists.
+    </div>
+  </div>
+</div>
+
+<!-- Services -->
+<section class="section section-dark" id="services">
+  <div class="container">
+    <div class="section-header text-center">
+      <h2>Our <span class="text-orange">Services</span></h2>
+      <p>Comprehensive Clean Truck Check compliance testing for every type of heavy-duty vehicle.</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon">&#128269;</div>
+        <h3>OBD Compliance Scan</h3>
+        <p>For 2013+ diesel engines and 2018+ alternative fuel engines. We use CARB-certified OBD testing devices to scan your vehicle's onboard diagnostics and submit results directly to CTC-VIS.</p>
+        <span class="service-tag">2013+ Diesel / 2018+ Alt Fuel</span>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">&#127787;&#65039;</div>
+        <h3>Smoke Opacity Test</h3>
+        <p>For pre-2013 diesel engines not equipped with OBD. SAE J1667-compatible smoke meter testing plus a full visual inspection of emissions control equipment.</p>
+        <span class="service-tag">Pre-2013 Diesel Engines</span>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">&#128663;</div>
+        <h3>Fleet Compliance Management</h3>
+        <p>Multi-vehicle fleet testing, deadline tracking, and compliance reporting. We handle CTC-VIS registration, fee payment coordination, and testing schedules for your entire fleet.</p>
+        <span class="service-tag">Multi-Vehicle Fleets</span>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">&#128666;</div>
+        <h3>Mobile On-Site Testing</h3>
+        <p>We come to your yard, depot, or job site. No need to bring trucks to a station. CARB allows remote/on-site testing and we take full advantage of it to minimize your downtime.</p>
+        <span class="service-tag">We Come To You</span>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">&#128203;</div>
+        <h3>CTC-VIS Registration Help</h3>
+        <p>Need help registering your vehicles in the Clean Truck Check Vehicle Inspection System? We walk you through the entire process, from account setup to vehicle reporting.</p>
+        <span class="service-tag">New Owner Friendly</span>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">&#128736;</div>
+        <h3>DMV Hold Resolution</h3>
+        <p>Got a registration hold for non-compliance? We help you get compliant fast: register in CTC-VIS, pay the fee, pass your test, and get that hold released.</p>
+        <span class="service-tag">Fast Resolution</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="section" id="pricing">
+  <div class="container">
+    <div class="section-header text-center">
+      <h2>Simple <span class="text-orange">Pricing</span></h2>
+      <p>Transparent pricing for every vehicle type. No hidden fees. No surprises.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="pricing-name">Single Vehicle</div>
+        <div class="pricing-price">$150 <span>/ test</span></div>
+        <div class="pricing-desc">One-time compliance test</div>
+        <ul class="pricing-features">
+          <li>OBD scan or smoke opacity test</li>
+          <li>Visual emissions equipment inspection</li>
+          <li>Results submitted to CTC-VIS</li>
+          <li>Digital compliance certificate</li>
+          <li>CTC-VIS registration assistance</li>
+        </ul>
+        <a href="#contact" class="btn-primary" style="width:100%;justify-content:center">Book Now</a>
+      </div>
+      <div class="pricing-card featured">
+        <div class="pricing-name">Fleet Plan</div>
+        <div class="pricing-price">$120 <span>/ test</span></div>
+        <div class="pricing-desc">5+ vehicles per visit</div>
+        <ul class="pricing-features">
+          <li>Everything in Single Vehicle</li>
+          <li>On-site mobile testing at your yard</li>
+          <li>Compliance deadline tracking</li>
+          <li>Dedicated fleet account manager</li>
+          <li>Priority scheduling</li>
+        </ul>
+        <a href="#contact" class="btn-primary" style="width:100%;justify-content:center">Get Fleet Quote</a>
+      </div>
+      <div class="pricing-card">
+        <div class="pricing-name">Annual Contract</div>
+        <div class="pricing-price">$99 <span>/ test</span></div>
+        <div class="pricing-desc">All tests for 12 months</div>
+        <ul class="pricing-features">
+          <li>Everything in Fleet Plan</li>
+          <li>All semi-annual tests included</li>
+          <li>Automated reminder system</li>
+          <li>Compliance guarantee</li>
+          <li>Free re-test if initial fail</li>
+        </ul>
+        <a href="#contact" class="btn-primary" style="width:100%;justify-content:center">Start Contract</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Deadlines -->
+<section class="section section-dark" id="deadlines">
+  <div class="container">
+    <div class="section-header text-center">
+      <h2>Key <span class="text-orange">Deadlines</span></h2>
+      <p>Stay ahead of CARB compliance deadlines. Tests can be submitted up to 90 days early.</p>
+    </div>
+    <div class="deadline-grid">
+      <div class="deadline-card">
+        <div class="deadline-date">
+          <span class="year">2025-26</span>
+          <span class="period">2x</span>
+        </div>
+        <div class="deadline-info">
+          <h3>Semi-Annual Testing</h3>
+          <p>All non-agricultural vehicles and non-CA motorhomes must be tested twice per year. Deadlines are based on your DMV registration expiration date and 6 months after.</p>
+        </div>
+      </div>
+      <div class="deadline-card">
+        <div class="deadline-date">
+          <span class="year">OCT</span>
+          <span class="period">2027</span>
+        </div>
+        <div class="deadline-info">
+          <h3>Quarterly Testing Begins</h3>
+          <p>OBD-equipped vehicles (2013+ diesel, 2018+ alt fuel) must test four times per year. Start planning now for increased testing frequency.</p>
+        </div>
+      </div>
+      <div class="deadline-card">
+        <div class="deadline-date">
+          <span class="year">ANNUAL</span>
+          <span class="period">1x</span>
+        </div>
+        <div class="deadline-info">
+          <h3>Agricultural Vehicles</h3>
+          <p>Vehicles that meet CARB's agricultural vehicle definition are tested once per year. Same applies to California-registered motorhomes used for recreation or emergency.</p>
+        </div>
+      </div>
+      <div class="deadline-card">
+        <div class="deadline-date">
+          <span class="year">WITHIN</span>
+          <span class="period">30d</span>
+        </div>
+        <div class="deadline-info">
+          <h3>New Vehicle Reporting</h3>
+          <p>Any newly acquired vehicle must be reported in CTC-VIS within 30 calendar days of acquisition. Selling? Update within 30 days too.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-header text-center">
+      <h2>Frequently Asked <span class="text-orange">Questions</span></h2>
+      <p>Everything you need to know about Clean Truck Check compliance.</p>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-question">Which vehicles are subject to Clean Truck Check?</button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">Nearly ALL diesel, alternative fuel, and hybrid vehicles with a Gross Vehicle Weight Rating (GVWR) over 14,000 pounds operating on California roads. This includes commercial trucks, buses, government vehicles, and even privately-owned vehicles. Out-of-state vehicles operating in California are also subject to the program.</div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">I'm registered out of state. Am I exempt?</button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">No. Out-of-state vehicles are NOT exempt. Any vehicle over 14,000 lbs GVWR that operates on California public roads must comply with Clean Truck Check, regardless of where it's registered. Your compliance deadlines are based on the last digit of your VIN.</div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">Is there a low-use or small fleet exemption?</button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">No. There is NO low-use exemption, and small fleets (including single-vehicle fleets) are NOT exempt. Every subject vehicle must be registered, pay the annual compliance fee, and pass emissions testing.</div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">What test does my truck need?</button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">It depends on your engine year. Vehicles with 2013+ diesel engines or 2018+ alternative fuel engines need an OBD data scan using a CARB-certified device. Pre-2013 diesel engines need a smoke opacity test (SAE J1667) plus a visual inspection. Pre-2018 alternative fuel engines need a visual inspection only.</div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">Do I have to go to a testing station?</button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">No! Unlike light-duty smog checks, there is no requirement for a brick-and-mortar station. We are a mobile testing service &mdash; we come to your location. Testing can be done at your yard, depot, job site, or wherever your trucks are.</div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">What happens if I don't comply?</button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">Penalties can reach up to $10,000 per vehicle per day for non-compliance. CARB also places DMV registration holds on non-compliant vehicles (including DMV-exempt plates). Out-of-state trucks may be restricted from operating in California. CARB uses roadside monitoring with remote emissions devices and license plate readers to flag non-compliant vehicles.</div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">How much is the annual compliance fee?</button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">For 2025 and onward, the annual compliance fee is $31.18 per vehicle (adjusted annually by California CPI). This must be paid through CTC-VIS &mdash; payments through any other system do not count. This fee is separate from and in addition to emissions testing costs.</div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">Can I submit my test early?</button>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">Yes. Passing tests may be submitted up to 90 days prior to your compliance deadline. We recommend scheduling early to avoid last-minute issues, especially if your vehicle needs repairs to pass.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact / CTA -->
+<section class="section cta-section" id="contact">
+  <div class="container">
+    <h2>Ready to Get <span class="text-orange">Compliant</span>?</h2>
+    <p>Don't wait for a $10,000/day fine or a DMV registration hold. Schedule your Clean Truck Check test today.</p>
+    <a href="tel:+19168904427" class="btn-primary">Call (916) 890-4427</a>
+    <p style="margin-top:20px;font-size:.85rem;color:var(--gray-dark);position:relative">Serving Fairfield, Vacaville, Suisun City, Vallejo, Benicia, and all of Solano County</p>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo" style="font-size:1.1rem">
+          <span class="logo-icon" style="width:36px;height:36px;font-size:1rem">CTC</span>
+          Clean Truck Check Fairfield
+        </a>
+        <p>CARB credentialed heavy-duty emissions testing serving the greater Fairfield and Solano County area. Mobile on-site testing for trucks, buses, and fleets.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <a href="#services">OBD Compliance Scan</a>
+        <a href="#services">Smoke Opacity Test</a>
+        <a href="#services">Fleet Management</a>
+        <a href="#services">Mobile Testing</a>
+        <a href="#services">DMV Hold Resolution</a>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <a href="https://cleantruckcheck.arb.ca.gov/" target="_blank" rel="noopener">CTC-VIS Portal</a>
+        <a href="https://ww2.arb.ca.gov/clean-truck-check-overview-fact-sheet" target="_blank" rel="noopener">CARB Fact Sheet</a>
+        <a href="https://ww2.arb.ca.gov/resources/fact-sheets/clean-truck-check-faq-0" target="_blank" rel="noopener">CARB FAQ</a>
+        <a href="#faq">Our FAQ</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a href="tel:+19168904427">(916) 890-4427</a>
+        <a href="mailto:info@cleantruckcheckfairfield.com">info@cleantruckcheckfairfield.com</a>
+        <a>Fairfield, CA 95678</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Clean Truck Check Fairfield. All rights reserved.</span>
+      <span>CARB Credentialed Tester &bull; Fairfield, CA</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Mobile nav toggle
+document.getElementById('mobileToggle').addEventListener('click', function() {
+  document.getElementById('navLinks').classList.toggle('open');
+});
+
+// Close mobile nav on link click
+document.querySelectorAll('.nav-links a').forEach(function(link) {
+  link.addEventListener('click', function() {
+    document.getElementById('navLinks').classList.remove('open');
+  });
+});
+
+// FAQ accordion
+document.querySelectorAll('.faq-question').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var item = this.parentElement;
+    var answer = this.nextElementSibling;
+    var isOpen = item.classList.contains('open');
+
+    // Close all
+    document.querySelectorAll('.faq-item').forEach(function(faqItem) {
+      faqItem.classList.remove('open');
+      faqItem.querySelector('.faq-answer').style.maxHeight = null;
+    });
+
+    // Open clicked (if it was closed)
+    if (!isOpen) {
+      item.classList.add('open');
+      answer.style.maxHeight = answer.scrollHeight + 'px';
+    }
+  });
+});
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+  anchor.addEventListener('click', function(e) {
+    var target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+
+</body>
+</html>
