@@ -142,6 +142,9 @@ Fallback: Sonnet for basic searches
 | **Lead Scraper** | Google Maps phone/address pulls | **Gemini - FREE** | $0 |
 | **Big Gilly** (Night Shift) | Overnight dispatch, TPS collection | **Gemini - FREE** | $0 |
 | **Big Gilly** (Night Shift) | Morning Briefing compilation | Claude Haiku (on-demand) | $ minimal |
+| **Uncle Sam** (Tax) | Deadline tracking, deduction ID | **Gemini - FREE** | $0 |
+| **Uncle Sam** (Tax) | Tax strategy, quarterly estimates | Claude Sonnet (on-demand) | $ only when needed |
+| **Bryan** (Digital Twin) | Daily business decisions | Claude Sonnet (on-demand) | $ only when needed |
 | **Data Sync** | Move data between systems | **Make.com** | $0 (already paid) |
 
 ### Make.com Automation Workflows
@@ -224,7 +227,9 @@ YOUR MAC
 │       ├── Cipher ────── Gemini FREE (Sheets) / Claude (tax/analysis)
 │       ├── Kesha ─────── Gemini FREE (content) / Claude (polish)
 │       ├── Sentinel ──── Gemini FREE (research) / Claude (deep analysis)
-│       └── Big Gilly ─── Gemini FREE (dispatch) / Haiku (briefings)
+│       ├── Big Gilly ─── Gemini FREE (dispatch) / Haiku (briefings)
+│       ├── Uncle Sam ─── Gemini FREE (deadlines) / Sonnet (tax strategy)
+│       └── Bryan ─────── Sonnet (decisions) — the digital twin / product
 │
 ├── Make.com (automation layer)
 │   ├── Lead capture pipelines
@@ -303,6 +308,8 @@ Slack is the mission command center. Agents are dispatched via slash commands an
 | `/agent-status` | All agent statuses |
 | `/budget` | Token spend report |
 | `/nightshift` | Run Big Gilly's full overnight playbook on demand |
+| `/recon-cop [query]` | All agents research Clean Oakland Project |
+| `/taxes [question]` | Uncle Sam + Cipher tax and finance review |
 | `/kill [agent]` | Emergency stop |
 
 ### Data Flow

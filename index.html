@@ -313,14 +313,18 @@
 <script>
 // ── Agent roster ──────────────────────────────────────────────
 const agents = [
-  { id: 'belichick', name: 'Belichick',  emoji: '🏈', role: 'Strategist',   status: 'active'   },
-  { id: 'margo',     name: 'Margo',      emoji: '🔬', role: 'Researcher',   status: 'active'   },
-  { id: 'jesus',     name: 'Jesus',       emoji: '🕊️', role: 'Coordinator',  status: 'active'   },
-  { id: 'musk',      name: 'Musk',        emoji: '🚀', role: 'Builder',      status: 'inactive' },
-  { id: 'kesha',     name: 'Kesha',       emoji: '🎤', role: 'Content',      status: 'active'   },
-  { id: 'sentinel',  name: 'Sentinel',    emoji: '🛡️', role: 'Guardian',     status: 'trouble'  },
-  { id: 'cipher',    name: 'Cipher',      emoji: '🔐', role: 'Security',     status: 'active'   },
-  { id: 'spark',     name: 'Spark',       emoji: '✨', role: 'Creative',     status: 'inactive' },
+  { id: 'bryan',       name: 'Bryan',       emoji: '👑', role: 'The Boss (Digital Twin)', status: 'active'   },
+  { id: 'big-gilly',   name: 'Big Gilly',   emoji: '🌙', role: 'Night Shift Foreman',    status: 'active'   },
+  { id: 'belichick',   name: 'Belichick',   emoji: '🏈', role: 'Strategist',             status: 'active'   },
+  { id: 'jon-jones',   name: 'Jon Jones',   emoji: '🥊', role: 'Sales (A.C.E.S.)',       status: 'active'   },
+  { id: 'sentinel',    name: 'Sentinel',    emoji: '🛡️', role: 'Legal/Regulatory',        status: 'active'   },
+  { id: 'mila-carb',   name: 'Mila-CARB',   emoji: '🚛', role: 'CARB Compliance',        status: 'active'   },
+  { id: 'mila-legal',  name: 'Mila-Legal',  emoji: '⚖️', role: 'Legal Research',          status: 'active'   },
+  { id: 'kesha',       name: 'Kesha',       emoji: '🎤', role: 'Marketing/Content',       status: 'active'   },
+  { id: 'musk',        name: 'Musk',        emoji: '🚀', role: 'Competitive Intel',       status: 'active'   },
+  { id: 'cipher',      name: 'Cipher',      emoji: '🔐', role: 'Finance/Bookkeeping',     status: 'active'   },
+  { id: 'uncle-sam',   name: 'Uncle Sam',   emoji: '🏛️', role: 'IRS/Tax Compliance',      status: 'active'   },
+  { id: 'lead-scraper',name: 'Lead Scraper',emoji: '🎯', role: 'Lead Generation',        status: 'active'   },
 ];
 
 const STATUS_CYCLE = ['active', 'inactive', 'trouble'];

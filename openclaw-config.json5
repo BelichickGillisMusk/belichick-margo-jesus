@@ -121,6 +121,15 @@
         "agent": "big-gilly",
         "task": "Post the compiled Morning Briefing from last night's production run to #recon-command. Include highlights, new leads, compliance alerts, cost summary, and recommended actions for today.",
         "slackChannel": "#recon-command"
+      },
+
+      // ── UNCLE SAM — Tax Deadline Alerts ──
+      {
+        "name": "uncle-sam-tax-check",
+        "schedule": "0 8 1,15 * *",     // 1st and 15th of every month at 8 AM
+        "agent": "uncle-sam",
+        "task": "Check upcoming IRS and CA FTB tax deadlines within the next 30 days. Calculate estimated quarterly tax payment if due. Post reminders to #alerts with amounts and due dates.",
+        "slackChannel": "#alerts"
       }
     ]
   },
