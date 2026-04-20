@@ -11,18 +11,19 @@ mark each row **K** (keep), **D** (delete), or **R** (review).
 
 ---
 
-## 1. Local repo HTML files (6) — all **KEEP**
+## 1. Local repo HTML files (2) — all **KEEP**
 
 | Path | Purpose | Size |
 |------|---------|------|
 | `index.html` | **Agent Round Table** dashboard — 11-agent status UI (title: "Team Status - Round Table"). Referenced in CLAUDE.md. | 29 KB |
 | `salesbot.html` | **The Office** — CSP-hardened Closer sales-bot demo. Do not modify CSP. | 26 KB |
-| `carbteststockton/index.html` | **Live landing page** — carbteststockton.com (Mobile OBD $85, Smoke $200, San Joaquin County). | 44 KB |
-| `carbteststockton/404.html` | 404 for Stockton site. | 1.5 KB |
-| `cleantruckcheckroseville/index.html` | **Live landing page** — cleantruckcheckroseville.com (Sacramento/Placer, dark/orange theme). | 31 KB |
-| `cleantruckcheckroseville/404.html` | 404 for Roseville site. | 0.9 KB |
 
-⚠ Do NOT rename the folder-level `index.html` files — they're served as folder root on Netlify/Cloudflare Pages. Renaming breaks the deployed sites.
+### Deleted 2026-04-19 (not the new mobilecarbsmoketest.com template)
+
+- `carbteststockton/` — old Stockton landing page (cream/brown Playfair theme). Rebuild as its own Cloudflare Worker from the mobilecarbsmoketest.com template with only phone / colors / price / local info swapped.
+- `cleantruckcheckroseville/` — old Roseville landing page (Inter dark/orange theme). Same — rebuild as its own Worker.
+
+⚠ Until Worker replacements are live, `carbteststockton.com` and `cleantruckcheckroseville.com` will 404.
 
 ---
 
