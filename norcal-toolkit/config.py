@@ -76,6 +76,13 @@ SMTP_USER = os.getenv("SMTP_USER", "")
 SMTP_PASS = os.getenv("SMTP_PASS", "")
 COLD_EMAIL_FROM = os.getenv("COLD_EMAIL_FROM", "")  # secondary domain for cold
 
+# ─── Google Calendar ─────────────────────────────────────────────
+GOOGLE_CALENDAR_ID = os.getenv("GOOGLE_CALENDAR_ID", "primary")
+GOOGLE_CALENDAR_CREDENTIALS = os.getenv(
+    "GOOGLE_CALENDAR_CREDENTIALS",
+    os.path.join(os.path.dirname(__file__), "credentials", "calendar-sa.json"),
+)
+
 # ─── Google Review Link ──────────────────────────────────────────
 GOOGLE_REVIEW_LINK = os.getenv(
     "GOOGLE_REVIEW_LINK",

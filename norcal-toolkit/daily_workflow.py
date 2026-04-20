@@ -10,12 +10,13 @@ Run this every morning. It executes the full daily cycle:
 THE DAILY LOOP:
     1. Scrape new leads (weekly on Monday, skip other days)
     2. Import new leads into CRM
-    3. Show today's follow-ups (who to call/email)
-    4. Send cold email sequences (Tier 1 first)
-    5. Pipeline status check
-    6. Generate a social media post
-    7. Check overdue invoices
-    8. Batch review requests for yesterday's tested jobs
+    3. Today's calendar (what's booked)
+    4. Show today's follow-ups (who to call/email)
+    5. Send cold email sequences (Tier 1 first)
+    6. Pipeline status check
+    7. Generate a social media post
+    8. Check overdue invoices
+    9. Batch review requests for yesterday's tested jobs
 """
 import os
 import sys
@@ -66,37 +67,43 @@ def daily_workflow(step=None, dry_run=False):
             "condition": True,
         },
         3: {
+            "desc": "Today's Calendar (WHAT'S BOOKED)",
+            "script": "06_calendar.py",
+            "args": ["today"],
+            "condition": True,
+        },
+        4: {
             "desc": "Today's Follow-Ups (WHO TO CALL)",
             "script": "03_crm_tracker.py",
             "args": ["due"],
             "condition": True,
         },
-        4: {
+        5: {
             "desc": "Cold Email — Tier 1 Sequence #1",
             "script": "02_cold_emailer.py",
             "args": ["--preview", "--tier", "1", "--sequence", "1"] if dry_run
                     else ["--send", "--tier", "1", "--sequence", "1", "--dry-run"],
             "condition": True,
         },
-        5: {
+        6: {
             "desc": "Pipeline Status",
             "script": "03_crm_tracker.py",
             "args": ["status"],
             "condition": True,
         },
-        6: {
+        7: {
             "desc": "Generate Social Media Post",
             "script": "05_review_request.py",
             "args": ["social", "--type", "tip"],
             "condition": True,
         },
-        7: {
+        8: {
             "desc": "Check Overdue Invoices",
             "script": "04_invoice_generator.py",
             "args": ["overdue"],
             "condition": True,
         },
-        8: {
+        9: {
             "desc": "Batch Review Requests",
             "script": "05_review_request.py",
             "args": ["batch-review"],
@@ -123,7 +130,7 @@ def daily_workflow(step=None, dry_run=False):
 def main():
     import argparse
     parser = argparse.ArgumentParser(description="NorCal Daily Workflow")
-    parser.add_argument("--step", type=int, help="Run specific step only (1-8)")
+    parser.add_argument("--step", type=int, help="Run specific step only (1-9)")
     parser.add_argument("--dry-run", action="store_true", help="Preview mode, no changes")
     args = parser.parse_args()
 

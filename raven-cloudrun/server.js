@@ -21,6 +21,7 @@ const TELEGRAM_API = `https://api.telegram.org/bot${TELEGRAM_TOKEN}`;
 const OWNER_EMAIL = process.env.OWNER_EMAIL || '';
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
 const GITHUB_ORG = process.env.GITHUB_ORG || 'BelichickGillisMusk';
+const GOOGLE_CALENDAR_ID = process.env.GOOGLE_CALENDAR_ID || '';
 
 // ── COST TRACKING ──
 // Haiku 4.5: $0.80/MTok input, $4/MTok output
@@ -84,6 +85,17 @@ if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
   console.log(`Email configured: ${process.env.SMTP_USER}`);
 } else {
   console.log('WARN: SMTP not configured — email tasks will be queued');
+}
+
+// ── GCP AUTH HELPER ──
+async function getGCPAccessToken() {
+  const tokenRes = await fetch(
+    'http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token',
+    { headers: { 'Metadata-Flavor': 'Google' } }
+  );
+  if (!tokenRes.ok) throw new Error('Cannot get GCP credentials from metadata server');
+  const { access_token } = await tokenRes.json();
+  return access_token;
 }
 
 // ── TOOLS THAT RAVEN CAN USE ──
@@ -210,6 +222,43 @@ const RAVEN_TOOLS = [
       properties: {},
     },
   },
+  {
+    name: 'create_calendar_event',
+    description: 'Create a Google Calendar event. Use when the user wants to schedule a test, appointment, or meeting. Always confirm details before creating.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        title: { type: 'string', description: 'Event title (e.g. "Valley Fleet — 3 truck tests")' },
+        startTime: { type: 'string', description: 'Start time in ISO 8601 format (e.g. 2026-04-21T15:00:00-07:00)' },
+        endTime: { type: 'string', description: 'End time in ISO 8601 format' },
+        location: { type: 'string', description: 'Address or location (optional)' },
+        description: { type: 'string', description: 'Event details — customer info, services, pricing (optional)' },
+      },
+      required: ['title', 'startTime', 'endTime'],
+    },
+  },
+  {
+    name: 'list_calendar_events',
+    description: 'List upcoming Google Calendar events. Use when the user asks "what\'s on my calendar" or "what\'s scheduled today/tomorrow".',
+    input_schema: {
+      type: 'object',
+      properties: {
+        date: { type: 'string', description: 'Date to check in YYYY-MM-DD format. Defaults to today.' },
+        maxResults: { type: 'number', description: 'Max events to return. Defaults to 10.' },
+      },
+    },
+  },
+  {
+    name: 'delete_calendar_event',
+    description: 'Delete/cancel a Google Calendar event. Always confirm with user before deleting.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        eventId: { type: 'string', description: 'The Google Calendar event ID to delete' },
+      },
+      required: ['eventId'],
+    },
+  },
 ];
 
 // ── TOOL EXECUTION ──
@@ -332,19 +381,10 @@ const toolHandlers = {
   },
 
   async trigger_cloud_build({ config, substitutions }) {
-    // Cloud Build trigger via gcloud isn't available from Cloud Run directly.
-    // Instead, we use the Cloud Build REST API.
     const projectId = 'mila-claude-2426-487008';
     try {
-      // Get access token from metadata server (Cloud Run has built-in service account)
-      const tokenRes = await fetch(
-        'http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token',
-        { headers: { 'Metadata-Flavor': 'Google' } }
-      );
-      if (!tokenRes.ok) return 'Cannot get GCP credentials. Make sure Cloud Run service account has Cloud Build permissions.';
-      const { access_token } = await tokenRes.json();
+      const access_token = await getGCPAccessToken();
 
-      // Trigger build
       const buildRes = await fetch(`https://cloudbuild.googleapis.com/v1/projects/${projectId}/builds`, {
         method: 'POST',
         headers: {
@@ -416,6 +456,87 @@ const toolHandlers = {
       `  Remaining: $${Math.max(0, MONTHLY_COST_CAP - m.cost).toFixed(4)}`,
     ].join('\n');
   },
+
+  async create_calendar_event({ title, startTime, endTime, location, description }) {
+    if (!GOOGLE_CALENDAR_ID) return 'Google Calendar not configured. Set GOOGLE_CALENDAR_ID env var.';
+    try {
+      const accessToken = await getGCPAccessToken();
+      const event = {
+        summary: title,
+        start: { dateTime: startTime, timeZone: 'America/Los_Angeles' },
+        end: { dateTime: endTime, timeZone: 'America/Los_Angeles' },
+        reminders: { useDefault: false, overrides: [{ method: 'popup', minutes: 30 }] },
+      };
+      if (location) event.location = location;
+      if (description) event.description = description;
+
+      const res = await fetch(
+        `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(GOOGLE_CALENDAR_ID)}/events`,
+        {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify(event),
+        }
+      );
+      const data = await res.json();
+      if (!res.ok) return `Calendar error: ${data.error?.message || res.status}`;
+      return `Event created: ${data.summary}\nTime: ${startTime} → ${endTime}\nLink: ${data.htmlLink}\nEvent ID: ${data.id}`;
+    } catch (err) {
+      return `Calendar error: ${err.message}`;
+    }
+  },
+
+  async list_calendar_events({ date, maxResults }) {
+    if (!GOOGLE_CALENDAR_ID) return 'Google Calendar not configured. Set GOOGLE_CALENDAR_ID env var.';
+    try {
+      const accessToken = await getGCPAccessToken();
+      const targetDate = date || new Date().toISOString().split('T')[0];
+      const timeMin = `${targetDate}T00:00:00-07:00`;
+      const timeMax = `${targetDate}T23:59:59-07:00`;
+      const max = maxResults || 10;
+
+      const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(GOOGLE_CALENDAR_ID)}/events?timeMin=${encodeURIComponent(timeMin)}&timeMax=${encodeURIComponent(timeMax)}&maxResults=${max}&singleEvents=true&orderBy=startTime`;
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      const data = await res.json();
+      if (!res.ok) return `Calendar error: ${data.error?.message || res.status}`;
+
+      const events = data.items || [];
+      if (events.length === 0) return `No events on ${targetDate}.`;
+
+      const lines = events.map(e => {
+        const start = e.start?.dateTime || e.start?.date || '?';
+        const time = start.includes('T') ? start.split('T')[1].slice(0, 5) : 'all-day';
+        const loc = e.location ? ` @ ${e.location}` : '';
+        return `${time}  ${e.summary || '(no title)'}${loc}  [${e.id}]`;
+      });
+      return `Calendar — ${targetDate} (${events.length} events):\n${lines.join('\n')}`;
+    } catch (err) {
+      return `Calendar error: ${err.message}`;
+    }
+  },
+
+  async delete_calendar_event({ eventId }) {
+    if (!GOOGLE_CALENDAR_ID) return 'Google Calendar not configured. Set GOOGLE_CALENDAR_ID env var.';
+    try {
+      const accessToken = await getGCPAccessToken();
+      const res = await fetch(
+        `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(GOOGLE_CALENDAR_ID)}/events/${encodeURIComponent(eventId)}`,
+        {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      );
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        return `Calendar error: ${data.error?.message || res.status}`;
+      }
+      return `Event ${eventId} deleted.`;
+    } catch (err) {
+      return `Calendar error: ${err.message}`;
+    }
+  },
 };
 
 // ── RAVEN SYSTEM PROMPT ──
@@ -433,6 +554,9 @@ You have real tools. USE THEM. Don't just describe what you would do — actuall
 - trigger_cloud_build: Deploy services to Cloud Run
 - add_task / complete_task / list_tasks: Track work
 - get_cost_report: Check budget
+- create_calendar_event: Schedule tests/appointments on Google Calendar
+- list_calendar_events: See what's on the calendar today/tomorrow
+- delete_calendar_event: Cancel a calendar event
 
 ## How You Operate
 1. User sends a task via Telegram
@@ -656,6 +780,7 @@ app.get('/health', (req, res) => {
     email: emailTransport ? 'ready' : 'not configured',
     telegram: TELEGRAM_TOKEN ? 'ready' : 'not configured',
     github: GITHUB_TOKEN ? 'ready' : 'not configured',
+    calendar: GOOGLE_CALENDAR_ID ? 'ready' : 'not configured',
     tasks: tasks.length,
     sessions: sessions.size,
     cost: {
@@ -732,8 +857,8 @@ const WELCOME = `Raven v2 — your AI operator.
 I don't just chat. I DO things:
 - "Email john@example.com about Friday's meeting"
 - "Create a GitHub issue for the deploy bug"
-- "Read the README from belichick-margo-jesus"
-- "What's open on GitHub?"
+- "Schedule a test for Valley Fleet tomorrow at 2pm"
+- "What's on my calendar today?"
 - "Deploy raven to Cloud Run"
 - "Draft a client follow-up email"
 
@@ -828,5 +953,6 @@ app.listen(PORT, () => {
   console.log(`Daily cap: $${DAILY_COST_CAP} | Monthly cap: $${MONTHLY_COST_CAP}`);
   console.log(`Email: ${emailTransport ? 'ready' : 'not configured'}`);
   console.log(`GitHub: ${GITHUB_TOKEN ? 'ready' : 'not configured'}`);
+  console.log(`Calendar: ${GOOGLE_CALENDAR_ID ? GOOGLE_CALENDAR_ID : 'not configured'}`);
   console.log(`Telegram: ${TELEGRAM_TOKEN ? 'ready' : 'not configured'}`);
 });

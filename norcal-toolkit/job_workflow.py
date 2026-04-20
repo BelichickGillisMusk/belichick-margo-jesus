@@ -91,24 +91,49 @@ def interactive_workflow():
             print(f"  {line}")
         print(f"  {'─'*40}")
 
-    # Step 4: Add to CRM
-    print(f"\n  STEP 4: ADD TO CRM")
+    # Step 4: Create calendar event
+    print(f"\n  STEP 4: ADD TO CALENDAR")
+    print(f"  {'─'*40}")
+    add_cal = input("  Create Google Calendar event? (y/n): ").strip().lower()
+    calendar_event_id = ""
+    if add_cal == "y":
+        try:
+            from importlib import import_module
+            cal = import_module("06_calendar")
+            service = cal.get_calendar_service()
+            if service:
+                event_body = cal.build_job_event(
+                    company=company, address=address,
+                    obd=obd, ovi=ovi, smoke=smoke,
+                    appt_time=appt_time, contact=contact, phone=phone,
+                )
+                calendar_event_id, link = cal.create_event(service, event_body)
+                print(f"  Calendar event created!")
+                print(f"  Link: {link}")
+            else:
+                print(f"  Calendar not configured — skipping.")
+        except Exception as e:
+            print(f"  Calendar error: {e} — skipping.")
+
+    # Step 5: Add to CRM
+    print(f"\n  STEP 5: ADD TO CRM")
     print(f"  {'─'*40}")
     add_crm = input("  Add to CRM? (y/n): ").strip().lower()
+    cal_note = f" | cal:{calendar_event_id}" if calendar_event_id else ""
     if add_crm == "y":
         from subprocess import run
         run([sys.executable, os.path.join(TOOLKIT_DIR, "03_crm_tracker.py"),
-             "add", company, phone, email, f"Scheduled: {appt_time} | {obd} OBD, {ovi} OVI"],
+             "add", company, phone, email, f"Scheduled: {appt_time} | {obd} OBD, {ovi} OVI{cal_note}"],
             cwd=TOOLKIT_DIR)
         # Update status to SCHEDULED
         run([sys.executable, os.path.join(TOOLKIT_DIR, "03_crm_tracker.py"),
              "update", company, "--status", "SCHEDULED",
              "--contact", contact, "--email", email,
-             "--note", f"Booked {total_vehicles} tests at {appt_time}"],
+             "--note", f"Booked {total_vehicles} tests at {appt_time}{cal_note}"],
             cwd=TOOLKIT_DIR)
 
-    # Step 5: After testing
-    print(f"\n  STEP 5: AFTER TESTING (run these after the job)")
+    # Step 6: After testing
+    print(f"\n  STEP 6: AFTER TESTING (run these after the job)")
     print(f"  {'─'*40}")
     print(f"  a) Update CRM status:")
     print(f"     python3 03_crm_tracker.py update \"{company}\" --status TESTED")
@@ -147,10 +172,27 @@ def quick_workflow(company, obd=0, ovi=0, smoke=0, phone="", email="", address="
     if total_vehicles >= PRICING["fleet_discount_threshold"]:
         print(f"  Fleet discount applied: -${discount:.2f}")
 
+    # Create calendar event
+    calendar_event_id = ""
+    try:
+        from importlib import import_module
+        cal = import_module("06_calendar")
+        service = cal.get_calendar_service()
+        if service:
+            event_body = cal.build_job_event(
+                company=company, address=address,
+                obd=obd, ovi=ovi, smoke=smoke,
+            )
+            calendar_event_id, link = cal.create_event(service, event_body)
+            print(f"  Calendar event created: {link}")
+    except Exception:
+        pass
+
     # Add to CRM
     from subprocess import run
+    cal_note = f" | cal:{calendar_event_id}" if calendar_event_id else ""
     run([sys.executable, os.path.join(TOOLKIT_DIR, "03_crm_tracker.py"),
-         "add", company, phone, email, f"{obd} OBD, {ovi} OVI, {smoke} Smoke"],
+         "add", company, phone, email, f"{obd} OBD, {ovi} OVI, {smoke} Smoke{cal_note}"],
         cwd=TOOLKIT_DIR, capture_output=True)
     run([sys.executable, os.path.join(TOOLKIT_DIR, "03_crm_tracker.py"),
          "update", company, "--status", "SCHEDULED"],

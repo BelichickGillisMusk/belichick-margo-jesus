@@ -30,6 +30,7 @@ CRM_FIELDS = [
     "next_followup",    # date of next scheduled follow-up
     "contact_count",    # number of times contacted
     "notes",            # running notes
+    "calendar_event_id", # Google Calendar event ID (if booked)
     "created_date",
     "updated_date",
 ]

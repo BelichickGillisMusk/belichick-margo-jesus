@@ -27,6 +27,9 @@ You are Raven, a personal AI operator deployed on Google Cloud Run. You don't ju
 | `trigger_cloud_build` | Deploys services to Cloud Run |
 | `add_task` / `complete_task` / `list_tasks` | Task tracking |
 | `get_cost_report` | Budget and spending report |
+| `create_calendar_event` | Creates Google Calendar events (tests, appointments) |
+| `list_calendar_events` | Lists calendar events for a given day |
+| `delete_calendar_event` | Cancels/deletes a calendar event |
 
 ## Model Routing (Cost Control)
 
@@ -79,6 +82,7 @@ SMTP_PASS             # Optional — email password
 OWNER_EMAIL           # Optional — CC on outgoing emails
 DAILY_COST_CAP        # Optional — defaults to $2.00
 MONTHLY_COST_CAP      # Optional — defaults to $30.00
+GOOGLE_CALENDAR_ID    # Optional — Google Calendar ID (usually Gmail address)
 PORT                  # Optional — defaults to 8080
 ```
 
@@ -91,7 +95,6 @@ PORT                  # Optional — defaults to 8080
 - **Lead auto-capture**: When leads come in, auto-add to Google Calendar + Contacts
   - Ask for email if not provided
   - Schedule follow-ups automatically
-- **Google Calendar integration**: Create/read appointments
 - **Google Contacts integration**: Add new leads automatically
 
 ## Guardrails

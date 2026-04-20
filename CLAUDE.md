@@ -114,6 +114,8 @@ SMTP_HOST
 SMTP_USER
 SMTP_PASS
 OWNER_EMAIL
+GOOGLE_CALENDAR_ID              # Google Calendar ID (usually Gmail address)
+GOOGLE_CALENDAR_CREDENTIALS     # Path to service account key JSON (local toolkit only)
 ```
 
 ## Skill File Format
