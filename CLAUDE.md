@@ -198,6 +198,13 @@ Two SEO-optimized service landing pages for CARB compliance testing businesses:
 
 Both include `_headers`, `_redirects`, `robots.txt`/`sitemap.xml` for static hosting (Netlify/Cloudflare Pages compatible).
 
+### Landing-page convention (Bryan's standard)
+
+- **Each new city/service site lives in its OWN Cloudflare Worker**, not in a shared folder. Repo folder name matches the Worker name (e.g. `cleantruckcheckhayward/`).
+- **Template = `mobilecarbsmoketest.com` design.** Clone it, then change only: phone number, accent colors, price, and local info (city / county / service area / JSON-LD geo).
+- **Delete old layouts wherever they are** (repo, Drive, iCloud, Mac) once the Worker-based replacement is live. Don't keep stale drafts around.
+- Orphan Cloudflare Worker projects whose folder doesn't exist in the repo (e.g. the current `cleantruckcheckhayward` CI failure) should be either created in-repo from the template or deleted from the Cloudflare dashboard — not left failing CI.
+
 ## Reports & Governance
 
 ### TPS Reports (`TPS-REPORTS.md`, `skills/tps-report/`)

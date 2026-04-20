@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GR Trucking - Fleet Compliance Portal</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f5f5;
+      color: #0d47a1;
+    }
+    
+    /* LOGIN SCREEN - Greek Blue Theme */
+    .login-screen {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0d47a1 0%, #1565c0 50%, #1976d2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .login-box {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      border-top: 4px solid #0d47a1;
+    }
+    
+    .login-header {
+      text-align: center;
+      padding-bottom: 24px;
+      border-bottom: 1px solid #e5e5e5;
+      margin-bottom: 24px;
+    }
+    
+    .login-header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #0d47a1;
+      letter-spacing: 2px;
+    }
+    
+    .login-header h2 {
+      font-size: 14px;
+      color: #666;
+      font-weight: 400;
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .login-header .location {
+      font-size: 12px;
+      color: #1976d2;
+      margin-top: 8px;
+      font-weight: 500;
+    }
+    
+    .login-input {
+      width: 100%;
+      padding: 16px;
+      font-size: 24px;
+      text-align: center;
+      letter-spacing: 8px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    
+    .login-input:focus {
+      border-color: #0d47a1;
+    }
+    
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      background: #0d47a1;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .login-btn:hover {
+      background: #1565c0;
+    }
+    
+    .login-error {
+      color: #dc2626;
+      text-align: center;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+    
+    .login-branding {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #e5e5e5;
+      text-align: center;
+    }
+    
+    .login-branding .powered {
+      font-size: 10px;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    
+    .login-branding .company {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0d47a1;
+      margin-top: 4px;
+      letter-spacing: 1px;
+    }
+    
+    .login-branding .tagline {
+      font-size: 11px;
+      color: #888;
+      margin-top: 4px;
+    }
+    
+    .login-contact {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 11px;
+      color: #aaa;
+    }
+    
+    /* MAIN PORTAL */
+    .portal {
+      display: none;
+      min-height: 100vh;
+    }
+    
+    .portal.active {
+      display: block;
+    }
+    
+    /* HEADER - Greek Blue */
+    .header {
+      background: #0d47a1;
+      color: white;
+      padding: 16px 24px;
+    }
+    
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 3px;
+    }
+    
+    .header h2 {
+      font-size: 11px;
+      font-weight: 400;
+      color: #90caf9;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+    
+    .header-right {
+      text-align: right;
+      font-size: 10px;
+      color: #90caf9;
+    }
+    
+    .header-contacts {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    
+    .header-contacts a {
+      background: #1565c0;
+      color: #e3f2fd;
+      padding: 6px 12px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    
+    .header-contacts a:hover {
+      background: #1976d2;
+    }
+    
+    /* SEARCH - PROMINENT */
+    .search-section {
+      background: #e3f2fd;
+      border-bottom: 1px solid #bbdefb;
+      padding: 16px 24px;
+    }
+    
+    .search-section-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .search-input-main {
+      width: 100%;
+      padding: 14px 20px;
+      border: 2px solid #90caf9;
+      border-radius: 6px;
+      font-size: 15px;
+      outline: none;
+      user-select: text;
+      -webkit-user-select: text;
+      transition: border-color 0.2s;
+    }
+    
+    .search-input-main:focus {
+      border-color: #0d47a1;
+    }
+    
+    .search-input-main::placeholder {
+      color: #64b5f6;
+    }
+    
+    /* TABS */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    
+    .tab-btn {
+      padding: 10px 20px;
+      background: #1565c0;
+      color: #90caf9;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .tab-btn.active {
+      background: white;
+      color: #0d47a1;
+    }
+    
+    /* MAIN CONTENT */
+    .main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    
+    /* TABLE */
+    .table-container {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border: 1px solid #e5e5e5;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    
+    thead {
+      background: #0d47a1;
+      color: white;
+    }
+    
+    th {
+      padding: 12px 10px;
+      text-align: left;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 11px;
+      border-right: 1px solid #1565c0;
+    }
+    
+    th:last-child {
+      border-right: none;
+    }
+    
+    td {
+      padding: 10px;
+      border-bottom: 1px solid #e5e5e5;
+      border-right: 1px solid #f0f0f0;
+    }
+    
+    td:last-child {
+      border-right: none;
+    }
+    
+    tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .vin-cell {
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 10px;
+    }
+    
+    /* STATUS ROWS */
+    .row-yellow {
+      background: #fef9c3;
+    }
+    
+    .row-orange {
+      background: #fed7aa;
+    }
+    
+    .row-green {
+      background: #dcfce7;
+    }
+    
+    .row-red {
+      background: #fecaca;
+    }
+    
+    .row-critical {
+      background: #7f1d1d;
+      color: white;
+    }
+    
+    .row-critical.blink {
+      opacity: 0.6;
+    }
+    
+    /* STATUS BADGES */
+    .status-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .badge-yellow { background: #fbbf24; color: #78350f; }
+    .badge-orange { background: #f97316; color: white; }
+    .badge-green { background: #22c55e; color: white; }
+    .badge-red { background: #ef4444; color: white; }
+    .badge-critical { background: #450a0a; color: #fca5a5; }
+    
+    /* INVOICE BUTTON */
+    .invoice-btn {
+      background: #0d47a1;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 10px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .invoice-btn:hover {
+      background: #1565c0;
+    }
+    
+    /* ADMIN CHECKMARKS */
+    .check-yes {
+      background: #22c55e;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    
+    .check-pending {
+      background: #f59e0b;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    
+    /* SUMMARY SECTION */
+    .summary-section {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+    
+    .summary-card {
+      background: white;
+      border-radius: 4px;
+      padding: 12px 8px;
+      text-align: center;
+      border: 1px solid #e5e5e5;
+      cursor: pointer;
+      transition: all 0.2s;
+      aspect-ratio: 1.2;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .summary-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .summary-card.active {
+      box-shadow: 0 0 0 2px #0d47a1;
+    }
+    
+    .summary-card .count {
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    
+    .summary-card .label {
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 6px;
+    }
+    
+    .summary-card .sublabel {
+      font-size: 8px;
+      color: #666;
+      margin-top: 2px;
+    }
+    
+    .card-yellow { border-top: 3px solid #fbbf24; }
+    .card-yellow .count { color: #b45309; }
+    
+    .card-orange { border-top: 3px solid #f97316; }
+    .card-orange .count { color: #c2410c; }
+    
+    .card-green { border-top: 3px solid #22c55e; }
+    .card-green .count { color: #15803d; }
+    
+    .card-red { border-top: 3px solid #ef4444; }
+    .card-red .count { color: #dc2626; }
+    
+    .card-critical { border-top: 3px solid #7f1d1d; background: #fef2f2; }
+    .card-critical .count { color: #7f1d1d; }
+    
+    /* LEGEND */
+    .legend {
+      margin-top: 24px;
+      background: white;
+      border-radius: 8px;
+      padding: 16px 20px;
+      border: 1px solid #e5e5e5;
+    }
+    
+    .legend h4 {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #666;
+      margin-bottom: 12px;
+    }
+    
+    .legend-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+    }
+    
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+    }
+    
+    /* FOOTER */
+    .footer {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #e5e5e5;
+      text-align: center;
+    }
+    
+    .footer .powered {
+      font-size: 10px;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    
+    .footer .company {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0d47a1;
+      letter-spacing: 1px;
+      margin-top: 4px;
+    }
+    
+    .footer .legal {
+      font-size: 10px;
+      color: #999;
+      margin-top: 8px;
+    }
+    
+    /* MODAL */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .modal-overlay.active {
+      display: flex;
+    }
+    
+    .modal {
+      background: white;
+      border-radius: 12px;
+      max-width: 480px;
+      width: 90%;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      border-top: 4px solid #0d47a1;
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    
+    .modal-header h3 {
+      font-size: 18px;
+      color: #0d47a1;
+    }
+    
+    .modal-header .invoice-id {
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #999;
+      cursor: pointer;
+    }
+    
+    .modal-body {
+      border-top: 1px solid #e5e5e5;
+      border-bottom: 1px solid #e5e5e5;
+      padding: 16px 0;
+      margin: 16px 0;
+    }
+    
+    .modal-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      font-size: 13px;
+    }
+    
+    .modal-row .label {
+      color: #666;
+    }
+    
+    .modal-row .value {
+      font-weight: 600;
+    }
+    
+    .retest-free {
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 12px;
+    }
+    
+    .retest-free .title {
+      color: #15803d;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    
+    .retest-free .desc {
+      color: #166534;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .modal-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      border: none;
+    }
+    
+    .modal-btn-primary {
+      background: #0d47a1;
+      color: white;
+    }
+    
+    .modal-btn-secondary {
+      background: #f5f5f5;
+      color: #333;
+    }
+    
+    /* INVOICES TAB */
+    .invoices-summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .inv-summary-card {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      border: 1px solid #e5e5e5;
+    }
+    
+    .inv-summary-card .label {
+      font-size: 11px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .inv-summary-card .value {
+      font-size: 28px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+    
+    .inv-list {
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #e5e5e5;
+      overflow: hidden;
+    }
+    
+    .inv-list-header {
+      background: #0d47a1;
+      color: white;
+      padding: 12px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .inv-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid #e5e5e5;
+    }
+    
+    .inv-item:last-child {
+      border-bottom: none;
+    }
+    
+    .inv-item:hover {
+      background: #e3f2fd;
+    }
+    
+    .inv-item-left .inv-id {
+      font-weight: 600;
+      color: #0d47a1;
+      font-size: 13px;
+    }
+    
+    .inv-item-left .inv-details {
+      font-size: 11px;
+      color: #666;
+      margin-top: 2px;
+    }
+    
+    .inv-item-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .inv-amount {
+      font-weight: 700;
+      color: #15803d;
+    }
+    
+    .retest-badge {
+      background: #dcfce7;
+      color: #15803d;
+      font-size: 10px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    @media (max-width: 768px) {
+      .summary-section {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .invoices-summary {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      table {
+        font-size: 10px;
+      }
+      
+      th, td {
+        padding: 8px 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen" class="login-screen">
+    <div class="login-box">
+      <div class="login-header">
+        <h1>GR TRUCKING</h1>
+        <h2>Fleet Compliance Portal</h2>
+        <p class="location">Rancho Cordova, CA</p>
+      </div>
+      
+      <div>
+        <label style="display:block; text-align:center; font-size:13px; color:#666; margin-bottom:12px;">ENTER ACCESS CODE</label>
+        <input type="password" id="passwordInput" class="login-input" maxlength="5" placeholder="•••••" autofocus>
+        <div id="loginError" class="login-error" style="display:none;">Incorrect password. Please try again.</div>
+        <button onclick="attemptLogin()" class="login-btn">ACCESS PORTAL</button>
+      </div>
+      
+      <div class="login-branding">
+        <p class="powered">Powered By</p>
+        <p class="company">SILVERBACK GROUP LLC</p>
+        <p class="tagline">Proprietary Fleet Management System</p>
+      </div>
+      
+      <div class="login-contact">
+        <p>Need access? Contact NorCal CARB Mobile</p>
+        <p style="margin-top:4px;">916-890-4427 • bryan@norcalcarbmobile.com</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN PORTAL -->
+  <div id="portal" class="portal">
+    <!-- HEADER -->
+    <div class="header">
+      <div class="header-content">
+        <div>
+          <h1>GR TRUCKING</h1>
+          <h2>Fleet Compliance Portal • Rancho Cordova, CA</h2>
+        </div>
+        <div class="header-right">
+          <div>NorCal CARB Mobile</div>
+          <div style="margin-top:2px;">Sync: Today 8:00 AM</div>
+        </div>
+      </div>
+      <div class="header-content" style="margin-top:10px;">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('fleet')">FLEET STATUS</button>
+          <button class="tab-btn" onclick="switchTab('invoices')">INVOICES</button>
+        </div>
+        <div class="header-contacts">
+          <a href="tel:9168904427">CALL 916-890-4427</a>
+          <a href="mailto:bryan@norcalcarbmobile.com">EMAIL</a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- SEARCH BAR - PROMINENT -->
+    <div class="search-section">
+      <div class="search-section-inner">
+        <input type="text" id="searchInput" class="search-input-main" placeholder="Search by Truck #, VIN, Plate, or Make..." oninput="filterTable()">
+      </div>
+    </div>
+    
+    <!-- MAIN CONTENT -->
+    <div class="main">
+      <!-- FLEET TAB -->
+      <div id="fleetTab" class="tab-content active">
+        
+        <!-- Table -->
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>TRUCK #</th>
+                <th>VIN</th>
+                <th>PLATE</th>
+                <th>MAKE</th>
+                <th>YEAR</th>
+                <th>TEST TYPE</th>
+                <th>LAST TEST</th>
+                <th>RESULT</th>
+                <th>NEXT DUE</th>
+                <th>DAYS</th>
+                <th>STATUS</th>
+                <th>UPLOADED</th>
+                <th>PAYMENT</th>
+                <th>INVOICE</th>
+              </tr>
+            </thead>
+            <tbody id="fleetTableBody">
+              <!-- Data populated by JS -->
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- Summary at Bottom -->
+        <div class="summary-section">
+          <div class="summary-card card-yellow" onclick="filterByStatus('TESTING DUE')">
+            <div class="count" id="countYellow">0</div>
+            <div class="label">TESTING DUE</div>
+            <div class="sublabel">Schedule Now</div>
+          </div>
+          <div class="summary-card card-orange" onclick="filterByStatus('NOT READY')">
+            <div class="count" id="countOrange">0</div>
+            <div class="label">NOT READY</div>
+            <div class="sublabel">Retest Free</div>
+          </div>
+          <div class="summary-card card-green" onclick="filterByStatus('COMPLIANT')">
+            <div class="count" id="countGreen">0</div>
+            <div class="label">COMPLIANT</div>
+            <div class="sublabel">Good Standing</div>
+          </div>
+          <div class="summary-card card-red" onclick="filterByStatus('OVERDUE')">
+            <div class="count" id="countRed">0</div>
+            <div class="label">OVERDUE</div>
+            <div class="sublabel">Action Needed</div>
+          </div>
+          <div class="summary-card card-critical" onclick="filterByStatus('CRITICAL')">
+            <div class="count" id="countCritical">0</div>
+            <div class="label">CRITICAL</div>
+            <div class="sublabel">500+ Days</div>
+          </div>
+        </div>
+        
+        <!-- Legend -->
+        <div class="legend">
+          <h4>Legend</h4>
+          <div class="legend-items">
+            <div class="legend-item"><div class="legend-color" style="background:#fef9c3;border:1px solid #fbbf24;"></div>Testing Due - Schedule now</div>
+            <div class="legend-item"><div class="legend-color" style="background:#fed7aa;border:1px solid #f97316;"></div>Not Ready - Codes need flush (Retest FREE)</div>
+            <div class="legend-item"><div class="legend-color" style="background:#dcfce7;border:1px solid #22c55e;"></div>Compliant - Good standing</div>
+            <div class="legend-item"><div class="legend-color" style="background:#fecaca;border:1px solid #ef4444;"></div>Overdue - Action required</div>
+            <div class="legend-item"><div class="legend-color" style="background:#7f1d1d;"></div><span style="color:#7f1d1d;font-weight:600;">Critical - 500+ days</span></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- INVOICES TAB -->
+      <div id="invoicesTab" class="tab-content">
+        <div class="invoices-summary">
+          <div class="inv-summary-card">
+            <div class="label">Total Paid</div>
+            <div class="value" style="color:#15803d;" id="totalPaid">$0</div>
+          </div>
+          <div class="inv-summary-card">
+            <div class="label">Total Tests</div>
+            <div class="value" style="color:#0d47a1;" id="totalTests">0</div>
+          </div>
+          <div class="inv-summary-card">
+            <div class="label">Pending Retests</div>
+            <div class="value" style="color:#f97316;" id="pendingRetests">0</div>
+          </div>
+          <div class="inv-summary-card">
+            <div class="label">Fleet Size</div>
+            <div class="value" style="color:#0d47a1;" id="fleetSize">0</div>
+          </div>
+        </div>
+        
+        <div class="inv-list">
+          <div class="inv-list-header">ALL INVOICES</div>
+          <div id="invoicesList">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div class="footer">
+        <p class="powered">Powered By</p>
+        <p class="company">SILVERBACK GROUP LLC</p>
+        <p class="legal">© 2026 All Rights Reserved • Proprietary Fleet Management System<br>Unauthorized access, copying, or distribution is prohibited.</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- INVOICE MODAL -->
+  <div id="invoiceModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <h3>Invoice Details</h3>
+          <p class="invoice-id" id="modalInvoiceId"></p>
+        </div>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Populated by JS -->
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn-primary" onclick="alert('Invoice PDF would download here')">VIEW INVOICE PDF</button>
+        <button class="modal-btn modal-btn-secondary" onclick="closeModal()">CLOSE</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // GR TRUCKING FLEET DATA - Rancho Cordova
+    const fleetData = [
+      // YELLOW - Testing Due
+      { truck_num: "GR002", vin: "1XPBDP9X8ND892345", plate: "CA345678", make: "Peterbilt", year: 2022, test_type: "OBD", last_test: "07/30/2025", last_result: "PASS", next_due: "01/26/2026", days: 4, status: "TESTING DUE", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-0730-002", amount_paid: 75 },
+      { truck_num: "GR008", vin: "3AKJJHLD5MN892456", plate: "8A12345", make: "Freightliner", year: 2021, test_type: "OBD", last_test: "07/28/2025", last_result: "PASS", next_due: "01/24/2026", days: 2, status: "TESTING DUE", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-0728-008", amount_paid: 75 },
+      { truck_num: "GR015", vin: "4V4NC9EH5LN892567", plate: "CA567890", make: "Volvo", year: 2020, test_type: "OBD", last_test: "08/05/2025", last_result: "PASS", next_due: "02/01/2026", days: 10, status: "TESTING DUE", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-0805-015", amount_paid: 75 },
+      { truck_num: "GR023", vin: "1M1WDHR5XMK892678", plate: "5E12345", make: "Mack", year: 2021, test_type: "OBD", last_test: "08/10/2025", last_result: "PASS", next_due: "02/06/2026", days: 15, status: "TESTING DUE", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-0810-023", amount_paid: 75 },
+      { truck_num: "GR031", vin: "1HTWDAAR5KH892789", plate: "89207L2", make: "International", year: 2019, test_type: "OBD", last_test: "08/02/2025", last_result: "PASS", next_due: "01/29/2026", days: 7, status: "TESTING DUE", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-0802-031", amount_paid: 75 },
+      { truck_num: "GR041", vin: "1NKZLJ0X1LJ892890", plate: "6N63398", make: "Kenworth", year: 2020, test_type: "OBD", last_test: "08/15/2025", last_result: "PASS", next_due: "02/11/2026", days: 20, status: "TESTING DUE", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-0815-041", amount_paid: 75 },
+      
+      // ORANGE - Not Ready (retest free)
+      { truck_num: "GR004", vin: "1XKDD40X9FK892234", plate: "9F17708", make: "Kenworth", year: 2015, test_type: "OBD", last_test: "01/07/2026", last_result: "FAIL - Awaiting Code Flush", next_due: "07/06/2026", days: 165, status: "NOT READY", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2026-0107-004", amount_paid: 75, retest_free: true },
+      { truck_num: "GR007", vin: "3HSDZAPR9NN892345", plate: "CA789012", make: "International", year: 2022, test_type: "OBD", last_test: "01/04/2026", last_result: "FAIL - Awaiting Code Flush", next_due: "07/03/2026", days: 162, status: "NOT READY", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2026-0104-007", amount_paid: 75, retest_free: true },
+      { truck_num: "GR012", vin: "1FUYDDYB9CP892456", plate: "CA234567", make: "Freightliner", year: 2012, test_type: "OVI (Smoke)", last_test: "01/01/2026", last_result: "FAIL - Awaiting Code Flush", next_due: "06/30/2026", days: 159, status: "NOT READY", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2026-0101-012", amount_paid: 250, retest_free: true },
+      { truck_num: "GR017", vin: "4VZ3DAJE5NN892567", plate: "7D43898", make: "Volvo", year: 2022, test_type: "OBD", last_test: "12/30/2025", last_result: "FAIL - Awaiting Code Flush", next_due: "06/28/2026", days: 157, status: "NOT READY", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1230-017", amount_paid: 75, retest_free: true },
+      { truck_num: "GR019", vin: "1M2AX04C8LM892678", plate: "CA901234", make: "Mack", year: 2020, test_type: "OBD", last_test: "01/02/2026", last_result: "FAIL - Awaiting Code Flush", next_due: "07/01/2026", days: 160, status: "NOT READY", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2026-0102-019", amount_paid: 75, retest_free: true },
+      { truck_num: "GR032", vin: "1XPCD40X5MD892789", plate: "9B16797", make: "Peterbilt", year: 2021, test_type: "OBD", last_test: "01/03/2026", last_result: "FAIL - Awaiting Code Flush", next_due: "07/02/2026", days: 161, status: "NOT READY", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2026-0103-032", amount_paid: 75, retest_free: true },
+      { truck_num: "GR053", vin: "1NKWL40X3KJ892890", plate: "41543Y2", make: "Kenworth", year: 2019, test_type: "OBD", last_test: "01/12/2026", last_result: "FAIL - Awaiting Code Flush", next_due: "07/11/2026", days: 170, status: "NOT READY", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2026-0112-053", amount_paid: 75, retest_free: true },
+      
+      // GREEN - Compliant (39 trucks)
+      { truck_num: "GR001", vin: "1M1WDHR5XLK892123", plate: "CA892156", make: "Mack", year: 2020, test_type: "OBD", last_test: "11/15/2025", last_result: "PASS", next_due: "05/14/2026", days: 112, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1115-001", amount_paid: 75 },
+      { truck_num: "GR003", vin: "3AKJJHLDXMN892234", plate: "7D45892", make: "Freightliner", year: 2021, test_type: "OBD", last_test: "12/01/2025", last_result: "PASS", next_due: "05/30/2026", days: 128, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1201-003", amount_paid: 75 },
+      { truck_num: "GR005", vin: "4V4NC9EH5MN892345", plate: "CA345123", make: "Volvo", year: 2021, test_type: "OBD", last_test: "10/20/2025", last_result: "PASS", next_due: "04/18/2026", days: 86, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1020-005", amount_paid: 75 },
+      { truck_num: "GR006", vin: "1HTWDAAR5JH892456", plate: "89207K2", make: "International", year: 2018, test_type: "OBD", last_test: "11/01/2025", last_result: "PASS", next_due: "04/30/2026", days: 98, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1101-006", amount_paid: 75 },
+      { truck_num: "GR009", vin: "1XPBDP9X8RD892567", plate: "GRTRK01", make: "Peterbilt", year: 2024, test_type: "OBD", last_test: "12/15/2025", last_result: "PASS", next_due: "06/13/2026", days: 142, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1215-009", amount_paid: 75 },
+      { truck_num: "GR010", vin: "1NKZLJ0X1MJ892678", plate: "6N63399", make: "Kenworth", year: 2021, test_type: "OBD", last_test: "11/20/2025", last_result: "PASS", next_due: "05/19/2026", days: 117, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1120-010", amount_paid: 75 },
+      { truck_num: "GR011", vin: "3HSDZTZR4NN892789", plate: "CA678901", make: "International", year: 2022, test_type: "OBD", last_test: "10/15/2025", last_result: "PASS", next_due: "04/13/2026", days: 81, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1015-011", amount_paid: 75 },
+      { truck_num: "GR013", vin: "1M2AX04C8MK892890", plate: "5E68893", make: "Mack", year: 2019, test_type: "OBD", last_test: "12/20/2025", last_result: "PASS", next_due: "06/18/2026", days: 147, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1220-013", amount_paid: 75 },
+      { truck_num: "GR014", vin: "4VZ3DAJE5LN892901", plate: "CA789123", make: "Volvo", year: 2020, test_type: "OBD", last_test: "11/10/2025", last_result: "PASS", next_due: "05/09/2026", days: 107, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1110-014", amount_paid: 75 },
+      { truck_num: "GR016", vin: "1FUYDDYB9EP892012", plate: "CA123567", make: "Freightliner", year: 2014, test_type: "OBD", last_test: "12/05/2025", last_result: "PASS", next_due: "06/03/2026", days: 132, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1205-016", amount_paid: 75 },
+      { truck_num: "GR018", vin: "1XKDD40X9GK892123", plate: "9F17709", make: "Kenworth", year: 2016, test_type: "OBD", last_test: "10/25/2025", last_result: "PASS", next_due: "04/23/2026", days: 91, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1025-018", amount_paid: 75 },
+      { truck_num: "GR020", vin: "3AKJJHLD5PN892234", plate: "8A12346", make: "Freightliner", year: 2023, test_type: "OBD", last_test: "11/25/2025", last_result: "PASS", next_due: "05/24/2026", days: 122, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1125-020", amount_paid: 75 },
+      { truck_num: "GR021", vin: "1HTWDAAR5LH892345", plate: "89207M2", make: "International", year: 2020, test_type: "OBD", last_test: "12/10/2025", last_result: "PASS", next_due: "06/08/2026", days: 137, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1210-021", amount_paid: 75 },
+      { truck_num: "GR022", vin: "1XPCD40X5ND892456", plate: "9B16798", make: "Peterbilt", year: 2022, test_type: "OBD", last_test: "10/30/2025", last_result: "PASS", next_due: "04/28/2026", days: 96, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1030-022", amount_paid: 75 },
+      { truck_num: "GR024", vin: "4V4NC9EH5NN892567", plate: "CA567891", make: "Volvo", year: 2022, test_type: "OBD", last_test: "11/05/2025", last_result: "PASS", next_due: "05/04/2026", days: 102, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1105-024", amount_paid: 75 },
+      { truck_num: "GR025", vin: "1M1WDHR5XNK892678", plate: "CA892157", make: "Mack", year: 2022, test_type: "OBD", last_test: "12/25/2025", last_result: "PASS", next_due: "06/23/2026", days: 152, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1225-025", amount_paid: 75 },
+      { truck_num: "GR026", vin: "1NKWL40X3LJ892789", plate: "41543Y3", make: "Kenworth", year: 2020, test_type: "OBD", last_test: "10/10/2025", last_result: "PASS", next_due: "04/08/2026", days: 76, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1010-026", amount_paid: 75 },
+      { truck_num: "GR027", vin: "3HSDZAPR9PN892890", plate: "CA789013", make: "International", year: 2023, test_type: "OBD", last_test: "11/30/2025", last_result: "PASS", next_due: "05/29/2026", days: 127, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1130-027", amount_paid: 75 },
+      { truck_num: "GR028", vin: "1FUYDDYB9FP892901", plate: "CA234568", make: "Freightliner", year: 2015, test_type: "OBD", last_test: "12/08/2025", last_result: "PASS", next_due: "06/06/2026", days: 135, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1208-028", amount_paid: 75 },
+      { truck_num: "GR029", vin: "4VZ3DAJE5MN892012", plate: "7D43899", make: "Volvo", year: 2021, test_type: "OBD", last_test: "10/05/2025", last_result: "PASS", next_due: "04/03/2026", days: 71, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1005-029", amount_paid: 75 },
+      { truck_num: "GR030", vin: "1XKDD40X9HK892123", plate: "9F17710", make: "Kenworth", year: 2017, test_type: "OBD", last_test: "11/08/2025", last_result: "PASS", next_due: "05/07/2026", days: 105, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1108-030", amount_paid: 75 },
+      { truck_num: "GR033", vin: "1M2AX04C8NK892234", plate: "CA901235", make: "Mack", year: 2022, test_type: "OBD", last_test: "12/18/2025", last_result: "PASS", next_due: "06/16/2026", days: 145, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1218-033", amount_paid: 75 },
+      { truck_num: "GR034", vin: "3AKJJHLD5RN892345", plate: "8A12347", make: "Freightliner", year: 2024, test_type: "OBD", last_test: "10/22/2025", last_result: "PASS", next_due: "04/20/2026", days: 88, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1022-034", amount_paid: 75 },
+      { truck_num: "GR035", vin: "1HTWDAAR5MH892456", plate: "89207N2", make: "International", year: 2021, test_type: "OBD", last_test: "11/28/2025", last_result: "PASS", next_due: "05/27/2026", days: 125, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1128-035", amount_paid: 75 },
+      { truck_num: "GR036", vin: "1XPBDP9X8SD892567", plate: "GRTRK02", make: "Peterbilt", year: 2025, test_type: "OBD", last_test: "12/22/2025", last_result: "PASS", next_due: "06/20/2026", days: 149, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1222-036", amount_paid: 75 },
+      { truck_num: "GR037", vin: "4V4NC9EH5PN892678", plate: "CA345124", make: "Volvo", year: 2023, test_type: "OBD", last_test: "10/18/2025", last_result: "PASS", next_due: "04/16/2026", days: 84, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1018-037", amount_paid: 75 },
+      { truck_num: "GR038", vin: "1NKZLJ0X1NJ892789", plate: "6N63400", make: "Kenworth", year: 2022, test_type: "OBD", last_test: "11/12/2025", last_result: "PASS", next_due: "05/11/2026", days: 109, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1112-038", amount_paid: 75 },
+      { truck_num: "GR039", vin: "3HSDZTZR4PN892890", plate: "CA678902", make: "International", year: 2023, test_type: "OBD", last_test: "12/28/2025", last_result: "PASS", next_due: "06/26/2026", days: 155, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1228-039", amount_paid: 75 },
+      { truck_num: "GR040", vin: "1M1WDHR5XPK892901", plate: "CA892158", make: "Mack", year: 2023, test_type: "OBD", last_test: "10/28/2025", last_result: "PASS", next_due: "04/26/2026", days: 94, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1028-040", amount_paid: 75 },
+      { truck_num: "GR042", vin: "1FUYDDYB9GP892012", plate: "CA123568", make: "Freightliner", year: 2016, test_type: "OBD", last_test: "11/18/2025", last_result: "PASS", next_due: "05/17/2026", days: 115, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1118-042", amount_paid: 75 },
+      { truck_num: "GR043", vin: "4VZ3DAJE5NN892123", plate: "7D43900", make: "Volvo", year: 2022, test_type: "OBD", last_test: "12/12/2025", last_result: "PASS", next_due: "06/10/2026", days: 139, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1212-043", amount_paid: 75 },
+      { truck_num: "GR044", vin: "1XKDD40X9JK892234", plate: "9F17711", make: "Kenworth", year: 2018, test_type: "OBD", last_test: "10/12/2025", last_result: "PASS", next_due: "04/10/2026", days: 78, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1012-044", amount_paid: 75 },
+      { truck_num: "GR045", vin: "1XPCD40X5PD892345", plate: "9B16799", make: "Peterbilt", year: 2023, test_type: "OBD", last_test: "11/22/2025", last_result: "PASS", next_due: "05/21/2026", days: 119, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1122-045", amount_paid: 75 },
+      { truck_num: "GR046", vin: "3AKJJHLD5SN892456", plate: "8A12348", make: "Freightliner", year: 2025, test_type: "OBD", last_test: "12/30/2025", last_result: "PASS", next_due: "06/28/2026", days: 157, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1230-046", amount_paid: 75 },
+      { truck_num: "GR047", vin: "1M2AX04C8PK892567", plate: "5E68894", make: "Mack", year: 2023, test_type: "OBD", last_test: "10/08/2025", last_result: "PASS", next_due: "04/06/2026", days: 74, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1008-047", amount_paid: 75 },
+      { truck_num: "GR048", vin: "1HTWDAAR5NH892678", plate: "89207P2", make: "International", year: 2022, test_type: "OBD", last_test: "11/15/2025", last_result: "PASS", next_due: "05/14/2026", days: 112, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1115-048", amount_paid: 75 },
+      { truck_num: "GR049", vin: "4V4NC9EH5RN892789", plate: "CA567892", make: "Volvo", year: 2024, test_type: "OBD", last_test: "12/05/2025", last_result: "PASS", next_due: "06/03/2026", days: 132, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1205-049", amount_paid: 75 },
+      { truck_num: "GR050", vin: "1NKWL40X3MJ892890", plate: "41543Y4", make: "Kenworth", year: 2021, test_type: "OBD", last_test: "10/02/2025", last_result: "PASS", next_due: "03/31/2026", days: 68, status: "COMPLIANT", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-1002-050", amount_paid: 75 },
+      
+      // RED - Overdue
+      { truck_num: "GR051", vin: "3HSDZAPR9BN892901", plate: "CA789014", make: "International", year: 2011, test_type: "OVI (Smoke)", last_test: "05/15/2025", last_result: "EXPIRED", next_due: "11/11/2025", days: -72, status: "OVERDUE", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-0515-051", amount_paid: 250 },
+      { truck_num: "GR052", vin: "1FUYDDYB9AN892012", plate: "CA234569", make: "Freightliner", year: 2010, test_type: "OVI (Smoke)", last_test: "04/20/2025", last_result: "PASS (Overdue)", next_due: "10/17/2025", days: -97, status: "OVERDUE", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-0420-052", amount_paid: 250 },
+      { truck_num: "GR054", vin: "1M2AX04C8CN892123", plate: "CA901236", make: "Mack", year: 2012, test_type: "OVI (Smoke)", last_test: "06/10/2025", last_result: "EXPIRED", next_due: "12/07/2025", days: -46, status: "OVERDUE", uploaded: "Yes", payment: "Yes", invoice_id: "INV-GR-2025-0610-054", amount_paid: 250 },
+      
+      // CRITICAL
+      { truck_num: "GR280", vin: "1NKZUJ0X1KJ249551", plate: "5Y89234", make: "Kenworth", year: 2019, test_type: "OBD", last_test: null, last_result: "NEVER TESTED", next_due: "08/31/2024", days: -509, status: "CRITICAL", uploaded: "Pending", payment: "Pending", invoice_id: null, amount_paid: 0 }
+    ];
+    
+    let currentFilter = 'ALL';
+    let blinkState = true;
+    
+    // PROTECTION
+    document.addEventListener('copy', e => { e.preventDefault(); alert('Content is protected.'); });
+    document.addEventListener('cut', e => { e.preventDefault(); });
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'p') { e.preventDefault(); alert('Printing is disabled.'); }
+    });
+    
+    // PASSWORD
+    document.getElementById('passwordInput').addEventListener('keypress', e => {
+      if (e.key === 'Enter') attemptLogin();
+    });
+    
+    function attemptLogin() {
+      const pw = document.getElementById('passwordInput').value;
+      if (pw === '11111') {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('portal').classList.add('active');
+        renderTable();
+        updateCounts();
+        renderInvoices();
+      } else {
+        document.getElementById('loginError').style.display = 'block';
+      }
+    }
+    
+    // BLINK
+    setInterval(() => {
+      blinkState = !blinkState;
+      document.querySelectorAll('.row-critical').forEach(row => {
+        row.classList.toggle('blink', !blinkState);
+      });
+    }, 600);
+    
+    // TABS
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      if (tab === 'fleet') {
+        document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+        document.getElementById('fleetTab').classList.add('active');
+      } else {
+        document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+        document.getElementById('invoicesTab').classList.add('active');
+      }
+    }
+    
+    // RENDER TABLE
+    function renderTable() {
+      const tbody = document.getElementById('fleetTableBody');
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      
+      let filtered = fleetData.filter(t => {
+        if (currentFilter !== 'ALL' && t.status !== currentFilter) return false;
+        if (search && !t.truck_num.toLowerCase().includes(search) && 
+            !t.vin.toLowerCase().includes(search) && 
+            !t.plate.toLowerCase().includes(search) &&
+            !t.make.toLowerCase().includes(search)) return false;
+        return true;
+      });
+      
+      // Sort
+      const order = { 'TESTING DUE': 1, 'NOT READY': 2, 'COMPLIANT': 3, 'OVERDUE': 4, 'CRITICAL': 5 };
+      filtered.sort((a, b) => {
+        if (order[a.status] !== order[b.status]) return order[a.status] - order[b.status];
+        return a.days - b.days;
+      });
+      
+      tbody.innerHTML = filtered.map(t => {
+        let rowClass = '';
+        let badgeClass = '';
+        if (t.status === 'TESTING DUE') { rowClass = 'row-yellow'; badgeClass = 'badge-yellow'; }
+        else if (t.status === 'NOT READY') { rowClass = 'row-orange'; badgeClass = 'badge-orange'; }
+        else if (t.status === 'COMPLIANT') { rowClass = 'row-green'; badgeClass = 'badge-green'; }
+        else if (t.status === 'OVERDUE') { rowClass = 'row-red'; badgeClass = 'badge-red'; }
+        else if (t.status === 'CRITICAL') { rowClass = 'row-critical'; badgeClass = 'badge-critical'; }
+        
+        return `<tr class="${rowClass}">
+          <td><strong>${t.truck_num}</strong></td>
+          <td class="vin-cell">${t.vin}</td>
+          <td>${t.plate}</td>
+          <td>${t.make}</td>
+          <td style="text-align:center;">${t.year}</td>
+          <td>${t.test_type}</td>
+          <td>${t.last_test || 'NEVER'}</td>
+          <td style="font-size:10px;">${t.last_result}</td>
+          <td>${t.next_due}</td>
+          <td style="text-align:center;font-weight:600;">${t.days}</td>
+          <td style="text-align:center;"><span class="status-badge ${badgeClass}">${t.status}</span></td>
+          <td style="text-align:center;"><span class="${t.uploaded === 'Yes' ? 'check-yes' : 'check-pending'}">${t.uploaded === 'Yes' ? '✓' : '...'}</span></td>
+          <td style="text-align:center;"><span class="${t.payment === 'Yes' ? 'check-yes' : 'check-pending'}">${t.payment === 'Yes' ? '✓' : '...'}</span></td>
+          <td style="text-align:center;"><button class="invoice-btn" onclick="openModal('${t.truck_num}')">VIEW</button></td>
+        </tr>`;
+      }).join('');
+    }
+    
+    function filterTable() {
+      renderTable();
+    }
+    
+    function filterByStatus(status) {
+      currentFilter = currentFilter === status ? 'ALL' : status;
+      document.querySelectorAll('.summary-card').forEach(card => card.classList.remove('active'));
+      if (currentFilter !== 'ALL') {
+        event.target.closest('.summary-card').classList.add('active');
+      }
+      renderTable();
+    }
+    
+    function updateCounts() {
+      document.getElementById('countYellow').textContent = fleetData.filter(t => t.status === 'TESTING DUE').length;
+      document.getElementById('countOrange').textContent = fleetData.filter(t => t.status === 'NOT READY').length;
+      document.getElementById('countGreen').textContent = fleetData.filter(t => t.status === 'COMPLIANT').length;
+      document.getElementById('countRed').textContent = fleetData.filter(t => t.status === 'OVERDUE').length;
+      document.getElementById('countCritical').textContent = fleetData.filter(t => t.status === 'CRITICAL').length;
+    }
+    
+    // INVOICES
+    function renderInvoices() {
+      const totalPaid = fleetData.reduce((sum, t) => sum + (t.amount_paid || 0), 0);
+      const totalTests = fleetData.filter(t => t.invoice_id).length;
+      const pendingRetests = fleetData.filter(t => t.retest_free).length;
+      
+      document.getElementById('totalPaid').textContent = '$' + totalPaid.toLocaleString();
+      document.getElementById('totalTests').textContent = totalTests;
+      document.getElementById('pendingRetests').textContent = pendingRetests;
+      document.getElementById('fleetSize').textContent = fleetData.length;
+      
+      const list = document.getElementById('invoicesList');
+      list.innerHTML = fleetData.filter(t => t.invoice_id).map(t => `
+        <div class="inv-item">
+          <div class="inv-item-left">
+            <div class="inv-id">${t.invoice_id}</div>
+            <div class="inv-details">${t.truck_num} • ${t.last_test} • ${t.test_type}</div>
+          </div>
+          <div class="inv-item-right">
+            <span class="inv-amount">$${t.amount_paid}</span>
+            ${t.retest_free ? '<span class="retest-badge">RETEST FREE</span>' : ''}
+            <button class="invoice-btn" onclick="openModal('${t.truck_num}')">VIEW</button>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    // MODAL
+    function openModal(truckNum) {
+      const t = fleetData.find(x => x.truck_num === truckNum);
+      if (!t) return;
+      
+      document.getElementById('modalInvoiceId').textContent = t.invoice_id || 'No Invoice';
+      
+      let html = `
+        <div class="modal-row"><span class="label">Truck #</span><span class="value">${t.truck_num}</span></div>
+        <div class="modal-row"><span class="label">VIN</span><span class="value" style="font-family:monospace;font-size:11px;">${t.vin}</span></div>
+        <div class="modal-row"><span class="label">Test Type</span><span class="value">${t.test_type}</span></div>
+        <div class="modal-row"><span class="label">Test Date</span><span class="value">${t.last_test || 'N/A'}</span></div>
+        <div class="modal-row"><span class="label">Result</span><span class="value" style="color:${t.last_result?.includes('FAIL') ? '#f97316' : '#22c55e'};">${t.last_result}</span></div>
+        <div class="modal-row"><span class="label">Amount Paid</span><span class="value" style="color:#15803d;font-size:18px;">$${t.amount_paid || 0}</span></div>
+      `;
+      
+      if (t.retest_free) {
+        html += `
+          <div class="retest-free">
+            <div class="title">✓ RETEST IS FREE</div>
+            <div class="desc">This vehicle failed testing. Once repairs are complete and codes are flushed, the retest is included at no additional charge.</div>
+          </div>
+        `;
+      }
+      
+      document.getElementById('modalBody').innerHTML = html;
+      document.getElementById('invoiceModal').classList.add('active');
+    }
+    
+    function closeModal() {
+      document.getElementById('invoiceModal').classList.remove('active');
+    }
+  </script>
+</body>
+</html>
