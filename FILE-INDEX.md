@@ -11,12 +11,13 @@ mark each row **K** (keep), **D** (delete), or **R** (review).
 
 ---
 
-## 1. Local repo HTML files (2) — all **KEEP**
+## 1. Local repo HTML files — all **KEEP**
 
 | Path | Purpose | Size |
 |------|---------|------|
 | `index.html` | **Agent Round Table** dashboard — 11-agent status UI (title: "Team Status - Round Table"). Referenced in CLAUDE.md. | 29 KB |
 | `salesbot.html` | **The Office** — CSP-hardened Closer sales-bot demo. Do not modify CSP. | 26 KB |
+| `fleet-portals/gr-trucking.html` | **GR Trucking — Fleet Compliance Portal** (Rancho Cordova, CA). Password-gated. Tracks fleet status (compliant / due / overdue / critical), invoice totals, retests. **Use as template for JMB and other customer portals.** | 49 KB |
 
 ### Deleted 2026-04-19 (not the new mobilecarbsmoketest.com template)
 
