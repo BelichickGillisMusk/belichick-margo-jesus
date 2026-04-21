@@ -1,0 +1,16 @@
+{
+  "name": "openclaw-runtime",
+  "version": "0.1.0",
+  "description": "SilverbackAI agent orchestration runtime — Belichick delegates, sub-agents execute",
+  "type": "module",
+  "bin": {
+    "openclaw-run": "./src/cli.js"
+  },
+  "scripts": {
+    "start": "node src/cli.js",
+    "project": "node src/cli.js project"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.52.0"
+  }
+}
