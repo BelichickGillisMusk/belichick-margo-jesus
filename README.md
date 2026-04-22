@@ -70,6 +70,24 @@ Operational notes:
 - Retries transient Google API failures.
 - Appends a sheet header only when the target sheet is empty.
 - Writes CSV values with proper escaping.
+- Supports numbered company-list research via:
+
+```bash
+npm run scrape -- --companies-file /absolute/path/to/companies.txt "California"
+```
+
+or
+
+```bash
+npm run scrape -- --companies-text $'1. Company One\n2. Company Two' "California"
+```
+
+- For company-list research, the scraper:
+  - preserves list numbering
+  - checks public website/contact pages for real public emails
+  - does **not** use Hunter or ZoomInfo
+  - returns `UNKNOWN` when no public email can be verified after trying public sources
+  - recommends outreach targets in this order: Fleet Manager, COO, CEO
 
 ### 2. Slack Bot
 

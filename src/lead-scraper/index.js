@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { google } from 'googleapis';
 import { isMainModule, parseIntegerEnv } from '../shared/runtime-contract.js';
 
@@ -8,22 +8,20 @@ const SHEETS_ID = process.env.GOOGLE_SHEETS_ID;
 const SERVICE_ACCOUNT_KEY = process.env.GOOGLE_SERVICE_ACCOUNT_KEY || './google-service-account.json';
 const REQUEST_RETRIES = parseIntegerEnv('SCRAPER_REQUEST_RETRIES', 3, 1);
 const REQUEST_DELAY_MS = parseIntegerEnv('SCRAPER_REQUEST_DELAY_MS', 200, 0);
+const CONTACT_PAGE_PATHS = ['/', '/contact', '/contact-us', '/about', '/about-us'];
+const RECOMMENDED_CONTACT_TARGETS = ['Fleet Manager', 'COO', 'CEO'];
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function validateSearchInput(query, location) {
+function validateSearchInput(query) {
   if (!query?.trim()) {
     throw new Error('A search query is required. Example: npm run scrape -- "trucking companies" "Los Angeles CA"');
   }
-
-  if (!location?.trim()) {
-    throw new Error('A location is required. Example: npm run scrape -- "trucking companies" "Los Angeles CA"');
-  }
 }
 
-async function fetchJsonWithRetry(url, label) {
+async function fetchWithRetry(url, label, parse) {
   let lastError;
 
   for (let attempt = 1; attempt <= REQUEST_RETRIES; attempt += 1) {
@@ -37,7 +35,7 @@ async function fetchJsonWithRetry(url, label) {
         }
         lastError = new Error(message);
       } else {
-        return await response.json();
+        return await parse(response);
       }
     } catch (error) {
       lastError = error;
@@ -50,6 +48,14 @@ async function fetchJsonWithRetry(url, label) {
   }
 
   throw lastError;
+}
+
+async function fetchJsonWithRetry(url, label) {
+  return fetchWithRetry(url, label, response => response.json());
+}
+
+async function fetchTextWithRetry(url, label) {
+  return fetchWithRetry(url, label, response => response.text());
 }
 
 function ensureGoogleStatus(data, label) {
@@ -65,9 +71,9 @@ function ensureGoogleStatus(data, label) {
 }
 
 export async function searchPlaces(query, location) {
-  validateSearchInput(query, location);
+  validateSearchInput(query);
   const url = new URL('https://maps.googleapis.com/maps/api/place/textsearch/json');
-  url.searchParams.set('query', `${query} in ${location}`);
+  url.searchParams.set('query', location?.trim() ? `${query} in ${location}` : query);
   url.searchParams.set('key', PLACES_KEY);
 
   const data = await fetchJsonWithRetry(url, 'Google Places text search');
@@ -115,6 +121,155 @@ export function csvEscape(value) {
   return `"${String(value ?? '').replaceAll('"', '""')}"`;
 }
 
+function sanitizeEmailCandidate(value) {
+  return value
+    .replace(/^[("'`<{[\s]+/, '')
+    .replace(/[)"'`>}\].,;:\s]+$/, '')
+    .trim()
+    .toLowerCase();
+}
+
+export function extractEmailsFromText(text) {
+  const matches = text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi) || [];
+  const unique = new Set();
+
+  for (const match of matches) {
+    const normalized = sanitizeEmailCandidate(match);
+    if (normalized && !normalized.endsWith('@hunter.io') && !normalized.endsWith('@zoominfo.com')) {
+      unique.add(normalized);
+    }
+  }
+
+  return [...unique];
+}
+
+function scoreEmail(email) {
+  const localPart = email.split('@')[0];
+
+  if (/(fleet|dispatch|operations|ops|safety|maintenance|service)/.test(localPart)) {
+    return 100;
+  }
+
+  if (/(ceo|coo|owner|president|chief|executive)/.test(localPart)) {
+    return 90;
+  }
+
+  if (/(sales|support|office|admin)/.test(localPart)) {
+    return 70;
+  }
+
+  if (/info/.test(localPart)) {
+    return 40;
+  }
+
+  return 60;
+}
+
+export function chooseBestEmail(emails) {
+  if (!emails.length) {
+    return 'UNKNOWN';
+  }
+
+  return [...emails].sort((left, right) => scoreEmail(right) - scoreEmail(left) || left.localeCompare(right))[0];
+}
+
+function dedupeByKey(items, getKey) {
+  const seen = new Set();
+  return items.filter(item => {
+    const key = getKey(item);
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
+}
+
+export function parseCompanyList(text) {
+  return text
+    .split('\n')
+    .map(line => line.trim())
+    .filter(Boolean)
+    .map((line, index) => {
+      const match = line.match(/^(\d+)[.)-]?\s+(.+)$/);
+      if (match) {
+        return {
+          itemNumber: Number.parseInt(match[1], 10),
+          companyName: match[2].trim(),
+        };
+      }
+
+      return {
+        itemNumber: index + 1,
+        companyName: line,
+      };
+    });
+}
+
+function normalizeWebsiteUrl(website) {
+  if (!website) {
+    return null;
+  }
+
+  try {
+    return new URL(website).toString();
+  } catch {
+    return new URL(`https://${website}`).toString();
+  }
+}
+
+async function discoverPublicEmails(website) {
+  const normalized = normalizeWebsiteUrl(website);
+  if (!normalized) {
+    return {
+      bestEmail: 'UNKNOWN',
+      emails: [],
+      sourceNotes: 'No public website found to inspect for contact emails.',
+      confidence: 'low',
+    };
+  }
+
+  const baseUrl = new URL(normalized);
+  const findings = [];
+
+  for (const path of CONTACT_PAGE_PATHS) {
+    const pageUrl = new URL(path, baseUrl).toString();
+    try {
+      const html = await fetchTextWithRetry(pageUrl, `Public contact page ${pageUrl}`);
+      const emails = extractEmailsFromText(html);
+      if (emails.length > 0) {
+        findings.push({ pageUrl, emails });
+      }
+    } catch {
+      // Ignore individual page fetch failures and keep trying public pages.
+    }
+
+    await sleep(REQUEST_DELAY_MS);
+  }
+
+  const emails = dedupeByKey(findings.flatMap(finding => finding.emails), email => email);
+  if (emails.length === 0) {
+    return {
+      bestEmail: 'UNKNOWN',
+      emails: [],
+      sourceNotes: `Tried public pages (${CONTACT_PAGE_PATHS.join(', ')}) but found no verified email on ${baseUrl.hostname}.`,
+      confidence: 'low',
+    };
+  }
+
+  const bestEmail = chooseBestEmail(emails);
+  const sourceNotes = findings
+    .map(finding => `${finding.pageUrl} => ${finding.emails.join(', ')}`)
+    .join(' | ');
+
+  return {
+    bestEmail,
+    emails,
+    sourceNotes,
+    confidence: bestEmail === 'UNKNOWN' ? 'low' : 'high',
+  };
+}
+
 export function buildCsv(leads) {
   const header = ['Name', 'Phone', 'Address', 'Website', 'Rating', 'Reviews', 'Status'];
   const rows = leads.map(lead => [
@@ -130,11 +285,38 @@ export function buildCsv(leads) {
   return [header.join(','), ...rows].join('\n');
 }
 
+export function buildCompanyResearchCsv(rows) {
+  const header = ['Item', 'Company', 'Matched Place', 'Phone', 'Address', 'Website', 'Best Email', 'All Emails', 'Recommended Targets', 'Source Notes', 'Confidence'];
+  const dataRows = rows.map(row => [
+    csvEscape(row.itemNumber),
+    csvEscape(row.companyName),
+    csvEscape(row.matchedName),
+    csvEscape(row.phone),
+    csvEscape(row.address),
+    csvEscape(row.website),
+    csvEscape(row.bestEmail),
+    csvEscape(row.allEmails.join('; ')),
+    csvEscape(row.recommendedTargets.join(' | ')),
+    csvEscape(row.sourceNotes),
+    csvEscape(row.confidence),
+  ].join(','));
+
+  return [header.join(','), ...dataRows].join('\n');
+}
+
 function printLeads(leads) {
   console.log('Name | Phone | Address | Website | Rating | Reviews');
   console.log('─'.repeat(110));
   for (const lead of leads) {
     console.log(`${lead.name} | ${lead.phone || 'N/A'} | ${lead.address} | ${lead.website || 'N/A'} | ${lead.rating} | ${lead.reviews}`);
+  }
+}
+
+function printCompanyResearch(rows) {
+  console.log('Item | Company | Best Email | Recommended Targets | Confidence');
+  console.log('─'.repeat(120));
+  for (const row of rows) {
+    console.log(`${row.itemNumber} | ${row.companyName} | ${row.bestEmail} | ${row.recommendedTargets.join(' / ')} | ${row.confidence}`);
   }
 }
 
@@ -196,18 +378,101 @@ async function writeToSheets(leads) {
 }
 
 export function parseCliArgs(argv = process.argv.slice(2)) {
+  if (argv[0] === '--companies-file') {
+    return {
+      mode: 'company-list',
+      companiesText: readFileSync(argv[1], 'utf-8'),
+      location: argv[2] || '',
+    };
+  }
+
+  if (argv[0] === '--companies-text') {
+    return {
+      mode: 'company-list',
+      companiesText: argv[1] || '',
+      location: argv[2] || '',
+    };
+  }
+
   return {
+    mode: 'search',
     query: argv[0] || 'trucking companies',
     location: argv[1] || 'Chicago IL',
   };
 }
 
-export async function runScrape({ query, location }) {
+export async function researchCompanyList({ companiesText, location = '' }) {
   if (!PLACES_KEY) {
     throw new Error('Set GOOGLE_PLACES_API_KEY in .env');
   }
 
-  validateSearchInput(query, location);
+  const companies = parseCompanyList(companiesText);
+  if (companies.length === 0) {
+    throw new Error('Provide at least one company name in the numbered list.');
+  }
+
+  const rows = [];
+
+  for (const company of companies) {
+    const matches = await searchPlaces(company.companyName, location);
+    const bestMatch = matches[0];
+
+    if (!bestMatch) {
+      rows.push({
+        itemNumber: company.itemNumber,
+        companyName: company.companyName,
+        matchedName: 'UNKNOWN',
+        phone: '',
+        address: '',
+        website: '',
+        bestEmail: 'UNKNOWN',
+        allEmails: [],
+        recommendedTargets: RECOMMENDED_CONTACT_TARGETS,
+        sourceNotes: 'No Google Business Profile / Google Places match found.',
+        confidence: 'low',
+      });
+      continue;
+    }
+
+    const details = await getPlaceDetails(bestMatch.placeId);
+    const contactResearch = await discoverPublicEmails(details?.website);
+
+    rows.push({
+      itemNumber: company.itemNumber,
+      companyName: company.companyName,
+      matchedName: details?.name || bestMatch.name || 'UNKNOWN',
+      phone: details?.phone || '',
+      address: details?.address || bestMatch.address || '',
+      website: details?.website || '',
+      bestEmail: contactResearch.bestEmail,
+      allEmails: contactResearch.emails,
+      recommendedTargets: RECOMMENDED_CONTACT_TARGETS,
+      sourceNotes: contactResearch.sourceNotes,
+      confidence: contactResearch.confidence,
+    });
+
+    await sleep(REQUEST_DELAY_MS);
+  }
+
+  printCompanyResearch(rows);
+  const timestamp = new Date().toISOString().slice(0, 10);
+  const csvPath = `company-contact-research-${timestamp}.csv`;
+  writeFileSync(csvPath, buildCompanyResearchCsv(rows));
+  console.log(`\n📄 Contact research CSV saved: ${csvPath}`);
+
+  return { csvPath, rows };
+}
+
+export async function runScrape({ mode = 'search', query, location, companiesText }) {
+  if (!PLACES_KEY) {
+    throw new Error('Set GOOGLE_PLACES_API_KEY in .env');
+  }
+
+  if (mode === 'company-list') {
+    return researchCompanyList({ companiesText, location });
+  }
+
+  validateSearchInput(query);
   console.log(`🔍 Searching: "${query}" in ${location}...`);
 
   const results = await searchPlaces(query, location);
