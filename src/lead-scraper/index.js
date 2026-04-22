@@ -1,65 +1,146 @@
 import 'dotenv/config';
 import { writeFileSync } from 'node:fs';
 import { google } from 'googleapis';
+import { isMainModule, parseIntegerEnv } from '../shared/runtime-contract.js';
 
 const PLACES_KEY = process.env.GOOGLE_PLACES_API_KEY;
 const SHEETS_ID = process.env.GOOGLE_SHEETS_ID;
 const SERVICE_ACCOUNT_KEY = process.env.GOOGLE_SERVICE_ACCOUNT_KEY || './google-service-account.json';
+const REQUEST_RETRIES = parseIntegerEnv('SCRAPER_REQUEST_RETRIES', 3, 1);
+const REQUEST_DELAY_MS = parseIntegerEnv('SCRAPER_REQUEST_DELAY_MS', 200, 0);
 
-// ── Google Places Text Search ─────────────────────────────────
-async function searchPlaces(query, location) {
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function validateSearchInput(query, location) {
+  if (!query?.trim()) {
+    throw new Error('A search query is required. Example: npm run scrape -- "trucking companies" "Los Angeles CA"');
+  }
+
+  if (!location?.trim()) {
+    throw new Error('A location is required. Example: npm run scrape -- "trucking companies" "Los Angeles CA"');
+  }
+}
+
+async function fetchJsonWithRetry(url, label) {
+  let lastError;
+
+  for (let attempt = 1; attempt <= REQUEST_RETRIES; attempt += 1) {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        const retriable = response.status >= 500 || response.status === 429;
+        const message = `${label} HTTP ${response.status}`;
+        if (!retriable || attempt === REQUEST_RETRIES) {
+          throw new Error(message);
+        }
+        lastError = new Error(message);
+      } else {
+        return await response.json();
+      }
+    } catch (error) {
+      lastError = error;
+      if (attempt === REQUEST_RETRIES) {
+        break;
+      }
+    }
+
+    await sleep(REQUEST_DELAY_MS * attempt);
+  }
+
+  throw lastError;
+}
+
+function ensureGoogleStatus(data, label) {
+  if (data.status === 'ZERO_RESULTS') {
+    return [];
+  }
+
+  if (data.status !== 'OK') {
+    throw new Error(`${label}: ${data.status}${data.error_message ? ` - ${data.error_message}` : ''}`);
+  }
+
+  return null;
+}
+
+export async function searchPlaces(query, location) {
+  validateSearchInput(query, location);
   const url = new URL('https://maps.googleapis.com/maps/api/place/textsearch/json');
   url.searchParams.set('query', `${query} in ${location}`);
   url.searchParams.set('key', PLACES_KEY);
 
-  const res = await fetch(url);
-  const data = await res.json();
-
-  if (data.status !== 'OK') {
-    console.error(`Places API error: ${data.status} - ${data.error_message || ''}`);
-    return [];
+  const data = await fetchJsonWithRetry(url, 'Google Places text search');
+  const emptyResult = ensureGoogleStatus(data, 'Google Places text search');
+  if (emptyResult) {
+    return emptyResult;
   }
 
-  return data.results.map(r => ({
-    placeId: r.place_id,
-    name: r.name,
-    address: r.formatted_address,
-    rating: r.rating || 'N/A',
-    totalReviews: r.user_ratings_total || 0,
-    open: r.business_status === 'OPERATIONAL',
+  return data.results.map(result => ({
+    placeId: result.place_id,
+    name: result.name,
+    address: result.formatted_address,
+    rating: result.rating || 'N/A',
+    totalReviews: result.user_ratings_total || 0,
+    open: result.business_status === 'OPERATIONAL',
   }));
 }
 
-// ── Google Places Detail Lookup ───────────────────────────────
-async function getPlaceDetails(placeId) {
+export async function getPlaceDetails(placeId) {
   const fields = 'name,formatted_phone_number,formatted_address,website,opening_hours,business_status,rating,user_ratings_total';
   const url = new URL('https://maps.googleapis.com/maps/api/place/details/json');
   url.searchParams.set('place_id', placeId);
   url.searchParams.set('fields', fields);
   url.searchParams.set('key', PLACES_KEY);
 
-  const res = await fetch(url);
-  const data = await res.json();
+  const data = await fetchJsonWithRetry(url, 'Google Places detail lookup');
+  const emptyResult = ensureGoogleStatus(data, 'Google Places detail lookup');
+  if (emptyResult) {
+    return null;
+  }
 
-  if (data.status !== 'OK') return null;
-
-  const r = data.result;
+  const result = data.result;
   return {
-    name: r.name || '',
-    phone: r.formatted_phone_number || '',
-    address: r.formatted_address || '',
-    website: r.website || '',
-    rating: r.rating || 'N/A',
-    reviews: r.user_ratings_total || 0,
-    status: r.business_status || 'UNKNOWN',
+    name: result.name || '',
+    phone: result.formatted_phone_number || '',
+    address: result.formatted_address || '',
+    website: result.website || '',
+    rating: result.rating || 'N/A',
+    reviews: result.user_ratings_total || 0,
+    status: result.business_status || 'UNKNOWN',
   };
 }
 
-// ── Write to Google Sheets ────────────────────────────────────
+export function csvEscape(value) {
+  return `"${String(value ?? '').replaceAll('"', '""')}"`;
+}
+
+export function buildCsv(leads) {
+  const header = ['Name', 'Phone', 'Address', 'Website', 'Rating', 'Reviews', 'Status'];
+  const rows = leads.map(lead => [
+    csvEscape(lead.name),
+    csvEscape(lead.phone),
+    csvEscape(lead.address),
+    csvEscape(lead.website),
+    csvEscape(lead.rating),
+    csvEscape(lead.reviews),
+    csvEscape(lead.status),
+  ].join(','));
+
+  return [header.join(','), ...rows].join('\n');
+}
+
+function printLeads(leads) {
+  console.log('Name | Phone | Address | Website | Rating | Reviews');
+  console.log('─'.repeat(110));
+  for (const lead of leads) {
+    console.log(`${lead.name} | ${lead.phone || 'N/A'} | ${lead.address} | ${lead.website || 'N/A'} | ${lead.rating} | ${lead.reviews}`);
+  }
+}
+
 async function writeToSheets(leads) {
   if (!SHEETS_ID) {
-    console.log('\n⚠ No GOOGLE_SHEETS_ID set — printing to console instead:\n');
-    printLeads(leads);
+    console.log('\n⚠ No GOOGLE_SHEETS_ID set — printing to console only.');
     return;
   }
 
@@ -70,85 +151,93 @@ async function writeToSheets(leads) {
       scopes: ['https://www.googleapis.com/auth/spreadsheets'],
     });
   } catch {
-    console.log('\n⚠ Could not load Google service account — printing to console:\n');
-    printLeads(leads);
+    console.log('\n⚠ Could not load Google service account — skipping Google Sheets export.');
     return;
   }
 
   const sheets = google.sheets({ version: 'v4', auth });
-
   const header = ['Name', 'Phone', 'Address', 'Website', 'Rating', 'Reviews', 'Status', 'Scraped'];
-  const rows = leads.map(l => [
-    l.name, l.phone, l.address, l.website,
-    String(l.rating), String(l.reviews), l.status,
+  const rows = leads.map(lead => [
+    lead.name,
+    lead.phone,
+    lead.address,
+    lead.website,
+    String(lead.rating),
+    String(lead.reviews),
+    lead.status,
     new Date().toISOString(),
   ]);
+
+  if (rows.length === 0) {
+    return;
+  }
+
+  let shouldWriteHeader = true;
+  try {
+    const existing = await sheets.spreadsheets.values.get({
+      spreadsheetId: SHEETS_ID,
+      range: 'Leads!A1:H1',
+    });
+    shouldWriteHeader = !existing.data.values?.length;
+  } catch {
+    shouldWriteHeader = true;
+  }
 
   await sheets.spreadsheets.values.append({
     spreadsheetId: SHEETS_ID,
     range: 'Leads!A1',
     valueInputOption: 'USER_ENTERED',
-    requestBody: { values: [header, ...rows] },
+    requestBody: {
+      values: shouldWriteHeader ? [header, ...rows] : rows,
+    },
   });
 
   console.log(`✅ ${leads.length} leads written to Google Sheets`);
 }
 
-// ── Console output ────────────────────────────────────────────
-function printLeads(leads) {
-  console.log('Name | Phone | Address | Rating | Reviews');
-  console.log('─'.repeat(80));
-  for (const l of leads) {
-    console.log(`${l.name} | ${l.phone || 'N/A'} | ${l.address} | ${l.rating} | ${l.reviews}`);
-  }
+export function parseCliArgs(argv = process.argv.slice(2)) {
+  return {
+    query: argv[0] || 'trucking companies',
+    location: argv[1] || 'Chicago IL',
+  };
 }
 
-// ── Main ──────────────────────────────────────────────────────
-async function main() {
-  const query = process.argv[2] || 'trucking companies';
-  const location = process.argv[3] || 'Chicago IL';
-
+export async function runScrape({ query, location }) {
   if (!PLACES_KEY) {
-    console.error('❌ Set GOOGLE_PLACES_API_KEY in .env');
-    process.exit(1);
+    throw new Error('Set GOOGLE_PLACES_API_KEY in .env');
   }
 
+  validateSearchInput(query, location);
   console.log(`🔍 Searching: "${query}" in ${location}...`);
 
   const results = await searchPlaces(query, location);
   console.log(`📍 Found ${results.length} businesses. Getting details...`);
 
   const leads = [];
-  for (const r of results) {
-    const detail = await getPlaceDetails(r.placeId);
+  for (const result of results) {
+    const detail = await getPlaceDetails(result.placeId);
     if (detail) {
       leads.push(detail);
-      // Respect rate limits
-      await new Promise(resolve => setTimeout(resolve, 200));
     }
+    await sleep(REQUEST_DELAY_MS);
   }
 
   console.log(`✅ ${leads.length} leads with full details.\n`);
-
-  // Always print to console
   printLeads(leads);
-
-  // Write to Sheets if configured
   await writeToSheets(leads);
 
-  // Save CSV backup
   const timestamp = new Date().toISOString().slice(0, 10);
   const safeName = location.replace(/[^a-zA-Z0-9]/g, '-');
-  const header = 'Name,Phone,Address,Website,Rating,Reviews,Status';
-  const rows = leads.map(l =>
-    [l.name, l.phone, `"${l.address}"`, l.website, l.rating, l.reviews, l.status].join(',')
-  );
   const csvPath = `leads-${safeName}-${timestamp}.csv`;
-  writeFileSync(csvPath, [header, ...rows].join('\n'));
+  writeFileSync(csvPath, buildCsv(leads));
   console.log(`\n📄 CSV saved: ${csvPath}`);
+
+  return { csvPath, leads };
 }
 
-main().catch(err => {
-  console.error('💀 Scraper failed:', err.message);
-  process.exit(1);
-});
+if (isMainModule(import.meta)) {
+  runScrape(parseCliArgs()).catch(error => {
+    console.error('💀 Scraper failed:', error.message);
+    process.exit(1);
+  });
+}
