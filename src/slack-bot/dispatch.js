@@ -1,16 +1,15 @@
-// Dispatch engine - sends tasks to Claude and returns results
 import Anthropic from '@anthropic-ai/sdk';
 import { AGENTS } from './agents.js';
 
 const anthropic = new Anthropic();
 
-// Run a single agent on a task
 export async function runAgent(agentId, task) {
   const agent = AGENTS[agentId];
-  if (!agent) throw new Error(`Unknown agent: ${agentId}`);
+  if (!agent) {
+    throw new Error(`Unknown agent: ${agentId}`);
+  }
 
   const start = Date.now();
-
   const response = await anthropic.messages.create({
     model: agent.model,
     max_tokens: 2048,
@@ -18,26 +17,52 @@ export async function runAgent(agentId, task) {
     messages: [{ role: 'user', content: task }],
   });
 
-  const elapsed = ((Date.now() - start) / 1000).toFixed(1);
-  const text = response.content[0]?.text || '(no response)';
-  const tokens = response.usage.input_tokens + response.usage.output_tokens;
+  const text = response.content
+    .filter(block => block.type === 'text')
+    .map(block => block.text)
+    .join('\n')
+    .trim() || '(no response)';
 
-  return { agentId, name: agent.name, text, tokens, elapsed };
+  return {
+    agentId,
+    name: agent.name,
+    text,
+    elapsed: ((Date.now() - start) / 1000).toFixed(1),
+    tokens: response.usage.input_tokens + response.usage.output_tokens,
+  };
 }
 
-// Run multiple agents on the same task (parallel)
 export async function runMission(agentIds, task) {
-  const results = await Promise.all(
-    agentIds.map(id => runAgent(id, task))
-  );
+  const settled = await Promise.allSettled(agentIds.map(agentId => runAgent(agentId, task)));
 
-  const totalTokens = results.reduce((sum, r) => sum + r.tokens, 0);
-  const names = results.map(r => r.name).join(' + ');
+  const results = [];
+  const failures = [];
 
-  // Combine results
-  const combined = results
-    .map(r => `**${r.name}** (${r.elapsed}s, ${r.tokens} tokens):\n${r.text}`)
-    .join('\n\n---\n\n');
+  for (const outcome of settled) {
+    if (outcome.status === 'fulfilled') {
+      results.push(outcome.value);
+      continue;
+    }
 
-  return { names, combined, totalTokens, results };
+    failures.push({
+      message: outcome.reason?.message || 'Unknown agent failure',
+    });
+  }
+
+  if (results.length === 0) {
+    throw new Error(failures.map(failure => failure.message).join('; '));
+  }
+
+  const combined = [
+    ...results.map(result => `**${result.name}** (${result.elapsed}s, ${result.tokens} tokens):\n${result.text}`),
+    ...failures.map(failure => `**Agent failure**\n${failure.message}`),
+  ].join('\n\n---\n\n');
+
+  return {
+    names: results.map(result => result.name).join(' + '),
+    combined,
+    totalTokens: results.reduce((sum, result) => sum + result.tokens, 0),
+    results,
+    failures,
+  };
 }
