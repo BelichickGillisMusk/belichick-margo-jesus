@@ -6,11 +6,11 @@ AI agent team. Local-first. Ships three real bots plus a road-ready Samantha orc
 
 The current runtime is intentionally split into three surfaces:
 
-- **Slack bot** — `/home/runner/work/belichick-margo-jesus/belichick-margo-jesus/src/slack-bot/index.js`
-- **Mila chatbot** — `/home/runner/work/belichick-margo-jesus/belichick-margo-jesus/src/mila-chatbot/index.js`
-- **Lead scraper** — `/home/runner/work/belichick-margo-jesus/belichick-margo-jesus/src/lead-scraper/index.js`
+- **Slack bot** — `src/slack-bot/index.js`
+- **Mila chatbot** — `src/mila-chatbot/index.js`
+- **Lead scraper** — `src/lead-scraper/index.js`
 
-`/home/runner/work/belichick-margo-jesus/belichick-margo-jesus/src/slack-bot/agents.js` is the runtime source of truth for agent definitions used by the Slack app. The `skills/*/SKILL.md` files remain the human-facing prompt and operating-reference layer.
+`src/slack-bot/agents.js` is the runtime source of truth for agent definitions used by the Slack app. The `skills/*/SKILL.md` files remain the human-facing prompt and operating-reference layer.
 
 ## Quick start
 

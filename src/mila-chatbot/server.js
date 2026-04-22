@@ -6,16 +6,19 @@ import { MILA_CONFIG } from './config.js';
 import { loadKnowledgeBase, buildSystemPrompt } from './knowledge-base.js';
 import { createSessionStore } from './session-store.js';
 
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const DEFAULT_ALLOWED_ORIGINS = new Set([
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:3001',
+]);
 
 function createCorsOptions(allowedOrigins) {
-  if (allowedOrigins.length === 0) {
-    return { origin: true };
-  }
+  const allowed = new Set(allowedOrigins.length > 0 ? allowedOrigins : DEFAULT_ALLOWED_ORIGINS);
 
   return {
     origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin || allowed.has(origin)) {
         callback(null, true);
         return;
       }
@@ -23,6 +26,27 @@ function createCorsOptions(allowedOrigins) {
       callback(new Error('Origin not allowed by Mila CORS policy.'));
     },
   };
+}
+
+function isValidEmail(email) {
+  if (typeof email !== 'string' || email.length > 254 || email.includes(' ')) {
+    return false;
+  }
+
+  const pieces = email.split('@');
+  if (pieces.length !== 2 || !pieces[0] || !pieces[1]) {
+    return false;
+  }
+
+  if (pieces[0].startsWith('.') || pieces[0].endsWith('.')) {
+    return false;
+  }
+
+  if (!pieces[1].includes('.') || pieces[1].startsWith('.') || pieces[1].endsWith('.')) {
+    return false;
+  }
+
+  return true;
 }
 
 function validateSessionId(sessionId) {
@@ -39,7 +63,7 @@ function validateLead(lead) {
     return { valid: false, message: 'Lead name is required and must be 80 characters or fewer.' };
   }
 
-  if (!EMAIL_PATTERN.test(email || '')) {
+  if (!isValidEmail(email || '')) {
     return { valid: false, message: 'Lead email must be a valid email address.' };
   }
 
