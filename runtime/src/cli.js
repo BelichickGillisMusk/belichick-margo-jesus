@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { runProject } from './orchestrator.js';
-import { getApiKey, getAllAgents, getAgent } from './config.js';
+import { getApiKey, getAllAgents, getAgent, generateDeployKey, verifyDeployKey, hasDeployKey, getDeployKeyInfo } from './config.js';
 import { runAgent } from './agent.js';
 import { logActivity } from './activity.js';
 
@@ -36,6 +36,12 @@ function usage() {
 
   ${GREEN}node src/cli.js status${NC}
     Show current agent status from activity.json.
+
+  ${GREEN}node src/cli.js keygen${NC}
+    Generate a deploy key. Only 1 person gets this key — store it safely.
+
+  ${GREEN}node src/cli.js keyinfo${NC}
+    Show who owns the deploy key and when it was created.
 
 ${BOLD}Agents:${NC}`);
 
@@ -98,7 +104,63 @@ async function main() {
     return;
   }
 
-  function requireKey() {
+  if (command === 'keygen') {
+    banner();
+    if (hasDeployKey()) {
+      const info = getDeployKeyInfo();
+      console.error(`${RED}  Deploy key already exists.${NC}`);
+      console.error(`  Owner: ${BOLD}${info.owner}${NC}`);
+      console.error(`  Created: ${info.created}`);
+      console.error(`  Machine: ${info.machine}`);
+      console.error(`\n  ${DIM}To regenerate, delete ~/.openclaw/deploy.key first.${NC}\n`);
+      process.exit(1);
+    }
+    const key = generateDeployKey();
+    console.log(`${GREEN}  Deploy key generated.${NC}\n`);
+    console.log(`  ${BOLD}YOUR KEY (save this — it won't be shown again):${NC}\n`);
+    console.log(`  ${YELLOW}${key}${NC}\n`);
+    console.log(`  ${DIM}Stored hash at ~/.openclaw/deploy.key (mode 600)${NC}`);
+    console.log(`  ${DIM}Set OPENCLAW_DEPLOY_KEY=<key> to authenticate.${NC}\n`);
+    console.log(`  ${RED}${BOLD}Only you have this key. No one else can run agents or deploy.${NC}\n`);
+    return;
+  }
+
+  if (command === 'keyinfo') {
+    banner();
+    const info = getDeployKeyInfo();
+    if (!info) {
+      console.log(`  ${DIM}No deploy key registered. Run: node src/cli.js keygen${NC}\n`);
+      return;
+    }
+    console.log(`${BOLD}  Deploy Key Info${NC}\n`);
+    console.log(`  Owner:   ${BOLD}${info.owner}${NC}`);
+    console.log(`  Created: ${info.created}`);
+    console.log(`  Machine: ${info.machine}`);
+    console.log(`  Hash:    ${DIM}${info.hash.slice(0, 12)}...${NC}\n`);
+    return;
+  }
+
+  function requireDeployKey() {
+    if (!hasDeployKey()) {
+      console.error(`\n${RED}  No deploy key registered.${NC}`);
+      console.error(`  Run: ${BOLD}node src/cli.js keygen${NC} to create one.\n`);
+      process.exit(1);
+    }
+    const provided = process.env.OPENCLAW_DEPLOY_KEY;
+    if (!provided) {
+      console.error(`\n${RED}  Deploy key required.${NC}`);
+      console.error(`  Set ${YELLOW}OPENCLAW_DEPLOY_KEY${NC} environment variable.\n`);
+      console.error(`  ${DIM}Example: OPENCLAW_DEPLOY_KEY=<your-key> node src/cli.js project "..."${NC}\n`);
+      process.exit(1);
+    }
+    const result = verifyDeployKey(provided);
+    if (!result.valid) {
+      console.error(`\n${RED}  ${result.reason}${NC}\n`);
+      process.exit(1);
+    }
+  }
+
+  function requireApiKey() {
     const key = getApiKey();
     if (!key) {
       console.error(`\n${RED}  No API key found.${NC}`);
@@ -108,7 +170,8 @@ async function main() {
   }
 
   if (command === 'project') {
-    requireKey();
+    requireDeployKey();
+    requireApiKey();
     const project = args.slice(1).join(' ');
     if (!project) {
       console.error(`\n${RED}  Provide a project description.${NC}`);
@@ -143,7 +206,8 @@ async function main() {
       console.error(`  Available: ${getAllAgents().map(a => a.id).join(', ')}\n`);
       process.exit(1);
     }
-    requireKey();
+    requireDeployKey();
+    requireApiKey();
     banner();
     console.log(`  Sending task to ${BOLD}${agent.name}${NC}...\n`);
     const start = Date.now();

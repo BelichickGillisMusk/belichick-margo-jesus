@@ -1,6 +1,8 @@
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, chmodSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { randomBytes, createHash, timingSafeEqual } from 'crypto';
+import { hostname } from 'os';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = join(__dirname, '..', '..');
@@ -54,4 +56,40 @@ export function getAllAgents() {
 
 export function getProjectRoot() {
   return PROJECT_ROOT;
+}
+
+const DEPLOY_KEY_PATH = join(process.env.HOME || '', '.openclaw', 'deploy.key');
+
+export function generateDeployKey() {
+  const key = randomBytes(32).toString('hex');
+  const hash = createHash('sha256').update(key).digest('hex');
+  const payload = JSON.stringify({
+    owner: process.env.USER || 'unknown',
+    created: new Date().toISOString(),
+    machine: process.env.HOSTNAME || hostname(),
+    hash,
+  }, null, 2);
+  writeFileSync(DEPLOY_KEY_PATH, payload, { mode: 0o600 });
+  return key;
+}
+
+export function verifyDeployKey(providedKey) {
+  if (!existsSync(DEPLOY_KEY_PATH)) return { valid: false, reason: 'No deploy key registered. Run: node src/cli.js keygen' };
+  const data = JSON.parse(readFileSync(DEPLOY_KEY_PATH, 'utf-8'));
+  const providedHash = createHash('sha256').update(providedKey).digest('hex');
+  const expected = Buffer.from(data.hash, 'hex');
+  const actual = Buffer.from(providedHash, 'hex');
+  if (expected.length !== actual.length || !timingSafeEqual(expected, actual)) {
+    return { valid: false, reason: 'Invalid deploy key' };
+  }
+  return { valid: true, owner: data.owner, created: data.created };
+}
+
+export function hasDeployKey() {
+  return existsSync(DEPLOY_KEY_PATH);
+}
+
+export function getDeployKeyInfo() {
+  if (!existsSync(DEPLOY_KEY_PATH)) return null;
+  return JSON.parse(readFileSync(DEPLOY_KEY_PATH, 'utf-8'));
 }

@@ -71,10 +71,28 @@ No test suite, linter, or CI pipeline exists yet.
 
 Internal agent work (research, drafting, code) is unrestricted. All outbound actions (email, Slack, Discord, file shares) are gatekept by Jon Jones. Three approval tiers: auto-approve (low risk, 30/hr circuit breaker), agent-approve (medium), human-approve (high risk, 60min timeout → auto-reject). `/stop` mode pauses all outbound and queues for batch review.
 
+## Deploy Key (Single Owner)
+
+All agent execution (`project`, `task`) requires a deploy key. Only one person can generate it.
+
+```bash
+# Generate key (one time only — save the output)
+node runtime/src/cli.js keygen
+
+# Use the key
+OPENCLAW_DEPLOY_KEY=<your-key> node runtime/src/cli.js project "..."
+```
+
+- Key hash stored at `~/.openclaw/deploy.key` (mode 600) — never committed to git
+- `keygen` refuses to run if a key already exists (delete `~/.openclaw/deploy.key` to regenerate)
+- Read-only commands (`status`, `roster`) work without a deploy key
+- Uses SHA-256 hash + timing-safe comparison — the raw key is never stored
+
 ## Key Constraints
 
 - `openclaw-config.json5` is gitignored — contains real API keys, stays local only
 - `~/.openclaw/` directory holds runtime config (600 permissions), vault (700), logs, workspaces
+- `~/.openclaw/deploy.key` — single-owner deploy key hash, required for all agent execution
 - Never auto-upgrade any platform to a paid tier — escalate to human
 - All public-facing content must be reviewed by Jon Jones before deploy
 - Credential patterns in outbound content are blocked immediately (no agent review needed)
