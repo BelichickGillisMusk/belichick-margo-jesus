@@ -8,15 +8,18 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = join(__dirname, '..', '..');
 const SKILLS_DIR = join(PROJECT_ROOT, 'skills');
 
+// Provider/model assignments — each agent uses the cheapest model that fits its job.
+// Only Belichick needs Claude (tool_use for delegation). Sub-agents can use any provider.
 const AGENT_REGISTRY = [
-  { id: 'belichick',      skillDir: 'belichick-strategy',   name: 'Belichick',        role: 'The Strategist' },
-  { id: 'mila-carb',      skillDir: 'mila-carb-cs',         name: 'Mila (CARB CS)',    role: 'Clean Truck Check Support' },
-  { id: 'mila-legal',     skillDir: 'mila-legal',           name: 'Mila (Legal)',      role: 'Regulatory Research' },
-  { id: 'atlas',           skillDir: 'atlas-creative',       name: 'Atlas',             role: 'YouTube & Creative' },
-  { id: 'closer',          skillDir: 'closer-sales',         name: 'Closer',            role: 'Sales Agent' },
-  { id: 'jon-jones',      skillDir: 'jon-jones-guardian',    name: 'Jon Jones',         role: 'Guardian Bot' },
-  { id: 'builder-deploy', skillDir: 'builder-deploy',       name: 'Builder-Deploy',    role: 'Ship & Deploy' },
-  { id: 'lead-scraper',   skillDir: 'gemini-lead-scraper',  name: 'Lead Scraper',      role: 'Google Maps Leads' },
+  { id: 'belichick',      skillDir: 'belichick-strategy',   name: 'Belichick',        role: 'The Strategist',           provider: 'anthropic', model: 'claude-sonnet-4-20250514' },
+  { id: 'mila-carb',      skillDir: 'mila-carb-cs',         name: 'Mila (CARB CS)',    role: 'Clean Truck Check Support', provider: 'anthropic', model: 'claude-haiku-4-5-20251001' },
+  { id: 'mila-legal',     skillDir: 'mila-legal',           name: 'Mila (Legal)',      role: 'Regulatory Research',       provider: 'anthropic', model: 'claude-sonnet-4-20250514' },
+  { id: 'atlas',           skillDir: 'atlas-creative',       name: 'Atlas',             role: 'YouTube & Creative (Blog)', provider: 'openai',    model: 'gpt-4o-mini' },
+  { id: 'closer',          skillDir: 'closer-sales',         name: 'Closer',            role: 'Sales Agent',               provider: 'anthropic', model: 'claude-sonnet-4-20250514' },
+  { id: 'jon-jones',      skillDir: 'jon-jones-guardian',    name: 'Jon Jones',         role: 'Guardian Bot',              provider: 'anthropic', model: 'claude-haiku-4-5-20251001' },
+  { id: 'builder-deploy', skillDir: 'builder-deploy',       name: 'Builder-Deploy',    role: 'Ship & Deploy',             provider: 'anthropic', model: 'claude-haiku-4-5-20251001' },
+  { id: 'lead-scraper',   skillDir: 'gemini-lead-scraper',  name: 'Lead Scraper',      role: 'Google Maps Leads',         provider: 'gemini',    model: 'gemini-2.0-flash' },
+  { id: 'nova',            skillDir: 'atlas-creative',       name: 'Nova',              role: 'Blog & Social Posts',       provider: 'grok',      model: 'grok-2-1212' },
 ];
 
 export function loadSkill(skillDir) {
@@ -25,9 +28,21 @@ export function loadSkill(skillDir) {
   return readFileSync(path, 'utf-8');
 }
 
-export function getApiKey() {
-  if (process.env.ANTHROPIC_API_KEY) return process.env.ANTHROPIC_API_KEY;
+const PROVIDER_ENV = {
+  anthropic: 'ANTHROPIC_API_KEY',
+  openai:    'OPENAI_API_KEY',
+  gemini:    'GEMINI_API_KEY',
+  grok:      'GROK_API_KEY',
+};
 
+const PROVIDER_CONFIG_PATHS = {
+  anthropic: ['apiKeys.anthropic', 'gateway.apiKey'],
+  openai:    ['apiKeys.openai',    'apiKeys.chatgpt'],
+  gemini:    ['apiKeys.gemini',    'apiKeys.google'],
+  grok:      ['apiKeys.grok',      'apiKeys.xai'],
+};
+
+function loadOpenclawConfig() {
   const configPaths = [
     join(process.env.HOME || '', '.openclaw', 'openclaw.json'),
     join(PROJECT_ROOT, 'openclaw-config.json5'),
@@ -38,12 +53,33 @@ export function getApiKey() {
       const raw = readFileSync(p, 'utf-8')
         .replace(/\/\/.*$/gm, '')
         .replace(/\/\*[\s\S]*?\*\//g, '');
-      const config = JSON.parse(raw);
-      const key = config?.apiKeys?.anthropic || config?.gateway?.apiKey;
-      if (key && !key.startsWith('CONFIGURE:')) return key;
+      return JSON.parse(raw);
     } catch { /* skip malformed */ }
   }
   return null;
+}
+
+function getNestedValue(obj, path) {
+  return path.split('.').reduce((o, k) => o?.[k], obj);
+}
+
+export function getProviderKey(provider) {
+  const envVar = PROVIDER_ENV[provider];
+  if (envVar && process.env[envVar]) return process.env[envVar];
+
+  const config = loadOpenclawConfig();
+  if (!config) return null;
+
+  for (const path of (PROVIDER_CONFIG_PATHS[provider] || [])) {
+    const key = getNestedValue(config, path);
+    if (key && typeof key === 'string' && !key.startsWith('CONFIGURE:')) return key;
+  }
+  return null;
+}
+
+// Backwards-compatible alias used by old call sites.
+export function getApiKey() {
+  return getProviderKey('anthropic');
 }
 
 export function getAgent(id) {

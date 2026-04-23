@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { runProject } from './orchestrator.js';
-import { getApiKey, getAllAgents, getAgent, generateDeployKey, verifyDeployKey, hasDeployKey, getDeployKeyInfo } from './config.js';
+import { getApiKey, getProviderKey, getAllAgents, getAgent, generateDeployKey, verifyDeployKey, hasDeployKey, getDeployKeyInfo } from './config.js';
+import { envVarName } from './providers/index.js';
 import { runAgent } from './agent.js';
 import { logActivity } from './activity.js';
 
@@ -67,9 +68,12 @@ async function main() {
   if (command === 'roster') {
     banner();
     console.log(`${BOLD}  Agent Roster${NC}\n`);
+    const providerColors = { anthropic: BLUE, openai: GREEN, gemini: YELLOW, grok: RED };
     getAllAgents().forEach(a => {
+      const pc = providerColors[a.provider] || DIM;
       console.log(`  ${BLUE}${a.id.padEnd(18)}${NC} ${BOLD}${a.name}${NC}`);
-      console.log(`  ${''.padEnd(18)} ${DIM}${a.role}${NC}\n`);
+      console.log(`  ${''.padEnd(18)} ${DIM}${a.role}${NC}`);
+      console.log(`  ${''.padEnd(18)} ${pc}${a.provider}${NC} ${DIM}→ ${a.model}${NC}\n`);
     });
     return;
   }
@@ -160,18 +164,18 @@ async function main() {
     }
   }
 
-  function requireApiKey() {
-    const key = getApiKey();
+  function requireProviderKey(provider) {
+    const key = getProviderKey(provider);
     if (!key) {
-      console.error(`\n${RED}  No API key found.${NC}`);
-      console.error(`  Set ANTHROPIC_API_KEY environment variable or configure ~/.openclaw/openclaw.json\n`);
+      console.error(`\n${RED}  No ${provider} API key found.${NC}`);
+      console.error(`  Set ${YELLOW}${envVarName(provider)}${NC} or configure ~/.openclaw/openclaw.json\n`);
       process.exit(1);
     }
   }
 
   if (command === 'project') {
     requireDeployKey();
-    requireApiKey();
+    requireProviderKey('anthropic');
     const project = args.slice(1).join(' ');
     if (!project) {
       console.error(`\n${RED}  Provide a project description.${NC}`);
@@ -207,9 +211,9 @@ async function main() {
       process.exit(1);
     }
     requireDeployKey();
-    requireApiKey();
+    requireProviderKey(agent.provider);
     banner();
-    console.log(`  Sending task to ${BOLD}${agent.name}${NC}...\n`);
+    console.log(`  Sending task to ${BOLD}${agent.name}${NC} ${DIM}(${agent.provider}/${agent.model})${NC}...\n`);
     const start = Date.now();
     try {
       const result = await runAgent(agent, task);

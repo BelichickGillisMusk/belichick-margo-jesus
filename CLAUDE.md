@@ -35,31 +35,45 @@ No test suite, linter, or CI pipeline exists yet.
 
 ## Architecture
 
-**Runtime** (`runtime/src/`): Node.js ES modules using `@anthropic-ai/sdk`. Model: `claude-sonnet-4-20250514`.
+**Runtime** (`runtime/src/`): Node.js ES modules. Multi-provider — each agent uses the cheapest model that fits its job.
 
-- `cli.js` — Entry point. Routes `project`, `task`, `status`, `roster` commands.
-- `orchestrator.js` — Belichick's controller. Defines three tools: `delegate` (assign work to sub-agents), `send_outbound` (external comms, gated by Jon Jones), `report` (final deliverables). Runs a tool_use loop until Belichick is done.
-- `agent.js` — `runAgent()` wraps Claude API calls. Loads agent's SKILL.md as system prompt, runs tool_use loop (max 10 iterations), updates activity.json on start/completion.
+- `cli.js` — Entry point. Routes `project`, `task`, `status`, `roster`, `keygen`, `keyinfo` commands.
+- `orchestrator.js` — Belichick's controller. Defines three tools: `delegate` (assign work to sub-agents), `send_outbound` (external comms, gated by Jon Jones), `report` (final deliverables). Runs a tool_use loop until Belichick is done. Belichick MUST be on Anthropic — only Claude has tool_use.
+- `agent.js` — `runAgent()` loads agent's SKILL.md as system prompt, dispatches to the right provider via `providers/index.js`, runs tool_use loop (max 10 iterations), updates activity.json on start/completion.
+- `providers/` — Abstraction layer per LLM vendor:
+  - `anthropic.js` — Claude (supports tool_use)
+  - `openai.js` — ChatGPT + Grok (Grok uses OpenAI-compatible API at `https://api.x.ai/v1`)
+  - `gemini.js` — Google Gemini
+  - `index.js` — `callProvider(provider, options)` dispatcher + `envVarName(provider)` lookup
 - `guardian.js` — Jon Jones outbound gate. First does regex scan for credential patterns (`sk-ant-`, `AIzaSy`, `xoxb-`, `ghp_`, etc.) and blocks immediately. Then calls Jon Jones agent to review content → APPROVE / REWRITE / BLOCK / ESCALATE.
 - `activity.js` — Reads/writes `agents-site/activity.json` for the Conference Room dashboard. Tracks per-agent status and a 50-entry activity feed.
-- `config.js` — Agent registry (8 agents mapped to skill dirs). `getApiKey()` checks: env var → `~/.openclaw/openclaw.json` → repo `openclaw-config.json5`.
+- `config.js` — Agent registry (9 agents with provider/model fields). `getProviderKey(provider)` checks env var → `~/.openclaw/openclaw.json` → repo `openclaw-config.json5`. Supports nested config paths like `apiKeys.anthropic`, `apiKeys.openai`, `apiKeys.gemini`, `apiKeys.grok`.
 
 **Execution flow**: User → `cli.js project "..."` → `orchestrator.runProject()` → Belichick gets project + tool definitions → Claude returns `tool_use` blocks → `handleDelegate()` calls `agent.runAgent()` for each sub-agent → sub-agent result feeds back to Belichick → loop until `report` tool or `end_turn`.
 
 **Skills** (`skills/*/SKILL.md`): YAML frontmatter (name, description) + markdown prompt defining role, frameworks, guardrails. Each agent's SKILL.md becomes its system prompt at runtime.
 
-## Agent Registry
+## Agent Registry (provider / model assignments)
 
-| ID | Name | Skill Dir | Role |
-|----|------|-----------|------|
-| `belichick` | Belichick | belichick-strategy | Orchestrator — breaks projects into tasks, delegates |
-| `mila-carb` | Mila (CARB CS) | mila-carb-cs | CARB Clean Truck Check compliance support |
-| `mila-legal` | Mila (Legal) | mila-legal | Regulatory research, business opportunity finder |
-| `atlas` | Atlas | atlas-creative | YouTube content strategy, video production |
-| `closer` | Closer | closer-sales | Sales agent (A.C.E.S. framework) |
-| `jon-jones` | Jon Jones | jon-jones-guardian | Security guardian — reviews all outbound |
-| `builder-deploy` | Builder-Deploy | builder-deploy | Deploy to Cloudflare/Vercel (free tier first) |
-| `lead-scraper` | Lead Scraper | gemini-lead-scraper | Google Maps/Places API lead generation |
+Cost-optimized — only Belichick needs Claude Sonnet (tool_use for delegation). Others use cheaper models.
+
+| ID | Name | Provider | Model | Role |
+|----|------|----------|-------|------|
+| `belichick` | Belichick | anthropic | claude-sonnet-4-20250514 | Orchestrator — breaks projects into tasks, delegates |
+| `mila-carb` | Mila (CARB CS) | anthropic | claude-haiku-4-5-20251001 | CARB Clean Truck Check support |
+| `mila-legal` | Mila (Legal) | anthropic | claude-sonnet-4-20250514 | Regulatory research |
+| `atlas` | Atlas | openai | gpt-4o-mini | YouTube + blog content |
+| `closer` | Closer | anthropic | claude-sonnet-4-20250514 | Sales (A.C.E.S. framework) |
+| `jon-jones` | Jon Jones | anthropic | claude-haiku-4-5-20251001 | Security guardian |
+| `builder-deploy` | Builder-Deploy | anthropic | claude-haiku-4-5-20251001 | Deploy to Cloudflare/Vercel |
+| `lead-scraper` | Lead Scraper | gemini | gemini-2.0-flash | Google Maps/Places (uses Google's stack) |
+| `nova` | Nova | grok | grok-2-1212 | Blog & social posts |
+
+Required API keys (set the env var OR put in `~/.openclaw/openclaw.json` under `apiKeys.<name>`):
+- `ANTHROPIC_API_KEY` — required (Belichick + several sub-agents)
+- `OPENAI_API_KEY` — for Atlas (gpt-4o-mini)
+- `GEMINI_API_KEY` — for Lead Scraper
+- `GROK_API_KEY` — for Nova (xAI)
 
 ## Deployments
 

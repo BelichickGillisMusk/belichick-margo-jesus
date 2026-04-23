@@ -1,19 +1,9 @@
-import Anthropic from '@anthropic-ai/sdk';
-import { loadSkill, getApiKey } from './config.js';
+import { loadSkill } from './config.js';
 import { logActivity, updateAgentStatus } from './activity.js';
+import { callProvider, supportsTools } from './providers/index.js';
 
-let client = null;
-
-function getClient() {
-  if (client) return client;
-  const key = getApiKey();
-  if (!key) throw new Error('No Anthropic API key found. Set ANTHROPIC_API_KEY or configure ~/.openclaw/openclaw.json');
-  client = new Anthropic({ apiKey: key });
-  return client;
-}
-
-const MODEL = 'claude-sonnet-4-20250514';
 const MAX_TOKENS = 4096;
+const MAX_ITERATIONS = 10;
 
 export async function runAgent(agentDef, task, { tools = [], onToolCall = null, parentId = null } = {}) {
   const skillPrompt = loadSkill(agentDef.skillDir);
@@ -24,6 +14,7 @@ export async function runAgent(agentDef, task, { tools = [], onToolCall = null, 
     '',
     '---',
     `You are ${agentDef.name} (${agentDef.role}) in the SilverbackAI agent team.`,
+    `You are running on ${agentDef.provider} (${agentDef.model}).`,
     'You are executing a task assigned by the orchestrator. Be direct and actionable.',
     'Return concrete output — not plans about what you would do, but the actual work product.',
   ].join('\n');
@@ -32,56 +23,54 @@ export async function runAgent(agentDef, task, { tools = [], onToolCall = null, 
 
   const messages = [{ role: 'user', content: task }];
   let finalText = '';
+  const wantTools = tools.length > 0 && supportsTools(agentDef.provider);
 
   try {
-    const apiTools = tools.length > 0 ? tools : undefined;
-    let response = await getClient().messages.create({
-      model: MODEL,
-      max_tokens: MAX_TOKENS,
+    let response = await callProvider(agentDef.provider, {
+      model: agentDef.model,
       system: systemPrompt,
       messages,
-      ...(apiTools ? { tools: apiTools } : {}),
+      tools: wantTools ? tools : undefined,
+      maxTokens: MAX_TOKENS,
     });
 
     let iterations = 0;
-    const MAX_ITERATIONS = 10;
-
     while (iterations < MAX_ITERATIONS) {
       iterations++;
-      const textBlocks = response.content.filter(b => b.type === 'text');
-      const toolBlocks = response.content.filter(b => b.type === 'tool_use');
-
-      if (textBlocks.length > 0) {
-        finalText += textBlocks.map(b => b.text).join('\n');
-      }
-
-      if (response.stop_reason === 'end_turn' || toolBlocks.length === 0) break;
+      if (response.text) finalText += (finalText ? '\n' : '') + response.text;
+      if (response.stopReason === 'end_turn' || !response.toolCalls || response.toolCalls.length === 0) break;
 
       const toolResults = [];
-      for (const toolCall of toolBlocks) {
+      for (const toolCall of response.toolCalls) {
         let result = { type: 'text', text: 'Tool not handled' };
         if (onToolCall) {
           result = await onToolCall(toolCall.name, toolCall.input, agentDef);
         }
-        toolResults.push({ type: 'tool_result', tool_use_id: toolCall.id, content: typeof result === 'string' ? result : JSON.stringify(result) });
+        toolResults.push({ id: toolCall.id, result });
       }
 
-      messages.push({ role: 'assistant', content: response.content });
-      messages.push({ role: 'user', content: toolResults });
+      messages.push({ role: 'assistant', content: response.raw });
+      messages.push({
+        role: 'user',
+        content: toolResults.map(r => ({
+          type: 'tool_result',
+          tool_use_id: r.id,
+          content: typeof r.result === 'string' ? r.result : JSON.stringify(r.result),
+        })),
+      });
 
-      response = await getClient().messages.create({
-        model: MODEL,
-        max_tokens: MAX_TOKENS,
+      response = await callProvider(agentDef.provider, {
+        model: agentDef.model,
         system: systemPrompt,
         messages,
-        ...(apiTools ? { tools: apiTools } : {}),
+        tools: wantTools ? tools : undefined,
+        maxTokens: MAX_TOKENS,
       });
     }
 
     await logActivity(agentDef.id, `Completed: ${task.slice(0, 80)}`, parentId ? 'subtask' : 'task');
     await updateAgentStatus(agentDef.id, 'idle', null, task.slice(0, 80));
     return finalText;
-
   } catch (err) {
     await updateAgentStatus(agentDef.id, 'blocked', `Error: ${err.message}`);
     throw err;
