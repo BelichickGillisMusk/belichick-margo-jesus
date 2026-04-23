@@ -68,6 +68,7 @@ Cost-optimized — only Belichick needs Claude Sonnet (tool_use for delegation).
 | `builder-deploy` | Builder-Deploy | anthropic | claude-haiku-4-5-20251001 | Deploy to Cloudflare/Vercel |
 | `lead-scraper` | Lead Scraper | gemini | gemini-2.0-flash | Google Maps/Places (uses Google's stack) |
 | `nova` | Nova | grok | grok-2-1212 | Blog & social posts |
+| `samantha` | Samantha | anthropic | claude-haiku-4-5-20251001 | Calendar & scheduling (Google Calendar) |
 
 Required API keys (set the env var OR put in `~/.openclaw/openclaw.json` under `apiKeys.<name>`):
 - `ANTHROPIC_API_KEY` — required (Belichick + several sub-agents)

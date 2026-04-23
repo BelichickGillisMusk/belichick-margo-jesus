@@ -90,6 +90,15 @@
       "currentTask": "Deploying Conference Room to agents.bryanoneillgillis.com",
       "lastCompleted": "Deployed silverbackai.agency to Cloudflare Pages",
       "lastCompletedAt": "2026-04-20T19:00:00Z"
+    },
+    {
+      "id": "samantha",
+      "name": "Samantha",
+      "role": "Calendar & Scheduling",
+      "status": "idle",
+      "currentTask": null,
+      "lastCompleted": "Synced Google Calendar and set 3 deadline reminders",
+      "lastCompletedAt": "2026-04-21T07:00:00Z"
     }
   ],
   "feed": [

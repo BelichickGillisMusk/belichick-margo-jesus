@@ -59,6 +59,7 @@ header h1 span{color:var(--accent)}
 .status-blocked{background:rgba(239,68,68,.15);color:var(--red)}
 .agent-task{font-size:.75rem;color:var(--dim);margin-top:.3rem;line-height:1.4}
 .agent-task strong{color:var(--text);font-weight:500}
+.agent-tagline{font-size:.7rem;color:var(--accent);font-style:italic;margin-top:.2rem;margin-bottom:.3rem;line-height:1.3;opacity:.85}
 
 /* Activity feed (center) */
 .feed{padding:1.5rem 2rem;overflow-y:auto}
@@ -159,16 +160,105 @@ header h1 span{color:var(--accent)}
 
 <script>
 const AGENT_META = {
-  belichick:      { color:'#a855f7', initial:'B',  couldDo:['Run weekly business review — pipeline stages, blockers, top 3 priorities','Evaluate new business opportunity end-to-end (legal, market, pitch, GO/NO-GO)','Delegate tasks to Sloan, Atlas, Closer and track completion'] },
-  'sloan-carb':   { color:'#22c55e', initial:'S',  couldDo:['Answer fleet compliance questions with CARB rule citations and deadlines','Schedule Clean Truck Check testing appointments with 90/30/7-day reminders','Brief fleet owners on 2027 quarterly mandate change (2x to 4x/year)'] },
-  'sloan-legal':  { color:'#22c55e', initial:'S',  couldDo:['Research IL/Chicago regs — find business opportunities in regulatory gaps','Analyze licensing requirements and propose legal business models','Compile regulatory brief for trucking/emissions industry with pending amendments'] },
-  atlas:          { color:'#3b82f6', initial:'A',  couldDo:['Create YouTube video briefs with SEO titles, hooks, tags, and thumbnail concepts','Build 4-week content calendar with topics, posting schedule, and series structures','Research trending topics in your niche and identify content gaps competitors miss'] },
-  closer:         { color:'#f97316', initial:'C',  couldDo:['Draft cold email sequences for fleet managers using A.C.E.S. framework','Handle live objections — reframe pricing, pivot "not interested" to discovery','Run prospecting campaigns with qualifying questions and urgency tactics'] },
-  'jon-jones':    { color:'#ef4444', initial:'JJ', couldDo:['Review all outbound emails/Slack for PII, tone, accuracy, and legal risk','Scan outbound traffic for leaked credentials (API keys, tokens, passwords)','Generate daily security audit report — approvals, blocks, escalations'] },
-  cipher:         { color:'#eab308', initial:'$',  couldDo:['Generate invoices and track payments against client contracts','Produce weekly P&L snapshot with revenue, costs, and runway','Monitor free-tier usage across Cloudflare, Vercel, Railway — alert at 80%'] },
-  sentinel:       { color:'#22c55e', initial:'S',  couldDo:['Scrape trucking company contacts from Google Maps in target metros','Build lead lists in Google Sheets via Make.com automation','Research competitor businesses with hours, reviews, and contact info'] },
-  nova:           { color:'#f97316', initial:'N',  couldDo:['Write social media posts for SilverbackAI across platforms','Build weekly content calendar aligned with Atlas video schedule','Draft marketing copy for landing pages and email campaigns'] },
-  'builder-deploy':{ color:'#3b82f6', initial:'BD', couldDo:['Deploy new sites to Cloudflare Pages or Vercel (free tier first)','Generate shareable preview links for client and partner review','Track deploy costs and alert before hitting free-tier limits'] }
+  belichick: {
+    color:'#a855f7', initial:'B',
+    tagline: 'The brain. Sees the whole board. Decides what gets done, who does it, when it ships.',
+    couldDo:[
+      'Break any project into tasks and auto-assign to the right agent in seconds',
+      'Run weekly business review — pipeline, blockers, agent utilization, GO/NO-GO calls',
+      'Evaluate a new business opportunity end-to-end: legal, market, pitch, financials, verdict'
+    ]
+  },
+  'sloan-carb': {
+    color:'#22c55e', initial:'SL',
+    tagline: 'Knows every CARB rule, deadline, penalty, and exemption. Truck compliance on autopilot.',
+    couldDo:[
+      'Answer any fleet compliance question with exact rule citations, deadlines, and penalty amounts',
+      'Auto-schedule Clean Truck Check appointments with 90/30/7-day countdown reminders',
+      'Brief fleet owners on the 2027 quarterly mandate — what changes, what it costs, how to prepare'
+    ]
+  },
+  'sloan-legal': {
+    color:'#10b981', initial:'SL',
+    tagline: 'Finds money hiding in red tape. Turns regulations into revenue opportunities.',
+    couldDo:[
+      'Research any regulation and come back with a business model that exploits the gap',
+      'Compile a full regulatory brief — current rules, pending changes, licensing, competitors, risk level',
+      'Find the friction in any licensing requirement and propose the business that solves it'
+    ]
+  },
+  atlas: {
+    color:'#3b82f6', initial:'A',
+    tagline: 'Content machine. YouTube strategy, SEO, thumbnails, scripts — full production pipeline.',
+    couldDo:[
+      'Produce a complete video brief: power-word title, 5-second hook, timestamped script, 30 SEO tags',
+      'Build a 4-week content calendar with trending topics, series structures, and upload schedule',
+      'Analyze competitors, find content gaps they miss, and create the videos that fill them'
+    ]
+  },
+  closer: {
+    color:'#f97316', initial:'C',
+    tagline: 'Never takes the first no. A.C.E.S. framework — Attention, Connect, Elevate, Seal.',
+    couldDo:[
+      'Write a full cold outreach sequence — opener, follow-ups, objection handlers, close',
+      'Handle any objection live: reframe price to daily cost, flip "not interested" into discovery',
+      'Build a custom sales playbook for any vertical with qualifying questions and urgency triggers'
+    ]
+  },
+  'jon-jones': {
+    color:'#ef4444', initial:'JJ',
+    tagline: 'The bouncer. Nothing leaves this building without his approval. Zero tolerance.',
+    couldDo:[
+      'Review every outbound email, Slack post, and API call for PII leaks, legal risk, and tone',
+      'Instant-block any message containing API keys, tokens, or credentials — no review needed',
+      'Generate a daily security report: what got approved, what got killed, who triggered alerts'
+    ]
+  },
+  cipher: {
+    color:'#eab308', initial:'$',
+    tagline: 'Counts every dollar. Invoices, P&L, free-tier meters — nothing gets wasted.',
+    couldDo:[
+      'Generate invoices from project data and track payments against contracts',
+      'Weekly P&L snapshot: revenue in, costs out, burn rate, runway',
+      'Monitor Cloudflare/Vercel/Railway free-tier usage and alert at 80% before you get charged'
+    ]
+  },
+  sentinel: {
+    color:'#06b6d4', initial:'LS',
+    tagline: 'Pulls leads from Google Maps while you sleep. Free tier, zero manual work.',
+    couldDo:[
+      'Scrape 50+ trucking company contacts in any metro — phone, address, website, rating, reviews',
+      'Auto-build lead sheets in Google Sheets via Make.com: search, parse, dedupe, deliver',
+      'Research any business vertical by geography with hours, status, and contact info ready to dial'
+    ]
+  },
+  nova: {
+    color:'#f97316', initial:'N',
+    tagline: 'Writes like a human, posts like a machine. Social media and blog content at scale.',
+    couldDo:[
+      'Draft a week of social posts across LinkedIn, X, and Instagram — on brand, on schedule',
+      'Write long-form blog posts that rank: SEO structure, internal links, CTAs, the works',
+      'Build a content calendar synced with Atlas video drops for maximum cross-platform impact'
+    ]
+  },
+  'builder-deploy': {
+    color:'#3b82f6', initial:'BD',
+    tagline: 'Ship fast. Ship free. Every deploy gets a live link and a cost of $0.',
+    couldDo:[
+      'Deploy any site to Cloudflare Pages or Vercel in under 2 minutes — free tier, every time',
+      'Generate shareable preview links so clients and partners can see the work instantly',
+      'Track every deploy cost across platforms and sound the alarm before you hit a paid tier'
+    ]
+  },
+  samantha: {
+    color:'#ec4899', initial:'SA',
+    tagline: 'Your calendar is her territory. Meetings, reminders, deadlines — she runs the clock.',
+    couldDo:[
+      'Manage your Google Calendar: schedule meetings, block focus time, set deadline reminders',
+      'Auto-coordinate appointments between agents — testing schedules, client calls, reviews',
+      'Morning briefing: today\'s meetings, deadlines, agent tasks due, and what needs your attention'
+    ]
+  }
 };
 
 async function loadData() {
@@ -197,7 +287,7 @@ function renderRoster(agents) {
   el.appendChild(title);
 
   agents.forEach(a => {
-    const meta = AGENT_META[a.id] || { color:'#7a8ba0', initial:'?', couldDo:[] };
+    const meta = AGENT_META[a.id] || { color:'#7a8ba0', initial:'?', tagline:'', couldDo:[] };
     const statusClass = a.status === 'working' ? 'status-working' : a.status === 'blocked' ? 'status-blocked' : 'status-idle';
     const statusLabel = a.status.charAt(0).toUpperCase() + a.status.slice(1);
 
@@ -213,6 +303,7 @@ function renderRoster(agents) {
         </div>
         <span class="status-badge ${statusClass}">${a.status === 'working' ? '<span class="pulse" style="width:6px;height:6px"></span>' : ''}${statusLabel}</span>
       </div>
+      ${meta.tagline ? '<div class="agent-tagline">' + meta.tagline + '</div>' : ''}
       <div class="agent-task">
         ${a.currentTask ? '<strong>Now:</strong> ' + a.currentTask : ''}
         ${a.lastCompleted ? '<br><strong>Last:</strong> ' + a.lastCompleted + ' <span style="color:var(--dim);font-size:.65rem">(' + timeAgo(a.lastCompletedAt) + ')</span>' : ''}
@@ -246,11 +337,12 @@ function renderFeed(feed) {
 function renderCouldDo() {
   const el = document.getElementById('couldDo');
   el.innerHTML = '';
-  const order = ['belichick','sloan-carb','sloan-legal','atlas','closer','jon-jones','cipher','sentinel','nova','builder-deploy'];
+  const order = ['belichick','sloan-carb','sloan-legal','atlas','closer','jon-jones','cipher','sentinel','nova','builder-deploy','samantha'];
   const names = {
     belichick:'Belichick','sloan-carb':'Sloan (CARB)','sloan-legal':'Sloan (Legal)',
     atlas:'Atlas',closer:'Closer','jon-jones':'Jon Jones',
-    cipher:'Cipher',sentinel:'Lead Scraper',nova:'Nova','builder-deploy':'Builder-Deploy'
+    cipher:'Cipher',sentinel:'Lead Scraper',nova:'Nova','builder-deploy':'Builder-Deploy',
+    samantha:'Samantha'
   };
   order.forEach(id => {
     const meta = AGENT_META[id];

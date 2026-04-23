@@ -11,8 +11,8 @@ const DELEGATE_TOOL = {
     properties: {
       agent_id: {
         type: 'string',
-        description: 'ID of the agent to delegate to. Available: sloan-carb, sloan-legal, atlas, closer, jon-jones, builder-deploy, lead-scraper, nova',
-        enum: ['sloan-carb', 'sloan-legal', 'atlas', 'closer', 'jon-jones', 'builder-deploy', 'lead-scraper', 'nova'],
+        description: 'ID of the agent to delegate to. Available: sloan-carb, sloan-legal, atlas, closer, jon-jones, builder-deploy, lead-scraper, nova, samantha',
+        enum: ['sloan-carb', 'sloan-legal', 'atlas', 'closer', 'jon-jones', 'builder-deploy', 'lead-scraper', 'nova', 'samantha'],
       },
       task: {
         type: 'string',

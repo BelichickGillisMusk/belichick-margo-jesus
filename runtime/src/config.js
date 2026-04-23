@@ -20,6 +20,7 @@ const AGENT_REGISTRY = [
   { id: 'builder-deploy', skillDir: 'builder-deploy',       name: 'Builder-Deploy',    role: 'Ship & Deploy',             provider: 'anthropic', model: 'claude-haiku-4-5-20251001' },
   { id: 'lead-scraper',   skillDir: 'gemini-lead-scraper',  name: 'Lead Scraper',      role: 'Google Maps Leads',         provider: 'gemini',    model: 'gemini-2.0-flash' },
   { id: 'nova',            skillDir: 'atlas-creative',       name: 'Nova',              role: 'Blog & Social Posts',       provider: 'grok',      model: 'grok-2-1212' },
+  { id: 'samantha',        skillDir: 'samantha-calendar',    name: 'Samantha',          role: 'Calendar & Scheduling',     provider: 'anthropic', model: 'claude-haiku-4-5-20251001' },
 ];
 
 export function loadSkill(skillDir) {
