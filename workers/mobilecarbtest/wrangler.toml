@@ -1,0 +1,23 @@
+name = "mobilecarbtest"
+main = "src/index.ts"
+compatibility_date = "2026-04-01"
+
+routes = [
+  { pattern = "mobilecarbtest.com/*", zone_name = "mobilecarbtest.com" },
+  { pattern = "www.mobilecarbtest.com/*", zone_name = "mobilecarbtest.com" },
+]
+
+# TODO(deploy): replace `id` with Tracy's isolated KV namespace.
+#   wrangler kv namespace create MOBILECARBTEST_HTML_STORE
+[[kv_namespaces]]
+binding = "MOBILECARBTEST_HTML_STORE"
+id      = "REPLACE_WITH_MOBILECARBTEST_KV_ID"
+
+[[d1_databases]]
+binding       = "LEADS_DB"
+database_name = "norcal-carb-leads"
+database_id   = "ded9f851-2944-4f66-97de-e88c6b7bd9c9"
+
+[[r2_buckets]]
+binding     = "FORM_SUBMISSIONS"
+bucket_name = "form-submissions"

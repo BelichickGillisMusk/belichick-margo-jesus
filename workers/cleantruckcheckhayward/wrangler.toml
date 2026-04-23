@@ -1,0 +1,23 @@
+name = "cleantruckcheckhayward"
+main = "src/index.ts"
+compatibility_date = "2026-04-01"
+
+routes = [
+  { pattern = "cleantruckcheckhayward.com/*", zone_name = "cleantruckcheckhayward.com" },
+  { pattern = "www.cleantruckcheckhayward.com/*", zone_name = "cleantruckcheckhayward.com" },
+]
+
+# TODO(deploy): replace `id` with Hayward's isolated KV namespace.
+#   wrangler kv namespace create HAYWARD_HTML_STORE
+[[kv_namespaces]]
+binding = "HAYWARD_HTML_STORE"
+id      = "REPLACE_WITH_HAYWARD_KV_ID"
+
+[[d1_databases]]
+binding       = "LEADS_DB"
+database_name = "norcal-carb-leads"
+database_id   = "ded9f851-2944-4f66-97de-e88c6b7bd9c9"
+
+[[r2_buckets]]
+binding     = "FORM_SUBMISSIONS"
+bucket_name = "form-submissions"

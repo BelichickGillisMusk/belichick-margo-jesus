@@ -1,0 +1,23 @@
+name = "cleantruckcheck-roseville"
+main = "src/index.ts"
+compatibility_date = "2026-04-01"
+
+routes = [
+  { pattern = "cleantruckcheckroseville.com/*", zone_name = "cleantruckcheckroseville.com" },
+  { pattern = "www.cleantruckcheckroseville.com/*", zone_name = "cleantruckcheckroseville.com" },
+]
+
+# TODO(deploy): replace `id` with Roseville's isolated KV namespace.
+#   wrangler kv namespace create ROSEVILLE_HTML_STORE
+[[kv_namespaces]]
+binding = "ROSEVILLE_HTML_STORE"
+id      = "REPLACE_WITH_ROSEVILLE_KV_ID"
+
+[[d1_databases]]
+binding       = "LEADS_DB"
+database_name = "norcal-carb-leads"
+database_id   = "ded9f851-2944-4f66-97de-e88c6b7bd9c9"
+
+[[r2_buckets]]
+binding     = "FORM_SUBMISSIONS"
+bucket_name = "form-submissions"

@@ -1,0 +1,26 @@
+name = "stockton-carb-worker"
+main = "src/index.ts"
+compatibility_date = "2026-04-01"
+
+routes = [
+  { pattern = "carbteststockton.com/*", zone_name = "carbteststockton.com" },
+  { pattern = "www.carbteststockton.com/*", zone_name = "carbteststockton.com" },
+]
+
+# T1 FIX: bound to STOCKTON_HTML_STORE (isolated per-site namespace).
+# Previously bound to shared HTML_STORE, which caused Stockton pushes to
+# overwrite carb-clean-truck-check.com. Do NOT re-add an HTML_STORE binding.
+[[kv_namespaces]]
+binding = "STOCKTON_HTML_STORE"
+id      = "ed51efc25c9c442bbb984a8fce905ee5"
+
+# T3: leads land in this D1 on every booking.
+[[d1_databases]]
+binding       = "LEADS_DB"
+database_name = "norcal-carb-leads"
+database_id   = "ded9f851-2944-4f66-97de-e88c6b7bd9c9"
+
+# T4: raw form payloads archived here (no TTL, unlike KV).
+[[r2_buckets]]
+binding     = "FORM_SUBMISSIONS"
+bucket_name = "form-submissions"
