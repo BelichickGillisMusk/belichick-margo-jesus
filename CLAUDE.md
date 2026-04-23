@@ -292,6 +292,39 @@ The primary business domain is **California Air Resources Board (CARB) Clean Tru
 - Key opportunity: mobile credentialed testing services (free training, no brick-and-mortar needed)
 - The `clean-truck-check-complete.md` file is the authoritative knowledge base
 
+### Cloudflare City Sites — Master Reference
+
+Each city has a one-page landing site on Cloudflare Workers + KV. **Do not duplicate content between cities.** Each site targets a unique service area. Full spec in `sites-config.json` and `CLOUDFLARE-SITES-MASTER.md`.
+
+**Global:**
+- Company: NorCal CARB Mobile LLC
+- CARB Tester ID: IF530523 (Valid Jun 2027)
+- Hours: Mon-Fri 6am-5pm, Sat 8am-4pm
+- Rating: 4.9 stars, 47+ reviews
+- Free retest: 1 free if fail
+- Always link to cleantruckcheckvin.app
+- Template source: `cloudflare/sites/hayward/index.html` (44K leather/copper rustic design)
+
+| City | Phone | OBD | OVI | Fleet OBD/OVI | Colors (Team) | Coverage | Domain | KV Namespace ID |
+|------|-------|-----|-----|---------------|---------------|----------|--------|-----------------|
+| **Stockton** | (209) 818-1371 | $69 | $179 | $49/$149 | Red/Gold (Stockton Heat) | Stockton, Lodi, Tracy, Manteca, Modesto, Turlock, Ripon, Escalon + Fresno by appt | carbteststockton.com | `ed51efc25c9c442bbb984a8fce905ee5` |
+| **Roseville** | (916) 890-4427 | $79 | $209 | $69/$169 | Orange/Black/Cream (SF Giants) | Roseville, Rocklin, Lincoln, Citrus Heights, Folsom, Auburn, Elk Grove, Sacramento | cleantruckcheckroseville.com | `a7499c3416a74d37a828e6e29f0b727f` |
+| **Fairfield** | (916) 890-4427 | $79 | $209 | $69/$169 | Blue/Silver (Air Force Academy, LIGHT bg) | Fairfield, Vacaville, Vallejo, Napa, Dixon, Davis, Woodland, Suisun City | cleantruckcheckfairfield.com | `18c13f0d18cd49519e1f3688484fc9dc` |
+| **Lodi** | (209) 818-1371 | $75 | $209 | $69/$169 | Garnet/Gold (Florida State, LIGHT bg) | Lodi, Woodbridge, Acampo, Galt, Lockeford, Stockton, Tracy + Fresno by appt | cleantruckchecklodi.com | TBD |
+| **Hayward** | (415) 900-8563 | $85 | $179 | $69/$169 | Silver/Black (Raiders) | Hayward, Union City, Fremont, Castro Valley, San Leandro, Alameda, Pleasanton, Livermore | cleantruckcheckhayward.com | `f55313eabf3b415d83fb7036e4873834` |
+| **Bay Area** | (415) 900-8563 | $79 | $219 | $75/$199 | Orange/Black/Cream (SF Giants) | San Jose to Novato — full Bay Area corridor | carb-clean-truck-check.com | — |
+| **San Diego** | (619) 786-4328 | $119 | $219 | $69/$169 | Brown/Gold (Padres) | San Diego, Chula Vista, Oceanside, Escondido, Carlsbad, El Cajon | mobilecarbsmoketest.com | — |
+
+**NEVER brand a one-page landing site to norcalcarbmobile.com** — that is the main business site (built separately, not a one-pager). One-pagers are city-specific satellite sites only.
+
+**Rules:**
+- Each city's service areas must NOT overlap with another city's
+- Pricing varies per city — see table above (NOT universal)
+- Motorhome pricing: OBD $99, OVI $250 (all cities)
+- All sites use the same worker code pattern (HTML from KV, /api/book endpoint, robots.txt, sitemap.xml)
+- Template source: `cloudflare/sites/hayward/index.html` (Hayward rustic design — adapt colors per city)
+- Hours: Mon-Fri 6am-5pm, Sat 8am-4pm
+
 ## What Not to Change
 
 - Do not remove guardrails from any SKILL.md file
