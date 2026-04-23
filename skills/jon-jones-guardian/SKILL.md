@@ -239,7 +239,7 @@ Escalated actions:
 Top agents by volume:
   1. closer: 18 actions
   2. belichick: 14 actions
-  3. mila: 9 actions
+  3. sloan: 9 actions
   4. nova: 6 actions
 ────────────────────────────────────
 ```

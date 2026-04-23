@@ -11,8 +11,8 @@
       "lastCompletedAt": "2026-04-21T11:30:00Z"
     },
     {
-      "id": "mila-carb",
-      "name": "Mila (CARB CS)",
+      "id": "sloan-carb",
+      "name": "Sloan (CARB CS)",
       "role": "Clean Truck Check Support",
       "status": "idle",
       "currentTask": null,
@@ -20,8 +20,8 @@
       "lastCompletedAt": "2026-04-21T09:15:00Z"
     },
     {
-      "id": "mila-legal",
-      "name": "Mila (Legal)",
+      "id": "sloan-legal",
+      "name": "Sloan (Legal)",
       "role": "Regulatory Research",
       "status": "idle",
       "currentTask": null,
@@ -112,7 +112,7 @@
       "type": "security"
     },
     {
-      "agent": "mila-carb",
+      "agent": "sloan-carb",
       "action": "Answered fleet compliance question re: 2027 quarterly mandate",
       "timestamp": "2026-04-21T09:15:00Z",
       "type": "support"
@@ -130,7 +130,7 @@
       "type": "sales"
     },
     {
-      "agent": "mila-legal",
+      "agent": "sloan-legal",
       "action": "Compiled IL trucking regulation brief — 3 opportunities flagged",
       "timestamp": "2026-04-20T16:45:00Z",
       "type": "research"

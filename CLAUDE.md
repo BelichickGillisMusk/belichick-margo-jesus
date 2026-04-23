@@ -60,8 +60,8 @@ Cost-optimized — only Belichick needs Claude Sonnet (tool_use for delegation).
 | ID | Name | Provider | Model | Role |
 |----|------|----------|-------|------|
 | `belichick` | Belichick | anthropic | claude-sonnet-4-20250514 | Orchestrator — breaks projects into tasks, delegates |
-| `mila-carb` | Mila (CARB CS) | anthropic | claude-haiku-4-5-20251001 | CARB Clean Truck Check support |
-| `mila-legal` | Mila (Legal) | anthropic | claude-sonnet-4-20250514 | Regulatory research |
+| `sloan-carb` | Sloan (CARB CS) | anthropic | claude-haiku-4-5-20251001 | CARB Clean Truck Check support |
+| `sloan-legal` | Sloan (Legal) | anthropic | claude-sonnet-4-20250514 | Regulatory research |
 | `atlas` | Atlas | openai | gpt-4o-mini | YouTube + blog content |
 | `closer` | Closer | anthropic | claude-sonnet-4-20250514 | Sales (A.C.E.S. framework) |
 | `jon-jones` | Jon Jones | anthropic | claude-haiku-4-5-20251001 | Security guardian |

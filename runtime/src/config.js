@@ -12,8 +12,8 @@ const SKILLS_DIR = join(PROJECT_ROOT, 'skills');
 // Only Belichick needs Claude (tool_use for delegation). Sub-agents can use any provider.
 const AGENT_REGISTRY = [
   { id: 'belichick',      skillDir: 'belichick-strategy',   name: 'Belichick',        role: 'The Strategist',           provider: 'anthropic', model: 'claude-sonnet-4-20250514' },
-  { id: 'mila-carb',      skillDir: 'mila-carb-cs',         name: 'Mila (CARB CS)',    role: 'Clean Truck Check Support', provider: 'anthropic', model: 'claude-haiku-4-5-20251001' },
-  { id: 'mila-legal',     skillDir: 'mila-legal',           name: 'Mila (Legal)',      role: 'Regulatory Research',       provider: 'anthropic', model: 'claude-sonnet-4-20250514' },
+  { id: 'sloan-carb',     skillDir: 'sloan-carb-cs',        name: 'Sloan (CARB CS)',   role: 'Clean Truck Check Support', provider: 'anthropic', model: 'claude-haiku-4-5-20251001' },
+  { id: 'sloan-legal',    skillDir: 'sloan-legal',          name: 'Sloan (Legal)',     role: 'Regulatory Research',       provider: 'anthropic', model: 'claude-sonnet-4-20250514' },
   { id: 'atlas',           skillDir: 'atlas-creative',       name: 'Atlas',             role: 'YouTube & Creative (Blog)', provider: 'openai',    model: 'gpt-4o-mini' },
   { id: 'closer',          skillDir: 'closer-sales',         name: 'Closer',            role: 'Sales Agent',               provider: 'anthropic', model: 'claude-sonnet-4-20250514' },
   { id: 'jon-jones',      skillDir: 'jon-jones-guardian',    name: 'Jon Jones',         role: 'Guardian Bot',              provider: 'anthropic', model: 'claude-haiku-4-5-20251001' },

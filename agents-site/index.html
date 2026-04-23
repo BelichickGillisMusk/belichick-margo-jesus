@@ -159,9 +159,9 @@ header h1 span{color:var(--accent)}
 
 <script>
 const AGENT_META = {
-  belichick:      { color:'#a855f7', initial:'B',  couldDo:['Run weekly business review — pipeline stages, blockers, top 3 priorities','Evaluate new business opportunity end-to-end (legal, market, pitch, GO/NO-GO)','Delegate tasks to Mila, Atlas, Closer and track completion'] },
-  'mila-carb':    { color:'#22c55e', initial:'M',  couldDo:['Answer fleet compliance questions with CARB rule citations and deadlines','Schedule Clean Truck Check testing appointments with 90/30/7-day reminders','Brief fleet owners on 2027 quarterly mandate change (2x to 4x/year)'] },
-  'mila-legal':   { color:'#22c55e', initial:'M',  couldDo:['Research IL/Chicago regs — find business opportunities in regulatory gaps','Analyze licensing requirements and propose legal business models','Compile regulatory brief for trucking/emissions industry with pending amendments'] },
+  belichick:      { color:'#a855f7', initial:'B',  couldDo:['Run weekly business review — pipeline stages, blockers, top 3 priorities','Evaluate new business opportunity end-to-end (legal, market, pitch, GO/NO-GO)','Delegate tasks to Sloan, Atlas, Closer and track completion'] },
+  'sloan-carb':   { color:'#22c55e', initial:'S',  couldDo:['Answer fleet compliance questions with CARB rule citations and deadlines','Schedule Clean Truck Check testing appointments with 90/30/7-day reminders','Brief fleet owners on 2027 quarterly mandate change (2x to 4x/year)'] },
+  'sloan-legal':  { color:'#22c55e', initial:'S',  couldDo:['Research IL/Chicago regs — find business opportunities in regulatory gaps','Analyze licensing requirements and propose legal business models','Compile regulatory brief for trucking/emissions industry with pending amendments'] },
   atlas:          { color:'#3b82f6', initial:'A',  couldDo:['Create YouTube video briefs with SEO titles, hooks, tags, and thumbnail concepts','Build 4-week content calendar with topics, posting schedule, and series structures','Research trending topics in your niche and identify content gaps competitors miss'] },
   closer:         { color:'#f97316', initial:'C',  couldDo:['Draft cold email sequences for fleet managers using A.C.E.S. framework','Handle live objections — reframe pricing, pivot "not interested" to discovery','Run prospecting campaigns with qualifying questions and urgency tactics'] },
   'jon-jones':    { color:'#ef4444', initial:'JJ', couldDo:['Review all outbound emails/Slack for PII, tone, accuracy, and legal risk','Scan outbound traffic for leaked credentials (API keys, tokens, passwords)','Generate daily security audit report — approvals, blocks, escalations'] },
@@ -246,9 +246,9 @@ function renderFeed(feed) {
 function renderCouldDo() {
   const el = document.getElementById('couldDo');
   el.innerHTML = '';
-  const order = ['belichick','mila-carb','mila-legal','atlas','closer','jon-jones','cipher','sentinel','nova','builder-deploy'];
+  const order = ['belichick','sloan-carb','sloan-legal','atlas','closer','jon-jones','cipher','sentinel','nova','builder-deploy'];
   const names = {
-    belichick:'Belichick','mila-carb':'Mila (CARB)','mila-legal':'Mila (Legal)',
+    belichick:'Belichick','sloan-carb':'Sloan (CARB)','sloan-legal':'Sloan (Legal)',
     atlas:'Atlas',closer:'Closer','jon-jones':'Jon Jones',
     cipher:'Cipher',sentinel:'Lead Scraper',nova:'Nova','builder-deploy':'Builder-Deploy'
   };

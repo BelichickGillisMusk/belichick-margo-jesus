@@ -26,7 +26,7 @@ Fallback: Claude Sonnet (cheaper, still good)
 
 ---
 
-### 2. MILA (Customer Service - CARB Website)
+### 2. SLOAN (Customer Service - CARB Website)
 **Lives on the website. Only knows what's on carb.com. Sandboxed.**
 
 - Answers customer questions from site content ONLY
@@ -106,7 +106,7 @@ Fallback: Local model for brainstorming
 - Monitor new legislation
 - Risk assessment
 
-Skills: mila-legal, summarize
+Skills: sloan-legal, summarize
 Model: Claude Opus (needs to be smart for legal analysis)
 Fallback: Sonnet for basic searches
 
@@ -156,8 +156,8 @@ SECURITY:
 |-------|-----------|-------|------|
 | **Belichick** (Admin) | Calendar, email, reminders, Drive | **Gemini - FREE** | $0 |
 | **Belichick** (Admin) | Complex strategy/decisions | Claude (on-demand) | $ only when needed |
-| **Mila** (Customer Svc) | CARB Q&A on website | **Gemini - FREE** | $0 |
-| **Mila** (Admin assist) | Schedule tests, organize Drive | **Gemini - FREE** | $0 |
+| **Sloan** (Customer Svc) | CARB Q&A on website | **Gemini - FREE** | $0 |
+| **Sloan** (Admin assist) | Schedule tests, organize Drive | **Gemini - FREE** | $0 |
 | **Atlas** (Web Dev) | Simple site updates | **Gemini - FREE** | $0 |
 | **Atlas** (Web Dev) | Complex code/architecture | Claude (on-demand) | $ only when needed |
 | **Cipher** (Finance) | Sheets formulas, invoice gen | **Gemini - FREE** | $0 |
@@ -175,10 +175,10 @@ Use Make.com for everything that's a repeating pipeline:
 
 | Workflow | Trigger | Action |
 |----------|---------|--------|
-| **Lead Capture → Sheets** | Mila collects a lead on website | Auto-add to Google Sheets lead tracker |
+| **Lead Capture → Sheets** | Sloan collects a lead on website | Auto-add to Google Sheets lead tracker |
 | **Compliance Deadline Alerts** | Calendar event approaching | Send SMS/email reminder to customer |
 | **Test Results → Drive** | Tester submits results | Auto-file in customer's Drive folder |
-| **New CARB Regulation Alert** | RSS/web monitor on CARB site | Notify you + update Mila's knowledge |
+| **New CARB Regulation Alert** | RSS/web monitor on CARB site | Notify you + update Sloan's knowledge |
 | **Invoice Generation** | Cipher creates invoice | Auto-send via email, log in Sheets |
 | **Social Media Posting** | Nova creates content | Auto-post to platforms on schedule |
 | **Fleet Compliance Check** | Weekly cron | Pull fleet status, flag non-compliant |
@@ -199,7 +199,7 @@ Use Make.com for everything that's a repeating pipeline:
 
 | Service | Keep or Cut? | Why |
 |---------|-------------|-----|
-| Google Cloud VM (Mila's current home) | **CUT** | Moving everything local |
+| Google Cloud VM (Sloan's current home) | **CUT** | Moving everything local |
 | Any redundant automation tool | **EVALUATE** | If Make.com covers it, cut it |
 | Paid Gemini tier vs free tier | **EVALUATE** | Check if free tier covers your volume |
 | Multiple Claude subscriptions | **EVALUATE** | One is enough if agents share it |
@@ -216,9 +216,9 @@ If you're on the paid Gemini tier, limits are much higher. Either way: plenty fo
 
 ---
 
-## Tonight's Target: Get Mila (Customer Service) Running
+## Tonight's Target: Get Sloan (Customer Service) Running
 
-### Why Mila First?
+### Why Sloan First?
 - Simplest to deploy (just a chat widget on the website)
 - Cheapest to run (Haiku or local model)
 - Immediate value (24/7 customer service)
@@ -229,7 +229,7 @@ If you're on the paid Gemini tier, limits are much higher. Either way: plenty fo
 2. Install Ollama on Mac: `brew install ollama`
 3. Pull a local model: `ollama pull llama3`
 4. Configure OpenClaw with the config from this repo
-5. Scrape CARB website content into Mila's knowledge base
+5. Scrape CARB website content into Sloan's knowledge base
 6. Deploy chat widget to website
 7. Test with sample customer questions
 
@@ -248,7 +248,7 @@ But the moment an agent wants to touch the outside world, it becomes a **potenti
                     ┌─────────────────────────────────────────────┐
                     │                                             │
                     │  Belichick ── strategy, planning, research  │
-                    │  Mila ─────── customer Q&A drafts           │
+                    │  Sloan ─────── customer Q&A drafts           │
                     │  Atlas ────── code, builds, deploys         │
                     │  Cipher ───── accounting, invoices (draft)  │
                     │  Nova ─────── content creation, scripts     │
@@ -332,7 +332,7 @@ Agent drafts message → Jon Jones reviews → Post to channel via Bot API
 ~/.openclaw/
 ├── workspaces/              # Isolated per-agent workspaces
 │   ├── belichick/           # Only Belichick can read/write
-│   ├── mila/                # Only Mila can read/write
+│   ├── sloan/                # Only Sloan can read/write
 │   ├── atlas/               # ...
 │   ├── cipher/
 │   ├── nova/
@@ -383,7 +383,7 @@ YOUR MAC
 │   ├── Bind: 127.0.0.1 ONLY
 │   └── Agents:
 │       ├── Belichick ─── Gemini FREE (daily) / Claude (on-demand)
-│       ├── Mila ──────── Gemini FREE (CS bot) / Ollama (backup)
+│       ├── Sloan ──────── Gemini FREE (CS bot) / Ollama (backup)
 │       ├── Atlas ─────── Gemini FREE (simple) / Claude (complex code)
 │       ├── Cipher ────── Gemini FREE (Sheets) / Claude (tax/analysis)
 │       ├── Nova ──────── Gemini FREE (content) / Claude (polish)
@@ -437,7 +437,7 @@ YOUR MAC
 │   ├── Cost alerts at 80% of free tier limits
 │   └── NEVER auto-upgrade to paid — human approval required
 │
-└── Website Chat Widget (Mila only)
+└── Website Chat Widget (Sloan only)
     ├── CSP: connect-src limited to YOUR domain only
     ├── Proxy: Vercel serverless function
     ├── Knowledge: ONLY CARB website content
@@ -459,7 +459,7 @@ Everything runs on your Mac. Period.
 
 The only thing that touches the internet:
 1. Claude API calls (when using Claude, not local models)
-2. The Mila chat widget on your website (proxied through Vercel)
+2. The Sloan chat widget on your website (proxied through Vercel)
 3. Email (SMTP/IMAP to Gmail — gatekept by Jon Jones)
 4. Slack Bot API (gatekept by Jon Jones)
 5. Discord/Telegram webhooks (gatekept by Jon Jones)
