@@ -42,22 +42,25 @@ no cross-domain robots/sitemap, no canonical bleed. Sources of truth:
 
 ## Before deploying the non-Stockton Workers
 
-Each non-Stockton `wrangler.toml` has `id = "REPLACE_WITH_<SITE>_KV_ID"`. This
-is deliberate — we don't know (and must not re-use) the existing IDs. For each
-site, decide:
+Each non-Stockton Worker ships with `wrangler.toml.template` instead of a live
+`wrangler.toml`. This stops Cloudflare's Git integration (and this repo's own
+Actions workflow) from auto-deploying a Worker that would bind to a bogus KV
+id. For each site, when you're ready:
 
-- **If a per-site KV already exists in the dashboard:** paste its id into the
-  `[[kv_namespaces]]` block.
-- **If the site currently binds to `HTML_STORE` (the shared one):** create a
-  new isolated namespace, copy the old HTML into it, then bind the new id:
-  ```
-  wrangler kv namespace create FAIRFIELD_HTML_STORE
-  # returns: { binding = "FAIRFIELD_HTML_STORE", id = "..." }
-  # copy HTML keys out of old HTML_STORE into the new namespace, then update wrangler.toml
-  ```
-
-The deploy workflow auto-skips any Worker whose `wrangler.toml` still contains
-`REPLACE_WITH_`, so you won't accidentally ship a broken binding.
+1. **Get its KV namespace id.** Either copy the existing isolated namespace id
+   from the Cloudflare dashboard, or create one:
+   ```
+   wrangler kv namespace create FAIRFIELD_HTML_STORE
+   ```
+   (Repeat with `SMOKETEST_HTML_STORE`, `MOBILECARBTEST_HTML_STORE`,
+   `ROSEVILLE_HTML_STORE`, `HAYWARD_HTML_STORE`.)
+2. **If the site currently binds to the shared `HTML_STORE`**, copy HTML keys
+   out of the old namespace into the new one before switching (otherwise the
+   site will 404 after deploy).
+3. **Paste the id** into `workers/<name>/wrangler.toml.template`, replacing
+   `REPLACE_WITH_<SITE>_KV_ID`.
+4. **Rename** `wrangler.toml.template` → `wrangler.toml` and commit. The next
+   push will deploy that Worker.
 
 ## Secrets required in GitHub
 
