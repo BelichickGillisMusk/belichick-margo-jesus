@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**BelichickGillisMusk** is a local-first multi-agent AI system built on the OpenClaw platform, designed to run on a Mac. It orchestrates a team of specialized AI agents for business operations including legal research, sales, marketing, customer service (CARB compliance), lead generation, and strategic coordination. The system uses Slack as its command center, Make.com for automation, and prioritizes free-tier Gemini for grunt work with Claude reserved for complex tasks.
+**BelichickGillisMusk** is a local-first multi-agent AI system built on the ClawdBot platform, designed to run on a Mac. It orchestrates a team of specialized AI agents for business operations including legal research, sales, marketing, customer service (CARB compliance), lead generation, and strategic coordination. The system uses Slack as its command center, Make.com for automation, and prioritizes free-tier Gemini for grunt work with Claude reserved for complex tasks.
 
 **License:** MIT
 
@@ -28,6 +28,7 @@ belichick-margo-jesus/
 │   ├── index.html           # SEO-optimized with JSON-LD LocalBusiness schema, geo-targeting
 │   ├── robots.txt
 │   └── sitemap.xml
+├── clawdbot-config.json5    # ClawdBot gateway configuration (JSON5 with comments)
 ├── cleantruckcheckroseville/  # Landing page for Clean Truck Check Roseville service
 │   ├── 404.html
 │   ├── _headers
@@ -40,6 +41,7 @@ belichick-margo-jesus/
 │   ├── discoveries-2026-02-13.md  # Queued cost-saving discoveries awaiting approval
 │   └── tps-2026-02-13.md         # Weekly agent status checkpoint
 ├── salesbot.html            # "The Office" - sandboxed sales bot demo (Closer agent prototype)
+├── skills/                  # ClawdBot skill definitions (agent prompts and knowledge bases)
 ├── skills/                  # OpenClaw skill definitions (agent prompts and knowledge bases)
 │   ├── belichick-strategy/
 │   │   └── SKILL.md         # Strategy & orchestration agent
@@ -137,7 +139,7 @@ npm start        # Alias for npm run slack
 
 ## Key Configuration
 
-### OpenClaw Gateway (`openclaw-config.json5`)
+### ClawdBot Gateway (`clawdbot-config.json5`)
 
 - **Bind:** `loopback` (127.0.0.1 only - not internet-accessible)
 - **Port:** 18789
@@ -232,7 +234,7 @@ description: Detailed description with trigger words
 [System prompt, workflows, output formats, guardrails]
 ```
 
-The `description` field includes trigger words that OpenClaw uses to route requests to the correct agent. Reference files go in a `references/` subdirectory within the skill folder.
+The `description` field includes trigger words that ClawdBot uses to route requests to the correct agent. Reference files go in a `references/` subdirectory within the skill folder.
 
 ## HTML Prototypes
 
@@ -261,6 +263,7 @@ Sandboxed sales bot demo for the Closer agent. Features:
 - Agent definitions go in `skills/<agent-name>/SKILL.md`
 - Reference/knowledge base data goes in `skills/<agent-name>/references/`
 - Application code goes in `src/<component>/index.js`
+- Configuration is JSON5 format (comments allowed) in `clawdbot-config.json5`
 - Configuration is JSON5 format (comments allowed) in `openclaw-config.json5`
 - UI prototypes are standalone HTML files at the repo root (no build system)
 - Landing pages go in their own directories at repo root (e.g., `carbteststockton/`)
@@ -328,7 +331,7 @@ Each city has a one-page landing site on Cloudflare Workers + KV. **Do not dupli
 ## What Not to Change
 
 - Do not remove guardrails from any SKILL.md file
-- Do not change `openclaw-config.json5` bind from `loopback` to anything public-facing
+- Do not change `clawdbot-config.json5` bind from `loopback` to anything public-facing
 - Do not add external network calls to `salesbot.html` (it is intentionally sandboxed)
 - Do not change the Content Security Policy on `salesbot.html`
 - Do not add cloud service dependencies - the system is local-first by design

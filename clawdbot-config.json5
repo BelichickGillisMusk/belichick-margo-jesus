@@ -1,5 +1,5 @@
-// OpenClaw Configuration for BelichickGillisMusk
-// Drop this into ~/.openclaw/openclaw.json on your Mac
+// ClawdBot Configuration for BelichickGillisMusk
+// Local-first agent orchestration — runs on your Mac
 // Agents: Mila (Research/Legal), Musk (YouTube/Creative), Jon Jones (Sales), Kesha (Marketing), Belichick (Strategy)
 {
   "gateway": {
