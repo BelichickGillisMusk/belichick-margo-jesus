@@ -35,12 +35,14 @@ belichick-margo-jesus/
 │   ├── _redirects
 │   └── index.html           # Premium dark theme with CSS design system, orange accent
 ├── index.html               # "Agent Round Table" - interactive agent status dashboard UI
+├── openclaw-config.json5    # OpenClaw gateway configuration (JSON5 with comments)
 ├── package.json             # Node.js project config (ES modules, @slack/bolt, Anthropic SDK, Express)
 ├── reports/                 # Agent-generated reports and discoveries
 │   ├── discoveries-2026-02-13.md  # Queued cost-saving discoveries awaiting approval
 │   └── tps-2026-02-13.md         # Weekly agent status checkpoint
 ├── salesbot.html            # "The Office" - sandboxed sales bot demo (Closer agent prototype)
 ├── skills/                  # ClawdBot skill definitions (agent prompts and knowledge bases)
+├── skills/                  # OpenClaw skill definitions (agent prompts and knowledge bases)
 │   ├── belichick-strategy/
 │   │   └── SKILL.md         # Strategy & orchestration agent
 │   ├── gemini-lead-scraper/
@@ -262,6 +264,7 @@ Sandboxed sales bot demo for the Closer agent. Features:
 - Reference/knowledge base data goes in `skills/<agent-name>/references/`
 - Application code goes in `src/<component>/index.js`
 - Configuration is JSON5 format (comments allowed) in `clawdbot-config.json5`
+- Configuration is JSON5 format (comments allowed) in `openclaw-config.json5`
 - UI prototypes are standalone HTML files at the repo root (no build system)
 - Landing pages go in their own directories at repo root (e.g., `carbteststockton/`)
 - Agent-generated reports go in `reports/`
