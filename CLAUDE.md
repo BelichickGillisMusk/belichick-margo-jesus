@@ -130,9 +130,9 @@ npm start        # Alias for npm run slack
 ### Source Code Architecture (`src/`)
 
 **Slack Bot** (`src/slack-bot/`):
-- `index.js` — Entry point; registers Slack commands (`/roster`, `/dispatch`, `/kill`, `/recon-*`, `/budget`), tracks active missions in memory, reports token usage
-- `agents.js` — Declares all 11 agents with their Claude model, Slack channel, and system prompt; defines mission-to-agent mappings for RECON commands
-- `dispatch.js` — `runAgent(agentId, task)` calls Claude API with agent-specific system prompt; `runMission(agentIds[], task)` runs multiple agents in parallel via `Promise.all()`; single-turn only (no conversation history)
+- `index.js` — Entry point; registers Slack commands (`/roster`, `/dispatch`, `/kill`, `/recon-*`, `/swarm`, `/budget`), tracks active missions in memory, reports token usage
+- `agents.js` — Declares all 11 agents with their Claude model, Slack channel, and system prompt; defines mission-to-agent mappings for RECON commands and named `SWARM_PRESETS` (full / intel / ops / revenue / compliance) used by `/swarm`
+- `dispatch.js` — `runAgent(agentId, task)` calls Claude API with agent-specific system prompt; `runMission(agentIds[], task)` runs multiple agents in parallel via `Promise.allSettled()`; `runSwarm(agentIds[], task, { parallelism })` chunks larger squads to respect API rate limits; single-turn only (no conversation history)
 
 **Mila Chatbot** (`src/mila-chatbot/`):
 - Express server with session-based multi-turn conversation (20-message rolling window)

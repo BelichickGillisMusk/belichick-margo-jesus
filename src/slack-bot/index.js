@@ -1,7 +1,14 @@
 import 'dotenv/config';
 import bolt from '@slack/bolt';
-import { AGENTS, AGENT_SOURCE_OF_TRUTH, MISSIONS } from './agents.js';
-import { runAgent, runMission } from './dispatch.js';
+import {
+  AGENTS,
+  AGENT_SOURCE_OF_TRUTH,
+  MISSIONS,
+  SWARM_PRESETS,
+  DEFAULT_SWARM_PRESET,
+  resolveSwarmAgents,
+} from './agents.js';
+import { runAgent, runMission, runSwarm } from './dispatch.js';
 import { createMissionStore } from './mission-store.js';
 import {
   ENVIRONMENT_VARIABLES,
@@ -15,6 +22,8 @@ const { App } = bolt;
 const DEFAULT_MAX_CONCURRENT_MISSIONS = parseIntegerEnv('SLACK_MAX_CONCURRENT_MISSIONS', 2, 1);
 const DEFAULT_DAILY_TOKEN_BUDGET = parseIntegerEnv('SLACK_DAILY_TOKEN_BUDGET', 60000, 1000);
 const DEFAULT_MISSION_TOKEN_WARN_THRESHOLD = parseIntegerEnv('SLACK_MISSION_TOKEN_WARN_THRESHOLD', 12000, 1000);
+const DEFAULT_SWARM_PARALLELISM = parseIntegerEnv('SLACK_SWARM_PARALLELISM', 3, 1);
+const DEFAULT_SWARM_MAX_AGENTS = parseIntegerEnv('SLACK_SWARM_MAX_AGENTS', 8, 1);
 const QUICK_ACTIONS = {
   samantha_pulse: {
     label: 'Samantha pulse',
@@ -47,6 +56,14 @@ const QUICK_ACTIONS = {
     agents: MISSIONS['recon-compliance'].agents,
     task: 'Summarize the most urgent Clean Truck Check follow-ups, deadlines, and next actions to keep customers compliant.',
     emoji: ':clipboard:',
+  },
+  swarm_pulse: {
+    label: 'Swarm pulse',
+    commandName: 'swarm',
+    type: 'Agent Swarm',
+    presetKey: DEFAULT_SWARM_PRESET,
+    task: 'Take an honest look at NorCal CARB Mobile right now and each weigh in from your specialty: what is the single best next move I can ship today?',
+    emoji: ':ant:',
   },
   budget_pulse: {
     label: 'Budget pulse',
@@ -83,6 +100,7 @@ function buildRosterResponse() {
           { type: 'button', text: { type: 'plain_text', text: 'Lead pulse' }, action_id: 'leads_pulse' },
           { type: 'button', text: { type: 'plain_text', text: 'Deploy pulse' }, action_id: 'deploy_pulse' },
           { type: 'button', text: { type: 'plain_text', text: 'Compliance pulse' }, action_id: 'compliance_pulse' },
+          { type: 'button', text: { type: 'plain_text', text: 'Swarm pulse' }, action_id: 'swarm_pulse' },
           { type: 'button', text: { type: 'plain_text', text: 'Budget' }, action_id: 'budget_pulse' },
         ],
       },
@@ -220,6 +238,8 @@ export function createSlackApp({
   maxConcurrentMissions = DEFAULT_MAX_CONCURRENT_MISSIONS,
   dailyTokenBudget = DEFAULT_DAILY_TOKEN_BUDGET,
   missionTokenWarnThreshold = DEFAULT_MISSION_TOKEN_WARN_THRESHOLD,
+  swarmParallelism = DEFAULT_SWARM_PARALLELISM,
+  swarmMaxAgents = DEFAULT_SWARM_MAX_AGENTS,
 } = {}) {
   const missing = validateRequiredEnv([
     'SLACK_BOT_TOKEN',
@@ -273,7 +293,22 @@ export function createSlackApp({
         return;
       }
 
-      const agentNames = action.agents.map(agentId => AGENTS[agentId]?.name || agentId).join(' + ');
+      let agents;
+      let isSwarm = false;
+      if (action.presetKey) {
+        try {
+          ({ agents } = resolveSwarmAgents(action.presetKey));
+        } catch (error) {
+          await respond({ text: `:x: Swarm preset error: ${error.message}`, response_type: 'ephemeral' });
+          return;
+        }
+        agents = agents.slice(0, swarmMaxAgents);
+        isSwarm = true;
+      } else {
+        agents = action.agents;
+      }
+
+      const agentNames = agents.map(agentId => AGENTS[agentId]?.name || agentId).join(' + ');
       const channelId = body.channel?.id || body.container?.channel_id;
       await respond({ text: `${action.emoji} Starting ${action.label}...`, response_type: 'ephemeral' });
 
@@ -282,10 +317,15 @@ export function createSlackApp({
           missionStore,
           commandName: action.commandName,
           task: action.task,
-          agents: action.agents,
+          agents,
           type: action.type,
           requestedBy: body.user.id,
-          execute: () => action.agents.length > 1 ? runMission(action.agents, action.task) : runAgent(action.agents[0], action.task),
+          execute: () => {
+            if (isSwarm) {
+              return runSwarm(agents, action.task, { parallelism: swarmParallelism });
+            }
+            return agents.length > 1 ? runMission(agents, action.task) : runAgent(agents[0], action.task);
+          },
         });
 
         if (!channelId) {
@@ -423,6 +463,90 @@ export function createSlackApp({
     }
   });
 
+  app.command('/swarm', guardCommand, async ({ ack, respond, command, say }) => {
+    await ack();
+
+    const raw = command.text?.trim() || '';
+    if (!raw) {
+      const presetList = Object.entries(SWARM_PRESETS)
+        .map(([key, preset]) => `\`${key}\` — ${preset.label} (${preset.agents.length} agents)`)
+        .join('\n');
+      await respond({
+        text: `Usage: /swarm [preset|agent,agent,...] | task\nDefault preset: \`${DEFAULT_SWARM_PRESET}\`\n\n${presetList}`,
+      });
+      return;
+    }
+
+    const separatorIndex = raw.indexOf('|');
+    let squadInput = '';
+    let task = raw;
+    if (separatorIndex >= 0) {
+      squadInput = raw.slice(0, separatorIndex).trim();
+      task = raw.slice(separatorIndex + 1).trim();
+    }
+
+    if (!task) {
+      await respond({ text: `Usage: /swarm [preset|agent,agent,...] | task` });
+      return;
+    }
+
+    let resolved;
+    try {
+      resolved = resolveSwarmAgents(squadInput);
+    } catch (error) {
+      await respond({ text: `:x: ${error.message}` });
+      return;
+    }
+
+    if (resolved.agents.length > swarmMaxAgents) {
+      await respond({
+        text: `:warning: Swarm size (${resolved.agents.length}) exceeds SLACK_SWARM_MAX_AGENTS (${swarmMaxAgents}). Trimming to first ${swarmMaxAgents}.`,
+      });
+      resolved.agents = resolved.agents.slice(0, swarmMaxAgents);
+    }
+
+    const blocker = getDispatchBlocker(missionStore, { maxConcurrentMissions, dailyTokenBudget });
+    if (blocker) {
+      await respond({ text: blocker });
+      return;
+    }
+
+    const agentNames = resolved.agents.map(agentId => AGENTS[agentId]?.name || agentId).join(' + ');
+    await respond({
+      text: `${resolved.emoji} *[SWARM ${resolved.preset.toUpperCase()}]* ${agentNames} → "${task}"\nFanning out at parallelism ${swarmParallelism}...`,
+    });
+
+    try {
+      const { cancelled, outcome } = await runTrackedMission({
+        missionStore,
+        commandName: 'swarm',
+        task,
+        agents: resolved.agents,
+        type: `Swarm (${resolved.preset})`,
+        requestedBy: command.user_id,
+        execute: () => runSwarm(resolved.agents, task, { parallelism: swarmParallelism }),
+      });
+
+      const text = cancelled
+        ? `:warning: *[CANCELLED]* swarm ${resolved.preset} — "${task}" was cancelled before posting results.`
+        : formatMissionCompletion({
+            outcome,
+            type: `Swarm (${resolved.preset})`,
+            task,
+            emoji: resolved.emoji,
+            agentNames,
+            missionTokenWarnThreshold,
+          });
+
+      await say({ text, channel: command.channel_id });
+    } catch (error) {
+      await say({
+        text: `:x: *[ERROR]* swarm ${resolved.preset} — failed: ${error.message}`,
+        channel: command.channel_id,
+      });
+    }
+  });
+
   app.command('/kill', guardCommand, async ({ ack, respond, command }) => {
     await ack();
     const agentId = command.text?.trim().toLowerCase();
@@ -450,6 +574,7 @@ export async function startSlackBot() {
   console.log('⚡ Slack bot is running (Socket Mode)');
   console.log(`📋 ${Object.keys(AGENTS).length} agents loaded`);
   console.log(`🎯 ${Object.keys(MISSIONS).length} mission types ready`);
+  console.log(`🐜 ${Object.keys(SWARM_PRESETS).length} swarm presets ready (default: ${DEFAULT_SWARM_PRESET})`);
 }
 
 if (isMainModule(import.meta)) {

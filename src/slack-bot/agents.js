@@ -206,6 +206,89 @@ Be precise with numbers. Flag when spending exceeds thresholds.`,
   }),
 };
 
+export const SWARM_PRESETS = {
+  full: {
+    label: 'Full roster',
+    emoji: ':ant:',
+    description: 'Every operational agent weighs in on a single task in parallel.',
+    agents: [
+      'samantha',
+      'datasync',
+      'finbot',
+      'website-helper',
+      'lead-scraper',
+      'sentinel',
+      'mila-legal',
+      'mila-carb',
+      'kesha',
+      'musk',
+      'jon-jones',
+      'cipher',
+    ],
+  },
+  intel: {
+    label: 'Intelligence squad',
+    emoji: ':mag:',
+    description: 'Market, technical, and creative intel agents brainstorming a single problem.',
+    agents: ['kesha', 'musk', 'sentinel', 'mila-legal'],
+  },
+  ops: {
+    label: 'Operations squad',
+    emoji: ':rocket:',
+    description: 'Day-to-day execution agents — routing, data, and deploy.',
+    agents: ['samantha', 'datasync', 'website-helper'],
+  },
+  revenue: {
+    label: 'Revenue squad',
+    emoji: ':moneybag:',
+    description: 'Sales pipeline, lead generation, and finance reconciliation in one pass.',
+    agents: ['jon-jones', 'lead-scraper', 'finbot', 'cipher'],
+  },
+  compliance: {
+    label: 'Compliance squad',
+    emoji: ':scales:',
+    description: 'CARB customer service, legal, and data sync triangulating a compliance question.',
+    agents: ['mila-carb', 'mila-legal', 'sentinel', 'datasync'],
+  },
+};
+
+export const DEFAULT_SWARM_PRESET = 'intel';
+
+export function resolveSwarmAgents(input, { knownAgents = AGENTS, presets = SWARM_PRESETS } = {}) {
+  const trimmed = (input || '').trim().toLowerCase();
+  const presetKey = trimmed || DEFAULT_SWARM_PRESET;
+
+  if (presets[presetKey]) {
+    return {
+      preset: presetKey,
+      label: presets[presetKey].label,
+      emoji: presets[presetKey].emoji,
+      agents: [...presets[presetKey].agents],
+    };
+  }
+
+  const requested = trimmed
+    .split(/[\s,]+/)
+    .map(value => value.trim())
+    .filter(Boolean);
+
+  const missing = requested.filter(agentId => !knownAgents[agentId]);
+  if (missing.length > 0) {
+    throw new Error(`Unknown swarm agents: ${missing.join(', ')}`);
+  }
+
+  if (requested.length === 0) {
+    throw new Error('No swarm agents specified.');
+  }
+
+  return {
+    preset: 'custom',
+    label: `Custom (${requested.join(' + ')})`,
+    emoji: ':ant:',
+    agents: requested,
+  };
+}
+
 export const MISSIONS = {
   'recon-leads': {
     agents: ['lead-scraper'],
