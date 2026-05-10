@@ -44,7 +44,11 @@ belichick-margo-jesus/
 ├── skills/                  # ClawdBot skill definitions (agent prompts and knowledge bases)
 ├── skills/                  # OpenClaw skill definitions (agent prompts and knowledge bases)
 │   ├── belichick-strategy/
-│   │   └── SKILL.md         # Strategy & orchestration agent
+│   │   └── SKILL.md         # Strategy & orchestration agent (legacy)
+│   ├── datasync/
+│   │   └── SKILL.md         # Data pipeline: CARB portal sync, VIN decoding, fleet DB ingestion
+│   ├── finbot/
+│   │   └── SKILL.md         # Financial reconciliation: QuickBooks, Stripe, PayPal, invoices
 │   ├── gemini-lead-scraper/
 │   │   └── SKILL.md         # Google Maps/Places API lead scraper
 │   ├── jonjones-sales/
@@ -60,6 +64,8 @@ belichick-margo-jesus/
 │   │       └── research-sources.md              # Federal, IL, Chicago legal databases
 │   ├── musk-creative/
 │   │   └── SKILL.md         # YouTube/creative content & competitive analysis agent
+│   ├── samantha-ops/
+│   │   └── SKILL.md         # Samantha command center: route planning, job dispatch, CRM, ops
 │   ├── slack-recon-agent/
 │   │   ├── SKILL.md         # Slack RECON mission command center
 │   │   └── references/
@@ -72,7 +78,7 @@ belichick-margo-jesus/
     ├── mila-chatbot/
     │   └── index.js         # Express server: CARB compliance chatbot with session history & widget
     └── slack-bot/
-        ├── agents.js        # Agent roster config: 11 agents with models, channels, system prompts
+        ├── agents.js        # Agent roster config: 13 agents with models, channels, system prompts
         ├── dispatch.js      # Claude API dispatch engine: single-agent & parallel multi-agent execution
         └── index.js         # Slack bot entry point: commands, mission tracking, token cost reporting
 ```
@@ -81,15 +87,18 @@ belichick-margo-jesus/
 
 | Agent | Role | Primary Model | Skill / Code |
 |-------|------|---------------|--------------|
-| **Belichick** | Strategy & orchestration | Claude Opus (complex) / Gemini (daily) | `skills/belichick-strategy/` |
-| **Mila (CARB CS)** | Customer service for CARB compliance | Gemini / Haiku | `skills/mila-carb-cs/`, `src/mila-chatbot/` |
-| **Mila (Legal)** | Regulatory research & business opportunity hunting | Gemini / Claude Opus | `skills/mila-legal/` |
-| **Musk** | YouTube content, creative, competitive analysis | Gemini / Claude Haiku | `skills/musk-creative/` |
-| **Jon Jones** | Sales conversations, lead qualification (A.C.E.S.) | Gemini / Claude Sonnet | `skills/jonjones-sales/` |
-| **Cipher** | Finance, bookkeeping, token spend tracking | Gemini / Claude Haiku | Defined in `src/slack-bot/agents.js` |
-| **Kesha** | Marketing & content intelligence | Gemini / Claude Haiku | Defined in `src/slack-bot/agents.js` |
-| **Sentinel** | Legal/regulatory deep analysis | Gemini / Claude Sonnet | Defined in `src/slack-bot/agents.js` |
-| **Lead Scraper** | Google Maps business lead generation | Gemini (free) | `skills/gemini-lead-scraper/`, `src/lead-scraper/` |
+| **Samantha** | Chief Operating Intelligence - route planning, job dispatch, CRM, ops execution | Claude Sonnet 4 | `skills/samantha-ops/` |
+| **DataSync** | Data pipeline: CARB portal sync, VIN decoding, fleet DB ingestion, test archival | Claude Sonnet 4 | `skills/datasync/` |
+| **FinBot** | Financial reconciliation: QuickBooks, Stripe, PayPal, invoice matching | Claude Sonnet 4 | `skills/finbot/` |
+| **Mila (CARB CS)** | Customer service for CARB compliance | Claude Haiku | `skills/mila-carb-cs/`, `src/mila-chatbot/` |
+| **Mila (Legal)** | Regulatory research & business opportunity hunting | Claude Sonnet | `skills/mila-legal/` |
+| **Musk** | YouTube content, creative, competitive analysis | Claude Haiku | `skills/musk-creative/` |
+| **Jon Jones** | Sales conversations, lead qualification (A.C.E.S.) | Claude Sonnet | `skills/jonjones-sales/` |
+| **Cipher** | Finance, bookkeeping, token spend tracking | Claude Haiku | Defined in `src/slack-bot/agents.js` |
+| **Kesha** | Marketing & content intelligence | Claude Haiku | Defined in `src/slack-bot/agents.js` |
+| **Sentinel** | Legal/regulatory deep analysis | Claude Sonnet | Defined in `src/slack-bot/agents.js` |
+| **Website Helper** | GitHub-to-Cloudflare/Vercel deployment assistance | Claude Sonnet | Defined in `src/slack-bot/agents.js` |
+| **Lead Scraper** | Google Maps business lead generation | Claude Haiku | `skills/gemini-lead-scraper/`, `src/lead-scraper/` |
 | **Slack RECON** | Mission dispatch & coordination via Slack | All agents | `skills/slack-recon-agent/`, `src/slack-bot/` |
 | **TPS Report** | Agent reporting & discoveries governance | N/A (framework) | `skills/tps-report/` |
 
