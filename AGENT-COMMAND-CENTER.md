@@ -82,6 +82,7 @@ npm run scrape    # Lead scraper — one-shot CLI tool
 | `/recon-market [industry]` | Kesha + Musk | #recon-market |
 | `/recon-compliance [vin]` | Mila-CARB | #recon-compliance |
 | `/recon-prospect [company]` | Jon Jones + Lead Scraper | #recon-sales |
+| `/swarm [preset|agent,agent,...] | task` | Configurable squad (default `intel`) | Channel where dispatched |
 | `/agent-status` | Belichick | #agent-status |
 | `/roster` | — (instant, no API) | Prints roster |
 | `/dispatch [agent] [task]` | Any agent | Varies |
@@ -90,10 +91,22 @@ npm run scrape    # Lead scraper — one-shot CLI tool
 
 **What it CAN'T do:**
 - Run without your Slack tokens
-- Dispatch more than 2 agents concurrently
+- Dispatch more than 2 missions concurrently
 - Run more than 10 missions/hour
+- Fan out a swarm wider than `SLACK_SWARM_MAX_AGENTS` (default 8) or with parallelism above `SLACK_SWARM_PARALLELISM` (default 3)
 - Post to channels outside its map
 - Run autonomously (manual start only)
+
+**Swarm presets (used by `/swarm` and the *Swarm pulse* button):**
+| Preset | Squad | Use For |
+|--------|-------|---------|
+| `full` | All 12 operational agents | "Brain trust" — every specialist weighs in |
+| `intel` (default) | Kesha + Musk + Sentinel + Mila-Legal | Market & legal triangulation |
+| `ops` | Samantha + DataSync + Website Helper | Day-to-day execution review |
+| `revenue` | Jon Jones + Lead Scraper + FinBot + Cipher | Pipeline + money pass |
+| `compliance` | Mila-CARB + Mila-Legal + Sentinel + DataSync | CARB question deep dive |
+
+Custom squads work too: `/swarm samantha,jon-jones,musk | should we send a new outbound campaign this week?`
 
 **Guardrails:**
 > Authorized users only. Max 10 missions/hour, 2 concurrent. No PII in Slack. Kill switch via `/kill`. Channel isolation enforced.
