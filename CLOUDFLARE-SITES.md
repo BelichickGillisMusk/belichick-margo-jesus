@@ -58,6 +58,29 @@ All sites auto-deploy from this GitHub repo via Cloudflare Pages/Workers.
 - Each site has its own directory in the repo root
 - Each directory contains: `index.html`, `404.html`, `_headers`, `_redirects`, `robots.txt`, `sitemap.xml`
 
+### Workers + KV (fast multi-site publishing)
+
+If you want to ship lots of city sites quickly, use the single reusable Worker at `cloudflare/worker/` and store the site HTML in KV.
+
+- Worker code: `/` → `index.html` from KV, serves a default `404.html` from KV, generates `robots.txt` + `sitemap.xml`, and supports `/api/book` redirect.
+- Wrangler config: `cloudflare/worker/wrangler.toml` has one `[env.<site>]` per domain.
+
+**One-time setup**
+- Install Wrangler: `npm i -g wrangler`
+- Authenticate: `wrangler login`
+- Ensure each domain is in the same Cloudflare account and the KV namespace IDs in `cloudflare/worker/wrangler.toml` are correct (replace `REPLACE_ME`).
+
+**Sync KV + deploy**
+- One site: `node cloudflare/worker/scripts/deploy.mjs hayward`
+- All sites in `cloudflare/sites/*`: `node cloudflare/worker/scripts/deploy.mjs all`
+
+**GitHub “deploy agent”**
+- Set repo secret `CLOUDFLARE_API_TOKEN` and pushes to `main` touching `cloudflare/**` auto-run `.github/workflows/cloudflare-worker-deploy.yml`.
+
+**KV contents**
+- `index.html` is loaded from `cloudflare/sites/<site>/index.html`
+- `404.html` is loaded from `cloudflare/worker/assets/404.html`
+
 ---
 
 ## Phone / Contact
