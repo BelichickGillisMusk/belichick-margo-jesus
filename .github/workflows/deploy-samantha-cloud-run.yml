@@ -1,0 +1,110 @@
+name: Deploy Samantha to Cloud Run
+
+# Deploys the Samantha Express server to Cloud Run in Bryan's
+# bryan@norcalcarbmobile.com "samantha" GCP project. Samantha calls Claude via
+# Vertex AI (Anthropic-on-Vertex) using the Cloud Run service account's
+# identity — no ANTHROPIC_API_KEY needed.
+#
+# One-time GCP setup (in the "samantha" project):
+#   gcloud services enable run.googleapis.com aiplatform.googleapis.com \
+#     artifactregistry.googleapis.com cloudbuild.googleapis.com \
+#     --project=samantha
+#   gcloud iam service-accounts create samantha \
+#     --display-name "Samantha Cloud Run runtime" --project=samantha
+#   for role in roles/aiplatform.user roles/run.invoker roles/logging.logWriter; do
+#     gcloud projects add-iam-policy-binding samantha \
+#       --member="serviceAccount:samantha@samantha.iam.gserviceaccount.com" \
+#       --role="$role"
+#   done
+#
+# Required repo secrets:
+#   GCP_SA_KEY  JSON key for a deploy service account with roles:
+#               run.admin, iam.serviceAccountUser, artifactregistry.writer,
+#               cloudbuild.builds.editor, storage.admin
+#
+# Optional repo variables:
+#   GCP_PROJECT_ID            defaults to "samantha"
+#   GCP_REGION                defaults to "us-east5" (Claude on Vertex region)
+#   CLOUD_RUN_SERVICE         defaults to "samantha"
+#   CLOUD_RUN_SERVICE_ACCOUNT defaults to "samantha@<project>.iam.gserviceaccount.com"
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'src/samantha/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/deploy-samantha-cloud-run.yml'
+
+concurrency:
+  group: deploy-samantha-cloud-run
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    env:
+      PROJECT_ID: ${{ vars.GCP_PROJECT_ID || 'samantha' }}
+      REGION: ${{ vars.GCP_REGION || 'us-east5' }}
+      SERVICE: ${{ vars.CLOUD_RUN_SERVICE || 'samantha' }}
+
+    steps:
+      - name: Guard against missing GCP_SA_KEY
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+        run: |
+          if [ -z "$GCP_SA_KEY" ]; then
+            echo "::error::Missing required repo secret: GCP_SA_KEY"
+            echo "Create a JSON key for the deploy service account and add it as GCP_SA_KEY."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          version: '>= 470.0.0'
+
+      - name: Deploy from source to Cloud Run
+        run: |
+          runtime_sa="${{ vars.CLOUD_RUN_SERVICE_ACCOUNT }}"
+          if [ -z "$runtime_sa" ]; then
+            runtime_sa="samantha@${PROJECT_ID}.iam.gserviceaccount.com"
+          fi
+          gcloud run deploy "$SERVICE" \
+            --project "$PROJECT_ID" \
+            --region "$REGION" \
+            --source src/samantha \
+            --service-account "$runtime_sa" \
+            --allow-unauthenticated \
+            --port 8080 \
+            --memory 512Mi \
+            --cpu 1 \
+            --min-instances 0 \
+            --max-instances 3 \
+            --set-env-vars "ANTHROPIC_VERTEX_PROJECT_ID=${PROJECT_ID},CLOUD_ML_REGION=${REGION}" \
+            --quiet
+
+      - name: Verify Samantha's brain is connected
+        run: |
+          url=$(gcloud run services describe "$SERVICE" \
+            --project "$PROJECT_ID" --region "$REGION" \
+            --format='value(status.url)')
+          echo "Samantha URL: $url"
+          status_json=$(curl -fsSL "$url/api/samantha/status")
+          echo "$status_json"
+          echo "$status_json" | grep -q '"ready":true' || {
+            echo "::error::Samantha deployed but /api/samantha/status reports ready:false";
+            exit 1;
+          }

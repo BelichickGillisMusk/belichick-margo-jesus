@@ -1,0 +1,11 @@
+node_modules
+npm-debug.log
+.env
+.env.*
+*.csv
+google-service-account.json
+.git
+.github
+reports
+test
+**/*.md
