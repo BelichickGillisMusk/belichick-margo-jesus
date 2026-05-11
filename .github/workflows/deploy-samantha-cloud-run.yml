@@ -18,9 +18,15 @@ name: Deploy Samantha to Cloud Run
 #   done
 #
 # Required repo secrets:
-#   GCP_SA_KEY  JSON key for a deploy service account with roles:
-#               run.admin, iam.serviceAccountUser, artifactregistry.writer,
-#               cloudbuild.builds.editor, storage.admin
+#   GCP_SA_KEY              JSON key for a deploy service account with roles:
+#                           run.admin, iam.serviceAccountUser,
+#                           artifactregistry.writer, cloudbuild.builds.editor,
+#                           storage.admin
+#   SAMANTHA_STATUS_TOKEN   Shared secret. Without the matching
+#                           `x-samantha-token` header, /api/samantha/status
+#                           returns only `{ ready, timestamp }`. Used by this
+#                           workflow's post-deploy probe to read the full
+#                           status response.
 #
 # Optional repo variables:
 #   GCP_PROJECT_ID            defaults to "samantha"
@@ -55,13 +61,17 @@ jobs:
       SERVICE: ${{ vars.CLOUD_RUN_SERVICE || 'samantha' }}
 
     steps:
-      - name: Guard against missing GCP_SA_KEY
+      - name: Guard against missing repo secrets
         env:
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+          SAMANTHA_STATUS_TOKEN: ${{ secrets.SAMANTHA_STATUS_TOKEN }}
         run: |
-          if [ -z "$GCP_SA_KEY" ]; then
-            echo "::error::Missing required repo secret: GCP_SA_KEY"
-            echo "Create a JSON key for the deploy service account and add it as GCP_SA_KEY."
+          missing=()
+          [ -z "$GCP_SA_KEY" ]            && missing+=("GCP_SA_KEY")
+          [ -z "$SAMANTHA_STATUS_TOKEN" ] && missing+=("SAMANTHA_STATUS_TOKEN")
+          if [ ${#missing[@]} -ne 0 ]; then
+            echo "::error::Missing required repo secrets: ${missing[*]}"
+            echo "Add them at Settings -> Secrets and variables -> Actions."
             exit 1
           fi
 
@@ -77,6 +87,8 @@ jobs:
           version: '>= 470.0.0'
 
       - name: Deploy from source to Cloud Run
+        env:
+          SAMANTHA_STATUS_TOKEN: ${{ secrets.SAMANTHA_STATUS_TOKEN }}
         run: |
           runtime_sa="${{ vars.CLOUD_RUN_SERVICE_ACCOUNT }}"
           if [ -z "$runtime_sa" ]; then
@@ -94,17 +106,24 @@ jobs:
             --min-instances 0 \
             --max-instances 3 \
             --set-env-vars "ANTHROPIC_VERTEX_PROJECT_ID=${PROJECT_ID},CLOUD_ML_REGION=${REGION}" \
+            --update-env-vars "^|^SAMANTHA_STATUS_TOKEN=${SAMANTHA_STATUS_TOKEN}" \
             --quiet
 
       - name: Verify Samantha's brain is connected
+        env:
+          SAMANTHA_STATUS_TOKEN: ${{ secrets.SAMANTHA_STATUS_TOKEN }}
         run: |
           url=$(gcloud run services describe "$SERVICE" \
             --project "$PROJECT_ID" --region "$REGION" \
             --format='value(status.url)')
           echo "Samantha URL: $url"
-          status_json=$(curl -fsSL "$url/api/samantha/status")
-          echo "$status_json"
+          status_json=$(curl -fsSL \
+            -H "x-samantha-token: ${SAMANTHA_STATUS_TOKEN}" \
+            "$url/api/samantha/status")
+          # Don't print the raw response — it contains project/region detail
+          # behind the token gate. Just check readiness.
           echo "$status_json" | grep -q '"ready":true' || {
             echo "::error::Samantha deployed but /api/samantha/status reports ready:false";
             exit 1;
           }
+          echo "Samantha is online."
