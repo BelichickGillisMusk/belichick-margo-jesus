@@ -2,69 +2,50 @@
 
 **Account:** Norcal (`de5e37ebaff3f517602e28a6515549ec`)
 **Deploys from:** GitHub repo `BelichickGillisMusk/belichick-margo-jesus`
-**Last updated:** 2026-03-22
+**Last updated:** 2026-05-12
+
+> **Source of truth: [`sites-config.json`](./sites-config.json)**.
+> HTML under `cloudflare/sites/<city>/` is **generated** by `scripts/generate-city-sites.js`. Direct edits are rejected by CI (`npm run sites:check` regenerates and diff-fails). To change a color, phone, or pricing, edit `sites-config.json`, run `npm run sites:generate`, and commit both files together.
 
 ---
 
 ## All Sites
 
-| # | Domain | Cloudflare Project | Theme | Primary | Secondary | Mode | Repo Directory | Status |
-|---|--------|-------------------|-------|---------|-----------|------|---------------|--------|
-| 1 | `carb-clean-truck-check.com` | `carb-clean-truck-check` | SF Giants | `#FD5A1E` Orange | `#1A1815` Black | Dark | `carb-clean-truck-check/` | Live |
-| 2 | `cleantruckcheckroseville.com` | `cleantruckcheckroseville` | SF Giants (paired) | `#FD5A1E` Orange | `#1A1815` Black | Dark | `cleantruckcheckroseville/` | NEEDS FIX — wrong orange, placeholder phone |
-| 3 | `mobilecarbsmoketest.com` | `mobilecarbsmoketest` | Padres | `#2F241D` Brown | `#FFC425` Gold | Dark | `mobilecarbsmoketest/` | Live |
-| 4 | `mobilecarbtest.com` | `mobilecarbtest` | John Deere | `#367C2B` Green | `#FFDE00` Yellow | White | `mobilecarbtest/` | Live |
-| 5 | `carbteststockton.com` | `carbteststockton` | Stockton Heat | `#C8102E` Red | `#F1BE48` Gold | White | `carbteststockton/` | Live |
-| 6 | `cleantruckcheckfairfield.com` | `cleantruckcheckfairfield` | Travis AFB | `#002868` Navy | `#D4AF37` Gold | White | `cleantruckcheckfairfield/` | NEEDS FIX — wrong code |
-| 7 | `cleantruckchechlodi.com` | `cleantruckchechlodi` | Wine Country | `#722F37` Burgundy | `#F5E6C8` Cream | White | `cleantruckchechlodi/` | Live |
-| 8 | `cleantruckcheckhayward.com` | `cleantruckcheckhayward` | Warriors | `#006BB6` Blue | `#FFC72C` Gold | White | `cleantruckcheckhayward/` | NEEDS FIX — old green/blue code |
+| # | Domain | Cloudflare Project | Theme | Brand Color | Mode | Repo Path | Status |
+|---|--------|-------------------|-------|-------------|------|-----------|--------|
+| 1 | `cleantruckcheckhayward.com` | `cleantruckcheckhayward` | Raiders | `#A5ACAF` Silver on `#000000` Black | Dark | `cloudflare/sites/hayward/` | Live (generated) |
+| 2 | `cleantruckcheckroseville.com` | `cleantruckcheckroseville` | SF Giants | `#FD5A1E` Orange on `#1A1815` Black | Dark | `cloudflare/sites/roseville/` | Live (generated) |
+| 3 | `cleantruckcheckfairfield.com` | `cleantruckcheckfairfield` | Air Force Academy | `#003087` Blue on light bg | Light | `cloudflare/sites/fairfield/` | Live (generated) |
+| 4 | `cleantruckchecklodi.com` | TBD | Florida State | `#782F40` Garnet on light bg | Light | `cloudflare/sites/lodi/` | Live (generated) |
+| 5 | `carbteststockton.com` | `stockton-carb-worker` | Stockton Heat | `#CE1126` Red / `#FFC72C` Gold | Dark | _Pending generator support_ | Out of generator scope |
+| 6 | `carb-clean-truck-check.com` | `carb-clean-truck-check` | SF Giants | `#FD5A1E` Orange | Dark | _Pending generator support_ | Out of generator scope |
+| 7 | `mobilecarbsmoketest.com` | `mobilecarbsmoketest` | Padres | `#FFC425` Gold | Dark | _Pending generator support_ | Out of generator scope |
+| 8 | `mobilecarbtest.com` | `mobilecarbtest` | 49ers (Tri-Valley) | `#AA0000` Red | Dark | _Pending generator support_ | Out of generator scope |
+
+> Cities listed as "out of generator scope" still ship from Cloudflare KV — they were not migrated into `cloudflare/sites/` in this pass. When you're ready to onboard them, add the slug to `cityMap` + `cityCopy` in `scripts/generate-city-sites.js`, then rerun the generator.
 
 ---
 
-## Sites Needing Work (this session)
+## How a city goes live
 
-| Site | Problem | Fix |
-|------|---------|-----|
-| `cleantruckcheckhayward.com` | Old code, wrong colors (green/blue) | Rebuild with correct template + Warriors Blue/Gold |
-| `cleantruckcheckfairfield.com` | Wrong code | Rebuild with correct template + Travis AFB Navy/Gold |
-| `cleantruckcheckroseville.com` | Wrong orange hex, placeholder phone (555-1234) | Fix colors to #FD5A1E, fix phone to (916) 890-4427 |
-
----
-
-## Color Reference
-
-### Dark Mode Sites
-| Site | Background | Primary | Secondary | Text |
-|------|-----------|---------|-----------|------|
-| carb-clean-truck-check | `#1A1815` | `#FD5A1E` Orange | `#1A1815` Black | Light |
-| cleantruckcheckroseville | `#1A1815` | `#FD5A1E` Orange | `#1A1815` Black | Light |
-| mobilecarbsmoketest | Dark | `#2F241D` Brown | `#FFC425` Gold | Light |
-
-### White/Light Mode Sites
-| Site | Background | Primary | Secondary | Text |
-|------|-----------|---------|-----------|------|
-| mobilecarbtest | White | `#367C2B` Green | `#FFDE00` Yellow | Dark |
-| carbteststockton | White | `#C8102E` Red | `#F1BE48` Gold | Dark |
-| cleantruckcheckfairfield | White | `#002868` Navy | `#D4AF37` Gold | Dark |
-| cleantruckchechlodi | White | `#722F37` Burgundy | `#F5E6C8` Cream | Dark |
-| cleantruckcheckhayward | White | `#006BB6` Blue | `#FFC72C` Gold | Dark |
-
----
-
-## Deployment
-
-All sites auto-deploy from this GitHub repo via Cloudflare Pages/Workers.
-- Push to branch → Cloudflare builds → site updates
-- Each site has its own directory in the repo root
-- Each directory contains: `index.html`, `404.html`, `_headers`, `_redirects`, `robots.txt`, `sitemap.xml`
+1. Edit `sites-config.json` (colors, phone, pricing, coverage, etc.).
+2. `npm run sites:generate` → rebuilds every `cloudflare/sites/<city>/index.html`.
+3. Commit `sites-config.json` and the regenerated HTML together.
+4. CI (`npm run sites:check`) re-runs the generator on every PR and fails if anything drifted.
+5. Cloudflare Workers/Pages auto-deploy from main.
 
 ---
 
 ## Phone / Contact
 
+Per-city phone lives in `sites-config.json`. Current values:
+
 | Site | Phone | Email |
 |------|-------|-------|
-| All sites | (916) 890-4427 | info@{domain} |
+| Hayward | (415) 900-8563 | admin@cleantruckcheckhayward.com |
+| Roseville | (916) 890-4427 | admin@cleantruckcheckroseville.com |
+| Fairfield | (916) 890-4427 | admin@cleantruckcheckfairfield.com |
+| Lodi | (209) 818-1371 | admin@cleantruckchecklodi.com |
 
 ---
 

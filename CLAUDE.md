@@ -21,19 +21,12 @@ belichick-margo-jesus/
 ├── MILA-SEO-MASTER-PLAYBOOK.md  # Step-by-step SEO execution plan for NorCal Carb Mobile
 ├── README.md                # Brief project description
 ├── TPS-REPORTS.md           # Agent checkpoint system: TPS format, discoveries workflow, cost caps
-├── carbteststockton/        # Landing page for CARB Test Stockton service
-│   ├── 404.html
-│   ├── _headers
-│   ├── _redirects
-│   ├── index.html           # SEO-optimized with JSON-LD LocalBusiness schema, geo-targeting
-│   ├── robots.txt
-│   └── sitemap.xml
 ├── clawdbot-config.json5    # ClawdBot gateway configuration (JSON5 with comments)
-├── cleantruckcheckroseville/  # Landing page for Clean Truck Check Roseville service
-│   ├── 404.html
-│   ├── _headers
-│   ├── _redirects
-│   └── index.html           # Premium dark theme with CSS design system, orange accent
+├── cloudflare/sites/        # One-page city landing sites (Workers + KV)
+│   ├── fairfield/index.html
+│   ├── hayward/index.html   # Generated from sites-config.json — Raiders Silver/Black
+│   ├── lodi/index.html
+│   └── roseville/index.html
 ├── index.html               # "Agent Round Table" - interactive agent status dashboard UI
 ├── openclaw-config.json5    # OpenClaw gateway configuration (JSON5 with comments)
 ├── package.json             # Node.js project config (ES modules, @slack/bolt, Anthropic SDK, Express)
@@ -193,12 +186,18 @@ MILA_PORT=3001                              # Mila chatbot Express server port
 
 ## Landing Pages
 
-Two SEO-optimized service landing pages for CARB compliance testing businesses:
+All city landing pages live under `cloudflare/sites/<city>/index.html` and are **generated from `sites-config.json`** by `scripts/generate-city-sites.js`. The spreadsheet (sites-config.json) is the only source of truth — colors, phone numbers, coverage areas, and pricing change there and only there. CI runs `npm run sites:check` which regenerates and fails on drift, so no one (human or agent) can edit a city's HTML directly without approval.
 
-- **`carbteststockton/`** — CARB Test Stockton: $85 OBD / $200 smoke opacity, JSON-LD LocalBusiness schema, geo-targeting for San Joaquin County
-- **`cleantruckcheckroseville/`** — Clean Truck Check Roseville: premium dark theme with orange accent, CSS design system with custom properties
+Workflow:
+1. Edit `sites-config.json` (colors, phone, pricing, coverage).
+2. Run `npm run sites:generate` locally.
+3. Commit both the config and the regenerated HTML in the same PR.
 
-Both include `_headers`, `_redirects`, `robots.txt`/`sitemap.xml` for static hosting (Netlify/Cloudflare Pages compatible).
+Per-city team palettes (locked by sites-config.json):
+- **Hayward** — Raiders Silver/Black, dark bg, `(415) 900-8563`
+- **Roseville** — SF Giants Orange/Black, dark bg, `(916) 890-4427`
+- **Fairfield** — Air Force Academy Blue/Silver, light bg, `(916) 890-4427`
+- **Lodi** — Florida State Garnet/Gold, light bg, `(209) 818-1371`
 
 ## Reports & Governance
 
@@ -266,7 +265,7 @@ Sandboxed sales bot demo for the Closer agent. Features:
 - Configuration is JSON5 format (comments allowed) in `clawdbot-config.json5`
 - Configuration is JSON5 format (comments allowed) in `openclaw-config.json5`
 - UI prototypes are standalone HTML files at the repo root (no build system)
-- Landing pages go in their own directories at repo root (e.g., `carbteststockton/`)
+- City landing pages live under `cloudflare/sites/<city>/index.html` and are generated from `sites-config.json` (never hand-edited)
 - Agent-generated reports go in `reports/`
 
 ### Security Principles
@@ -306,7 +305,7 @@ Each city has a one-page landing site on Cloudflare Workers + KV. **Do not dupli
 - Rating: 4.9 stars, 47+ reviews
 - Free retest: 1 free if fail
 - Always link to cleantruckcheckvin.app
-- Template source: `cloudflare/sites/hayward/index.html` (44K leather/copper rustic design)
+- Source of truth: `sites-config.json`. HTML is generated via `npm run sites:generate`. Direct edits to `cloudflare/sites/<city>/index.html` are blocked by CI (`npm run sites:check`).
 
 | City | Phone | OBD | OVI | Fleet OBD/OVI | Colors (Team) | Coverage | Domain | KV Namespace ID |
 |------|-------|-----|-----|---------------|---------------|----------|--------|-----------------|
@@ -325,7 +324,7 @@ Each city has a one-page landing site on Cloudflare Workers + KV. **Do not dupli
 - Pricing varies per city — see table above (NOT universal)
 - Motorhome pricing: OBD $99, OVI $250 (all cities)
 - All sites use the same worker code pattern (HTML from KV, /api/book endpoint, robots.txt, sitemap.xml)
-- Template source: `cloudflare/sites/hayward/index.html` (Hayward rustic design — adapt colors per city)
+- HTML is generated from `sites-config.json` via `scripts/generate-city-sites.js` — never hand-edit `cloudflare/sites/<city>/index.html`. Edit the JSON, run `npm run sites:generate`, commit both.
 - Hours: Mon-Fri 6am-5pm, Sat 8am-4pm
 
 ## What Not to Change

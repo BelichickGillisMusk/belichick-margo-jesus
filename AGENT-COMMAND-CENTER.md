@@ -167,15 +167,16 @@ These are PROMPT CONFIGS, not running processes. They only activate when the Sla
 
 ---
 
-### STATIC MARKETING SITES (Netlify — your choice to keep)
+### STATIC MARKETING SITES (Cloudflare Workers — generated from `sites-config.json`)
 
 | Site | Domain | What It Is | Risk |
 |------|--------|-----------|------|
-| `carbteststockton/` | `carbteststockton.com` | Static HTML marketing page. No backend. Loads Google Fonts only. | **NONE** — pure HTML |
-| `cleantruckcheckroseville/` | `cleantruckcheckroseville.com` | Static HTML marketing page. No backend. Phone is PLACEHOLDER. | **NONE** — pure HTML |
+| `cloudflare/sites/hayward/` | `cleantruckcheckhayward.com` | Generated city landing page. Loads Google Fonts only. | **NONE** — pure HTML |
+| `cloudflare/sites/roseville/` | `cleantruckcheckroseville.com` | Generated city landing page. Loads Google Fonts only. | **NONE** — pure HTML |
+| `cloudflare/sites/fairfield/` | `cleantruckcheckfairfield.com` | Generated city landing page. Loads Google Fonts only. | **NONE** — pure HTML |
+| `cloudflare/sites/lodi/` | `cleantruckchecklodi.com` | Generated city landing page. Loads Google Fonts only. | **NONE** — pure HTML |
 
-Both have security headers: `X-Frame-Options: DENY`, `connect-src 'self'`, no eval.
-Manage at: https://app.netlify.com/
+All four files are produced by `npm run sites:generate` from `sites-config.json`. Direct edits are rejected by CI (`npm run sites:check`).
 
 ---
 

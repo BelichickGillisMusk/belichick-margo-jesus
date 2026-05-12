@@ -79,14 +79,16 @@ gh workflow disable jekyll-docker.yml -R YOUR_USERNAME/belichick-margo-jesus
 
 ---
 
-### 1D. Netlify (Marketing Sites)
+### 1D. Cloudflare Workers (Marketing Sites)
 
-**Found:** `_redirects` and `_headers` files in both `carbteststockton/` and `cleantruckcheckroseville/`
+**Source:** `cloudflare/sites/<city>/index.html`, generated from `sites-config.json` via `npm run sites:generate`.
 
 | Site | Domain | Content |
 |------|--------|---------|
-| `carbteststockton/` | `carbteststockton.com` | Static marketing page. Phone: (916) 890-4427 |
-| `cleantruckcheckroseville/` | `cleantruckcheckroseville.com` | Static marketing page. Phone: (916) 555-1234 (**PLACEHOLDER**) |
+| `cloudflare/sites/hayward/` | `cleantruckcheckhayward.com` | Generated Raiders Silver/Black, phone (415) 900-8563 |
+| `cloudflare/sites/roseville/` | `cleantruckcheckroseville.com` | Generated SF Giants Orange/Black, phone (916) 890-4427 |
+| `cloudflare/sites/fairfield/` | `cleantruckcheckfairfield.com` | Generated Air Force Academy Blue (light bg), phone (916) 890-4427 |
+| `cloudflare/sites/lodi/` | `cleantruckchecklodi.com` | Generated Florida State Garnet (light bg), phone (209) 818-1371 |
 
 **These are STATIC sites — no agents, no API calls, no backend.** They just load Google Fonts. The security headers are already locked down (`connect-src 'self'`). These are safe to keep running.
 

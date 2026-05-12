@@ -5,8 +5,10 @@ const root = process.cwd();
 const htmlFiles = [
   'index.html',
   'salesbot.html',
-  'carbteststockton/index.html',
-  'cleantruckcheckroseville/index.html',
+  'cloudflare/sites/hayward/index.html',
+  'cloudflare/sites/roseville/index.html',
+  'cloudflare/sites/fairfield/index.html',
+  'cloudflare/sites/lodi/index.html',
 ];
 
 for (const relativePath of htmlFiles) {

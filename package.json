@@ -11,8 +11,10 @@
     "start": "node src/slack-bot/index.js",
     "test": "node --test",
     "smoke": "node scripts/smoke-imports.js",
+    "sites:generate": "node scripts/generate-city-sites.js",
+    "sites:check": "node scripts/generate-city-sites.js && git diff --exit-code -- cloudflare/sites/",
     "validate:html": "node scripts/validate-html.js",
-    "check": "npm run test && npm run smoke && npm run validate:html"
+    "check": "npm run test && npm run smoke && npm run validate:html && npm run sites:check"
   },
   "dependencies": {
     "@slack/bolt": "^4.1.0",

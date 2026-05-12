@@ -22,3 +22,7 @@ jobs:
       - run: npm test
       - run: npm run smoke
       - run: npm run validate:html
+      # Regenerates cloudflare/sites/<city>/index.html from sites-config.json and
+      # fails if the committed files have drifted. Spreadsheet is the source of
+      # truth — colors, phones, copy can only change via sites-config.json.
+      - run: npm run sites:check
