@@ -24,8 +24,8 @@ npm run validate:html # Checks static HTML files
 
 - **ES modules only**: The project uses `"type": "module"` — all imports use ESM syntax. No CommonJS `require()`.
 - **No build step**: Source files run directly with Node.js. No transpilation needed.
-- **dotenv loaded at import time**: `dotenv/config` is imported at the top of server entry points, so `.env` is read on process start. Restart the server after changing `.env`.
-- **Mila chatbot starts without a valid `ANTHROPIC_API_KEY`**: The Express server boots and serves `/health`, `/tps`, and `/widget` even without a key. Only `/chat` requires the key (returns 503 if missing, 500 if invalid).
+- **dotenv loaded at import time**: `dotenv/config` is imported at the top of server entry points, so `.env` is read on process start. Restart the server after changing `.env`. Inline env overrides (e.g. `ANTHROPIC_API_KEY=xxx npm run mila`) do NOT override `.env` values — the `dotenv` package loads the file unconditionally. Always edit `.env` directly.
+- **Mila chatbot starts without a valid `ANTHROPIC_API_KEY`**: The Express server boots and serves `/health`, `/tps`, and `/widget` even without a key. Only `/chat` requires the key (returns 503 if env var is unset, 500 if the key is invalid/rejected by Anthropic).
 - **Smoke test imports all entry points**: `npm run smoke` dynamically imports the 3 entry-point modules. If any module has a top-level side-effect that depends on env vars, the smoke test may fail. Currently all entry points guard side-effects behind `isMainModule()`.
 - **Node 22 required**: CI uses Node 22 (`actions/setup-node` with `node-version: 22`).
 - **punycode deprecation warning is cosmetic**: The `googleapis` package triggers a `[DEP0040]` warning about `punycode`. It does not affect functionality.
