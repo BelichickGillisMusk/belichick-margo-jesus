@@ -17,6 +17,12 @@ export const RUNTIME_SURFACES = [
     description: 'Express chatbot API and embeddable widget for CARB compliance support.',
   },
   {
+    id: 'samantha',
+    entryPoint: 'src/samantha/index.js',
+    mode: 'cloud-run',
+    description: 'Samantha Express service deployed to Cloud Run; talks to Claude via Vertex AI.',
+  },
+  {
     id: 'lead-scraper',
     entryPoint: 'src/lead-scraper/index.js',
     mode: 'operator-run',
@@ -36,6 +42,15 @@ export const ENVIRONMENT_VARIABLES = {
     'SLACK_MISSION_TOKEN_WARN_THRESHOLD',
     'SLACK_SWARM_MAX_AGENTS',
     'SLACK_SWARM_PARALLELISM',
+  ],
+  samantha: [
+    'PORT',
+    'CLOUD_ML_REGION',
+    'ANTHROPIC_VERTEX_PROJECT_ID',
+    'SAMANTHA_MODEL',
+    'SAMANTHA_MAX_TOKENS',
+    'SAMANTHA_ALLOWED_ORIGINS',
+    'SAMANTHA_STATUS_TOKEN',
   ],
   mila: [
     'MILA_PORT',
