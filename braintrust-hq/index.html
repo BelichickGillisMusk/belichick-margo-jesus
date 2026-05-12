@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#07090d" />
+<meta name="description" content="Brain Trust HQ — NorCal CARB Mobile mission control. Live KPIs, agent presence, and command channel." />
+<title>Brain Trust HQ — NorCal CARB Mobile</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='6' fill='%235eead4'/><circle cx='16' cy='16' r='13' fill='none' stroke='%235eead4' stroke-opacity='.35'/></svg>" />
+<style>
+  :root{
+    --bg: #07090d;
+    --surface: #0d1117;
+    --raised: #11161e;
+    --raised-strong: #161b22;
+    --line: rgba(255,255,255,.06);
+    --line-strong: rgba(255,255,255,.10);
+    --ink: #e6edf3;
+    --ink-dim: #9aa6b2;
+    --ink-faint: #5b6573;
+    --teal: #5eead4;
+    --teal-soft: rgba(94,234,212,.14);
+    --orange: #ff6a3d;
+    --orange-soft: rgba(255,106,61,.14);
+    --green: #4ade80;
+    --green-soft: rgba(74,222,128,.12);
+    --red: #f87171;
+    --red-soft: rgba(248,113,113,.12);
+    --purple: #c084fc;
+    --shadow-1: 0 1px 0 rgba(255,255,255,.03) inset, 0 12px 32px -16px rgba(0,0,0,.6);
+    --shadow-2: 0 1px 0 rgba(255,255,255,.04) inset, 0 24px 60px -24px rgba(0,0,0,.8);
+    --ease: cubic-bezier(.2,.7,.2,1);
+    --radius: 14px;
+    --radius-sm: 10px;
+    --radius-pill: 999px;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI Variable", "Segoe UI", Inter, system-ui, sans-serif;
+  }
+
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  html,body{height:100%}
+  body{
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(94,234,212,.06), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(255,106,61,.05), transparent 60%),
+      var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-feature-settings:"ss01","cv11","tnum";
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    overflow:hidden;
+  }
+
+  ::selection{background:var(--teal-soft);color:var(--ink)}
+
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+  input,textarea{font:inherit;color:inherit;background:none;border:0;outline:none}
+
+  .app{
+    display:grid;
+    grid-template-rows: 56px 1fr;
+    height:100vh;
+    height:100dvh;
+  }
+
+  /* ── Top bar ── */
+  .topbar{
+    display:flex;align-items:center;gap:16px;
+    padding:0 20px;
+    border-bottom:1px solid var(--line);
+    background:rgba(13,17,23,.6);
+    backdrop-filter:blur(20px) saturate(180%);
+    -webkit-backdrop-filter:blur(20px) saturate(180%);
+    z-index:10;
+  }
+
+  .brand{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:-.01em}
+  .brand-mark{
+    width:22px;height:22px;border-radius:8px;
+    background:
+      radial-gradient(circle at 30% 30%, var(--teal), #2dd4bf 60%, #0d9488);
+    box-shadow:0 0 0 1px rgba(255,255,255,.08), 0 0 20px rgba(94,234,212,.35);
+    position:relative;
+  }
+  .brand-mark::after{
+    content:"";position:absolute;inset:5px;border-radius:4px;
+    background:radial-gradient(circle, rgba(255,255,255,.55), transparent 60%);
+  }
+  .brand-name{font-size:14px}
+  .brand-sep{color:var(--ink-faint);margin:0 2px}
+  .brand-sub{color:var(--ink-dim);font-weight:500;font-size:13px}
+
+  .crumbs{
+    display:flex;align-items:center;gap:8px;
+    color:var(--ink-dim);font-size:12.5px;
+    margin-left:8px;
+  }
+  .crumbs .chev{color:var(--ink-faint)}
+  .crumbs .here{color:var(--ink)}
+
+  .topbar-spacer{flex:1}
+
+  .kbd{
+    font-family:var(--mono);font-size:11px;
+    padding:3px 7px;border-radius:6px;
+    background:rgba(255,255,255,.04);
+    border:1px solid var(--line-strong);
+    color:var(--ink-dim);
+  }
+
+  .cmd-trigger{
+    display:flex;align-items:center;gap:10px;
+    padding:7px 12px;border-radius:var(--radius-pill);
+    background:var(--raised);border:1px solid var(--line);
+    color:var(--ink-dim);font-size:12.5px;
+    transition:border-color .24s var(--ease), color .24s var(--ease), background .24s var(--ease);
+  }
+  .cmd-trigger:hover{border-color:var(--line-strong);color:var(--ink);background:var(--raised-strong)}
+  .cmd-trigger svg{width:14px;height:14px;opacity:.7}
+
+  .env-chip{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:4px 10px;border-radius:var(--radius-pill);
+    background:var(--teal-soft);color:var(--teal);
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+    border:1px solid rgba(94,234,212,.22);
+  }
+  .env-chip .dot{width:6px;height:6px;border-radius:50%;background:var(--teal);box-shadow:0 0 8px var(--teal)}
+
+  .clock{
+    font-family:var(--mono);font-size:12px;color:var(--ink-dim);
+    font-variant-numeric:tabular-nums;
+  }
+
+  .avatar-me{
+    width:30px;height:30px;border-radius:50%;
+    background:linear-gradient(135deg,#5eead4,#0ea5e9);
+    display:grid;place-items:center;font-size:11px;font-weight:700;color:#022;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);
+  }
+
+  /* ── Body grid: agent rail · channel · priority rail ── */
+  .body{
+    display:grid;
+    grid-template-columns: 260px 1fr 340px;
+    min-height:0;
+  }
+
+  .rail-left, .rail-right{
+    border-right:1px solid var(--line);
+    overflow:hidden;
+    display:flex;flex-direction:column;min-height:0;
+    background:linear-gradient(180deg, rgba(255,255,255,.012), transparent 30%);
+  }
+  .rail-right{border-right:0;border-left:1px solid var(--line)}
+
+  .rail-section{
+    padding:18px 18px 6px;
+  }
+  .rail-eyebrow{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-faint);
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:10px;
+  }
+  .rail-eyebrow .count{color:var(--ink-dim)}
+
+  /* Agent presence */
+  .agents{display:flex;flex-direction:column;gap:2px;padding:0 8px 10px;overflow-y:auto}
+  .agent{
+    display:grid;grid-template-columns:30px 1fr auto;gap:10px;align-items:center;
+    padding:8px 10px;border-radius:10px;
+    transition:background .18s var(--ease);
+    cursor:pointer;
+  }
+  .agent:hover{background:rgba(255,255,255,.03)}
+  .agent.active{background:rgba(94,234,212,.06)}
+
+  .agent-av{
+    position:relative;width:30px;height:30px;border-radius:50%;
+    display:grid;place-items:center;font-size:13px;font-weight:600;
+    background:linear-gradient(135deg,#1e293b,#0f172a);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+    color:var(--ink);
+  }
+  .agent-av .status{
+    position:absolute;right:-1px;bottom:-1px;
+    width:10px;height:10px;border-radius:50%;
+    background:var(--ink-faint);
+    box-shadow:0 0 0 2px var(--bg);
+  }
+  .agent-av .status.online{background:var(--green);box-shadow:0 0 0 2px var(--bg), 0 0 8px var(--green)}
+  .agent-av .status.busy{background:var(--orange);box-shadow:0 0 0 2px var(--bg), 0 0 10px var(--orange)}
+  .agent-av .status.away{background:var(--ink-faint)}
+
+  .agent-meta{min-width:0}
+  .agent-name{font-size:13px;font-weight:600;letter-spacing:-.005em;color:var(--ink)}
+  .agent-role{font-size:11px;color:var(--ink-faint);text-overflow:ellipsis;white-space:nowrap;overflow:hidden}
+  .agent-time{font-family:var(--mono);font-size:10px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+
+  .rail-divider{height:1px;background:var(--line);margin:8px 18px}
+
+  /* Channel pickers (mini) */
+  .channels{padding:4px 8px 16px;display:flex;flex-direction:column;gap:1px;overflow-y:auto}
+  .channel{
+    display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:8px;
+    font-size:12.5px;color:var(--ink-dim);
+    transition:background .18s var(--ease), color .18s var(--ease);
+  }
+  .channel:hover{background:rgba(255,255,255,.03);color:var(--ink)}
+  .channel.active{background:rgba(94,234,212,.08);color:var(--ink)}
+  .channel .hash{color:var(--ink-faint);font-family:var(--mono);font-size:11px}
+  .channel .unread{
+    margin-left:auto;font-family:var(--mono);font-size:10px;
+    background:var(--orange);color:#1a0a04;padding:1px 6px;border-radius:8px;font-weight:700;
+  }
+  .channel .pip{
+    margin-left:auto;width:6px;height:6px;border-radius:50%;background:var(--teal);
+  }
+
+  /* ── Center column ── */
+  .center{
+    display:grid;grid-template-rows: auto 1fr auto;
+    min-height:0;min-width:0;
+  }
+
+  /* KPI strip */
+  .kpis{
+    display:grid;grid-template-columns:repeat(5, 1fr);
+    gap:1px;
+    background:var(--line);
+    border-bottom:1px solid var(--line);
+  }
+  .kpi{
+    background:var(--surface);
+    padding:18px 20px 16px;
+    position:relative;
+    transition:background .24s var(--ease);
+  }
+  .kpi:hover{background:var(--raised)}
+  .kpi-label{
+    font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--ink-faint);
+    display:flex;align-items:center;gap:6px;
+  }
+  .kpi-label .src{
+    font-family:var(--mono);font-size:9px;color:var(--ink-faint);
+    opacity:0;transition:opacity .2s var(--ease);margin-left:auto;
+  }
+  .kpi:hover .src{opacity:1}
+  .kpi-value{
+    font-family:var(--mono);font-variant-numeric:tabular-nums;
+    font-size:30px;font-weight:600;letter-spacing:-.025em;color:var(--ink);
+    margin-top:8px;line-height:1;
+  }
+  .kpi-value .cents{color:var(--ink-faint);font-size:18px;margin-left:1px}
+  .kpi-value .unit{color:var(--ink-faint);font-size:14px;margin-left:4px;font-weight:500}
+  .kpi-delta{
+    margin-top:10px;display:flex;align-items:center;gap:8px;
+    font-family:var(--mono);font-size:11px;color:var(--ink-dim);font-variant-numeric:tabular-nums;
+  }
+  .kpi-delta .pill{
+    display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:var(--radius-pill);
+    background:var(--green-soft);color:var(--green);
+    font-weight:600;
+  }
+  .kpi-delta .pill.down{background:var(--red-soft);color:var(--red)}
+  .kpi-delta .pill.flat{background:rgba(255,255,255,.04);color:var(--ink-dim)}
+
+  .kpi.urgent .kpi-value{color:var(--orange)}
+  .kpi.urgent::after{
+    content:"";position:absolute;left:0;right:0;top:0;height:2px;
+    background:linear-gradient(90deg, transparent, var(--orange), transparent);
+    animation:pulse 2.6s var(--ease) infinite;
+  }
+  @keyframes pulse{
+    0%,100%{opacity:.25}
+    50%{opacity:1}
+  }
+
+  /* Channel header */
+  .channel-head{
+    display:flex;align-items:center;gap:10px;
+    padding:16px 24px 10px;
+    border-bottom:1px solid var(--line);
+  }
+  .channel-head h2{font-size:15px;font-weight:600;letter-spacing:-.01em}
+  .channel-head .hash{color:var(--ink-faint);font-family:var(--mono);font-weight:500}
+  .channel-head .topic{color:var(--ink-dim);font-size:12.5px;margin-left:6px}
+  .channel-head .members{
+    margin-left:auto;display:flex;align-items:center;gap:8px;
+    color:var(--ink-dim);font-size:12px;
+  }
+  .stacked-avs{display:flex}
+  .stacked-avs > div{
+    width:22px;height:22px;border-radius:50%;margin-left:-6px;
+    background:linear-gradient(135deg,#1e293b,#0f172a);
+    box-shadow:0 0 0 2px var(--surface);
+    display:grid;place-items:center;font-size:10px;font-weight:600;
+  }
+  .stacked-avs > div:first-child{margin-left:0}
+
+  /* Feed */
+  .feed{
+    overflow-y:auto;
+    padding:18px 24px 24px;
+    display:flex;flex-direction:column;gap:6px;
+    scroll-behavior:smooth;
+  }
+  .feed::-webkit-scrollbar{width:8px}
+  .feed::-webkit-scrollbar-thumb{background:rgba(255,255,255,.06);border-radius:8px}
+  .feed::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.12)}
+
+  .day-divider{
+    display:flex;align-items:center;gap:12px;margin:14px 0 6px;
+    color:var(--ink-faint);font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  }
+  .day-divider::before,.day-divider::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  .msg{
+    display:grid;grid-template-columns:36px 1fr;gap:12px;
+    padding:8px 10px;border-radius:10px;
+    transition:background .18s var(--ease);
+  }
+  .msg:hover{background:rgba(255,255,255,.02)}
+  .msg.system{opacity:.85}
+
+  .msg-av{
+    width:36px;height:36px;border-radius:50%;
+    display:grid;place-items:center;font-size:14px;font-weight:700;
+    background:linear-gradient(135deg,#1e293b,#0f172a);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
+    position:relative;
+  }
+
+  .msg-head{
+    display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;
+  }
+  .msg-name{font-size:13.5px;font-weight:600;color:var(--ink);letter-spacing:-.005em}
+  .msg-role{
+    font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--ink-faint);
+    padding:1px 6px;border-radius:var(--radius-pill);
+    background:rgba(255,255,255,.03);border:1px solid var(--line);
+  }
+  .msg-time{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+  .msg-body{font-size:13.5px;line-height:1.55;color:var(--ink);margin-top:2px}
+  .msg-body em{color:var(--ink-dim);font-style:normal}
+  .msg-body code{
+    font-family:var(--mono);font-size:12px;background:rgba(255,255,255,.05);
+    padding:1px 6px;border-radius:6px;border:1px solid var(--line);
+  }
+
+  .msg-actions{
+    display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;
+  }
+  .chip{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:4px 10px;border-radius:var(--radius-pill);
+    background:rgba(255,255,255,.03);border:1px solid var(--line);
+    font-size:11.5px;color:var(--ink-dim);
+    transition:all .18s var(--ease);
+  }
+  .chip:hover{background:rgba(255,255,255,.06);color:var(--ink);border-color:var(--line-strong)}
+  .chip.primary{background:var(--teal-soft);color:var(--teal);border-color:rgba(94,234,212,.25)}
+  .chip.primary:hover{background:rgba(94,234,212,.22)}
+  .chip.urgent{background:var(--orange-soft);color:var(--orange);border-color:rgba(255,106,61,.25)}
+
+  /* Send-to selector */
+  .sendto{
+    display:inline-flex;align-items:center;gap:4px;
+    margin-left:6px;font-family:var(--mono);font-size:11px;color:var(--ink-faint);
+  }
+  .sendto .target{
+    color:var(--teal);padding:2px 6px;border-radius:6px;
+    background:rgba(94,234,212,.08);border:1px solid rgba(94,234,212,.18);
+  }
+
+  /* Composer */
+  .composer{
+    border-top:1px solid var(--line);
+    padding:14px 18px 18px;
+    background:linear-gradient(180deg, transparent, rgba(0,0,0,.2));
+  }
+  .composer-card{
+    border:1px solid var(--line-strong);background:var(--raised);
+    border-radius:var(--radius);
+    transition:border-color .24s var(--ease), box-shadow .24s var(--ease);
+  }
+  .composer-card:focus-within{
+    border-color:rgba(94,234,212,.4);
+    box-shadow:0 0 0 4px rgba(94,234,212,.08);
+  }
+  .composer-toolbar{
+    display:flex;align-items:center;gap:6px;
+    padding:8px 12px;border-bottom:1px solid var(--line);
+    color:var(--ink-faint);
+  }
+  .tb-btn{
+    padding:4px 8px;border-radius:6px;font-size:11.5px;
+    transition:background .18s var(--ease), color .18s var(--ease);
+  }
+  .tb-btn:hover{background:rgba(255,255,255,.05);color:var(--ink)}
+  .tb-sep{width:1px;height:14px;background:var(--line);margin:0 2px}
+  .tb-spacer{flex:1}
+  .tb-target{
+    display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:var(--radius-pill);
+    background:rgba(94,234,212,.08);color:var(--teal);
+    border:1px solid rgba(94,234,212,.22);font-size:11.5px;font-family:var(--mono);letter-spacing:.04em;
+  }
+  .composer-input{
+    width:100%;padding:12px 14px;font-size:13.5px;line-height:1.5;
+    min-height:44px;resize:none;
+  }
+  .composer-input::placeholder{color:var(--ink-faint)}
+  .composer-footer{
+    display:flex;align-items:center;gap:10px;padding:8px 12px;border-top:1px solid var(--line);
+    color:var(--ink-faint);font-size:11.5px;
+  }
+  .composer-footer .hint{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em}
+  .send-btn{
+    margin-left:auto;display:inline-flex;align-items:center;gap:8px;
+    padding:7px 16px;border-radius:var(--radius-pill);
+    background:linear-gradient(135deg, #f97316, var(--orange));
+    color:#1a0a04;font-weight:700;font-size:12.5px;letter-spacing:.02em;
+    box-shadow:0 8px 24px -8px rgba(255,106,61,.5), inset 0 1px 0 rgba(255,255,255,.3);
+    transition:transform .12s var(--ease), box-shadow .24s var(--ease), filter .2s var(--ease);
+  }
+  .send-btn:hover{transform:translateY(-1px);filter:brightness(1.08)}
+  .send-btn:active{transform:translateY(0)}
+  .send-btn .kbd-hint{
+    font-family:var(--mono);font-size:10px;background:rgba(0,0,0,.18);color:#1a0a04;
+    padding:1px 5px;border-radius:4px;
+  }
+
+  /* ── Right rail (priorities) ── */
+  .rail-right{overflow-y:auto}
+  .priorities{display:flex;flex-direction:column;gap:14px;padding:0 16px 24px}
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    overflow:hidden;
+    transition:border-color .24s var(--ease), transform .24s var(--ease);
+  }
+  .card:hover{border-color:var(--line-strong)}
+
+  .card-head{
+    display:flex;align-items:center;gap:10px;
+    padding:14px 16px 10px;
+  }
+  .card-head h3{font-size:13px;font-weight:600;letter-spacing:-.005em}
+  .card-head .badge{
+    font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    padding:2px 8px;border-radius:var(--radius-pill);
+    background:rgba(255,255,255,.04);color:var(--ink-dim);border:1px solid var(--line);
+  }
+  .card-head .badge.urgent{background:var(--orange-soft);color:var(--orange);border-color:rgba(255,106,61,.25)}
+  .card-head .badge.warn{background:var(--green-soft);color:var(--green);border-color:rgba(74,222,128,.22)}
+  .card-head .more{margin-left:auto;color:var(--ink-faint);font-size:11px;font-family:var(--mono)}
+
+  .row{
+    display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;
+    padding:10px 16px;
+    border-top:1px solid var(--line);
+    transition:background .18s var(--ease);
+    cursor:pointer;
+  }
+  .row:hover{background:rgba(255,255,255,.02)}
+  .row-glyph{
+    width:28px;height:28px;border-radius:8px;display:grid;place-items:center;
+    background:rgba(255,255,255,.03);border:1px solid var(--line);
+    font-family:var(--mono);font-size:11px;color:var(--ink-dim);
+  }
+  .row-glyph.urgent{background:var(--orange-soft);color:var(--orange);border-color:rgba(255,106,61,.25)}
+  .row-glyph.ok{background:var(--green-soft);color:var(--green);border-color:rgba(74,222,128,.22)}
+
+  .row-main{min-width:0}
+  .row-title{font-size:12.5px;color:var(--ink);font-weight:500;letter-spacing:-.005em;text-overflow:ellipsis;overflow:hidden;white-space:nowrap}
+  .row-sub{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);margin-top:2px;font-variant-numeric:tabular-nums}
+
+  .row-num{
+    font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums;
+    text-align:right;
+  }
+  .row-num .delta{font-size:10px;color:var(--ink-faint);display:block;margin-top:2px}
+
+  .card-cta{
+    display:flex;gap:8px;padding:10px 14px 14px;border-top:1px solid var(--line);
+  }
+  .card-cta .chip{flex:1;justify-content:center}
+
+  /* ── Command palette ── */
+  .palette-shell{
+    position:fixed;inset:0;background:rgba(2,4,8,.7);
+    backdrop-filter:blur(12px);
+    display:none;align-items:flex-start;justify-content:center;
+    padding-top:14vh;z-index:50;
+  }
+  .palette-shell.open{display:flex;animation:fadein .22s var(--ease)}
+  @keyframes fadein{from{opacity:0}to{opacity:1}}
+  .palette{
+    width:min(640px, 92vw);background:var(--raised-strong);
+    border:1px solid var(--line-strong);border-radius:var(--radius);
+    box-shadow:var(--shadow-2);
+    overflow:hidden;
+    transform:translateY(0);
+    animation:slideup .26s var(--ease);
+  }
+  @keyframes slideup{from{transform:translateY(8px);opacity:.6}to{transform:translateY(0);opacity:1}}
+  .palette-input-row{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+  .palette-input{flex:1;font-size:15px;letter-spacing:-.005em}
+  .palette-input::placeholder{color:var(--ink-faint)}
+  .palette-list{max-height:360px;overflow-y:auto;padding:6px}
+  .palette-item{
+    display:grid;grid-template-columns:24px 1fr auto;gap:12px;align-items:center;
+    padding:10px 12px;border-radius:8px;cursor:pointer;
+  }
+  .palette-item:hover, .palette-item.sel{background:rgba(94,234,212,.06)}
+  .palette-item .glyph{
+    width:24px;height:24px;border-radius:6px;display:grid;place-items:center;
+    background:rgba(255,255,255,.04);font-size:12px;color:var(--ink-dim);
+  }
+  .palette-item .lbl{font-size:13px;color:var(--ink)}
+  .palette-item .sub{font-size:11px;color:var(--ink-faint);font-family:var(--mono)}
+  .palette-foot{
+    display:flex;align-items:center;gap:10px;padding:8px 14px;
+    border-top:1px solid var(--line);color:var(--ink-faint);font-size:11px;font-family:var(--mono);
+  }
+  .palette-foot .sep{width:1px;height:10px;background:var(--line)}
+
+  /* ── Responsive ── */
+  @media (max-width: 1100px){
+    .body{grid-template-columns: 220px 1fr 300px}
+    .kpis{grid-template-columns:repeat(5, 1fr)}
+  }
+  @media (max-width: 900px){
+    .body{grid-template-columns: 1fr}
+    .rail-left, .rail-right{display:none}
+    .kpis{grid-template-columns:repeat(2, 1fr)}
+    .kpi{padding:14px 16px 12px}
+    .kpi-value{font-size:24px}
+  }
+  @media (max-width: 540px){
+    .kpis{grid-template-columns:1fr 1fr}
+    .channel-head .topic{display:none}
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation:none !important;transition:none !important}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ── Top bar ── -->
+  <header class="topbar" role="banner">
+    <div class="brand" aria-label="Brain Trust">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">Brain Trust</span>
+      <span class="brand-sep">/</span>
+      <span class="brand-sub">NorCal CARB Mobile</span>
+    </div>
+    <nav class="crumbs" aria-label="Location">
+      <span>HQ</span>
+      <span class="chev">›</span>
+      <span class="here">#hq</span>
+    </nav>
+    <div class="topbar-spacer"></div>
+    <span class="env-chip" title="Local-first, no cloud telemetry"><span class="dot"></span>Live · Local-First</span>
+    <button class="cmd-trigger" id="paletteBtn" aria-label="Open command palette">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <span>Search or run command</span>
+      <span class="kbd">⌘K</span>
+    </button>
+    <span class="clock" id="clock" aria-live="off">—</span>
+    <div class="avatar-me" title="Dr. Bryan Gillis">BG</div>
+  </header>
+
+  <!-- ── Body grid ── -->
+  <div class="body">
+
+    <!-- Left rail: agent presence -->
+    <aside class="rail-left" aria-label="Agent roster">
+      <section class="rail-section">
+        <div class="rail-eyebrow"><span>The Roster</span><span class="count" id="rosterCount">— online</span></div>
+      </section>
+      <div class="agents" id="agents"></div>
+
+      <div class="rail-divider"></div>
+
+      <section class="rail-section">
+        <div class="rail-eyebrow"><span>Channels</span></div>
+      </section>
+      <nav class="channels">
+        <a class="channel active"><span class="hash">#</span>hq <span class="pip"></span></a>
+        <a class="channel"><span class="hash">#</span>recon-leads <span class="unread">3</span></a>
+        <a class="channel"><span class="hash">#</span>recon-compliance</a>
+        <a class="channel"><span class="hash">#</span>recon-legal</a>
+        <a class="channel"><span class="hash">#</span>recon-sales</a>
+        <a class="channel"><span class="hash">#</span>alerts <span class="unread">2</span></a>
+        <a class="channel"><span class="hash">#</span>agent-status</a>
+      </nav>
+    </aside>
+
+    <!-- Center column -->
+    <section class="center" aria-label="Channel">
+      <!-- KPI strip -->
+      <div class="kpis" role="region" aria-label="Key performance indicators">
+        <div class="kpi" data-kpi="paid">
+          <div class="kpi-label"><span>Paid YTD</span><span class="src">QuickBooks · 5m ago</span></div>
+          <div class="kpi-value">$16,206<span class="cents">.00</span></div>
+          <div class="kpi-delta"><span class="pill">▲ 4.2%</span> vs last week</div>
+        </div>
+        <div class="kpi" data-kpi="pending">
+          <div class="kpi-label"><span>Pending</span><span class="src">Stripe · 2m ago</span></div>
+          <div class="kpi-value">$250<span class="unit">/ 2 invoices</span></div>
+          <div class="kpi-delta"><span class="pill flat">— 0</span> 24h</div>
+        </div>
+        <div class="kpi" data-kpi="anet">
+          <div class="kpi-label"><span>A+ Net</span><span class="src">A+ Portal · today</span></div>
+          <div class="kpi-value">$1,976</div>
+          <div class="kpi-delta"><span class="pill">▲ $230</span> this week</div>
+        </div>
+        <div class="kpi" data-kpi="tests">
+          <div class="kpi-label"><span>Tests</span><span class="src">CARB CTC-VIS · 8m ago</span></div>
+          <div class="kpi-value">27<span class="unit">P · 1 F</span></div>
+          <div class="kpi-delta"><span class="pill">▲ 5</span> WTD · 96.4% pass</div>
+        </div>
+        <div class="kpi urgent" data-kpi="orphans">
+          <div class="kpi-label"><span>Orphans</span><span class="src">DataSync diff · 3m ago</span></div>
+          <div class="kpi-value">6<span class="unit">T · 77 I</span></div>
+          <div class="kpi-delta"><span class="pill down">▲ 12 I</span> needs reconciliation</div>
+        </div>
+      </div>
+
+      <!-- Channel header -->
+      <div class="channel-head">
+        <h2><span class="hash">#</span>hq</h2>
+        <span class="topic">Brain Trust command channel · auto-joined</span>
+        <div class="members">
+          <div class="stacked-avs">
+            <div title="Samantha">S</div>
+            <div title="Belichick">B</div>
+            <div title="Mila">M</div>
+            <div title="FinBot">F</div>
+            <div title="+8 more">+8</div>
+          </div>
+          <span>12 in channel</span>
+        </div>
+      </div>
+
+      <!-- Feed -->
+      <div class="feed" id="feed" tabindex="0"></div>
+
+      <!-- Composer -->
+      <div class="composer">
+        <div class="composer-card">
+          <div class="composer-toolbar">
+            <button class="tb-btn" title="Bold">B</button>
+            <button class="tb-btn" title="Italic"><em>I</em></button>
+            <button class="tb-btn" title="Code">‹/›</button>
+            <span class="tb-sep"></span>
+            <button class="tb-btn" title="Attach">📎</button>
+            <button class="tb-btn" title="Mention">@</button>
+            <span class="tb-spacer"></span>
+            <span class="tb-target" id="targetChip">▶ Samantha</span>
+          </div>
+          <textarea class="composer-input" id="composer" rows="1" placeholder="Message #hq — try ‘@samantha pull today's orphan tests and stage invoices’"></textarea>
+          <div class="composer-footer">
+            <span class="hint"><span class="kbd">⏎</span> send · <span class="kbd">⇧⏎</span> newline · <span class="kbd">/</span> commands</span>
+            <button class="send-btn" id="sendBtn">Dispatch <span class="kbd-hint">⏎</span></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right rail: priorities -->
+    <aside class="rail-right" aria-label="Priority queue">
+      <section class="rail-section">
+        <div class="rail-eyebrow"><span>Critical Attention</span><span class="count">3 items</span></div>
+      </section>
+      <div class="priorities">
+
+        <article class="card" data-card="orphan-tests">
+          <header class="card-head">
+            <h3>Orphan tests · revenue leakage</h3>
+            <span class="badge urgent">6 found</span>
+          </header>
+          <div class="row">
+            <div class="row-glyph urgent">T</div>
+            <div class="row-main">
+              <div class="row-title">VIN 1FUJGED­C2HLJN1234 — Hayward</div>
+              <div class="row-sub">passed 5/09 · no invoice · est $179</div>
+            </div>
+            <div class="row-num">$179<span class="delta">+3d</span></div>
+          </div>
+          <div class="row">
+            <div class="row-glyph urgent">T</div>
+            <div class="row-main">
+              <div class="row-title">VIN 3AKJHHD­R8LSML5870 — Stockton</div>
+              <div class="row-sub">passed 5/10 · no invoice · est $69</div>
+            </div>
+            <div class="row-num">$69<span class="delta">+2d</span></div>
+          </div>
+          <div class="row">
+            <div class="row-glyph urgent">T</div>
+            <div class="row-main">
+              <div class="row-title">VIN 4V4NC9­EH7HN968220 — Lodi</div>
+              <div class="row-sub">passed 5/11 · no invoice · est $209</div>
+            </div>
+            <div class="row-num">$209<span class="delta">+1d</span></div>
+          </div>
+          <div class="card-cta">
+            <button class="chip primary">Generate invoices</button>
+            <button class="chip">See all 6</button>
+          </div>
+        </article>
+
+        <article class="card" data-card="orphan-invoices">
+          <header class="card-head">
+            <h3>Orphan invoices · work owed</h3>
+            <span class="badge urgent">77 open</span>
+          </header>
+          <div class="row">
+            <div class="row-glyph urgent">I</div>
+            <div class="row-main">
+              <div class="row-title">Maverick Trucking — 3 vehicles</div>
+              <div class="row-sub">paid 4/22 · no CARB record yet</div>
+            </div>
+            <div class="row-num">$537<span class="delta">+20d</span></div>
+          </div>
+          <div class="row">
+            <div class="row-glyph urgent">I</div>
+            <div class="row-main">
+              <div class="row-title">SJV Cold Chain — 1 vehicle</div>
+              <div class="row-sub">paid 5/02 · awaiting OVI</div>
+            </div>
+            <div class="row-num">$199<span class="delta">+10d</span></div>
+          </div>
+          <div class="card-cta">
+            <button class="chip primary">Schedule field runs</button>
+            <button class="chip">Export CSV</button>
+          </div>
+        </article>
+
+        <article class="card" data-card="deadlines">
+          <header class="card-head">
+            <h3>Deadlines · 14d window</h3>
+            <span class="badge warn">on track</span>
+          </header>
+          <div class="row">
+            <div class="row-glyph">D</div>
+            <div class="row-main">
+              <div class="row-title">CTC quarterly cohort opens</div>
+              <div class="row-sub">Oct 2027 mandate · pre-stage now</div>
+            </div>
+            <div class="row-num">Q4</div>
+          </div>
+          <div class="row">
+            <div class="row-glyph ok">D</div>
+            <div class="row-main">
+              <div class="row-title">A+ commission cycle close</div>
+              <div class="row-sub">cutover 5/16 · auto-reconciled by FinBot</div>
+            </div>
+            <div class="row-num">4d</div>
+          </div>
+        </article>
+
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- ── Command palette ── -->
+<div class="palette-shell" id="paletteShell" role="dialog" aria-modal="true" aria-label="Command palette">
+  <div class="palette">
+    <div class="palette-input-row">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--ink-faint)"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input class="palette-input" id="paletteInput" placeholder="Run a command, jump to a channel, or summon an agent…" />
+      <span class="kbd">esc</span>
+    </div>
+    <div class="palette-list" id="paletteList"></div>
+    <div class="palette-foot">
+      <span>↑↓ navigate</span><span class="sep"></span>
+      <span>⏎ run</span><span class="sep"></span>
+      <span>⌘K toggle</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  // ── Roster ──────────────────────────────────────────────────────────────
+  const ROSTER = [
+    { id:'samantha', name:'Samantha', role:'COO · Routing & Dispatch', initial:'S', status:'online', last:'now' },
+    { id:'belichick', name:'Belichick', role:'Strategy · Orchestration', initial:'B', status:'online', last:'now' },
+    { id:'mila-carb', name:'Mila', role:'CARB Customer Service', initial:'M', status:'online', last:'2m' },
+    { id:'finbot', name:'FinBot', role:'Reconciliation · QB+Stripe', initial:'F', status:'busy', last:'syncing' },
+    { id:'datasync', name:'DataSync', role:'CTC-VIS · VIN Pipeline', initial:'D', status:'busy', last:'ingesting' },
+    { id:'lead-scraper', name:'Lead Scraper', role:'Google Places · CSV', initial:'L', status:'online', last:'idle' },
+    { id:'jon-jones', name:'Jon Jones', role:'Sales · A.C.E.S.', initial:'J', status:'online', last:'5m' },
+    { id:'sentinel', name:'Sentinel', role:'Legal Deep Analysis', initial:'Σ', status:'away', last:'33m' },
+    { id:'kesha', name:'Kesha', role:'Marketing Intelligence', initial:'K', status:'away', last:'1h' },
+    { id:'musk', name:'Musk', role:'Competitive Intel', initial:'X', status:'away', last:'2h' },
+    { id:'cipher', name:'Cipher', role:'Token Spend · Budgets', initial:'C', status:'online', last:'now' },
+    { id:'tps', name:'TPS', role:'Reporting · Discoveries', initial:'T', status:'away', last:'overnight' },
+  ];
+
+  const rail = document.getElementById('agents');
+  const rosterCount = document.getElementById('rosterCount');
+  const onlineCount = ROSTER.filter(a => a.status === 'online' || a.status === 'busy').length;
+  rosterCount.textContent = `${onlineCount} / ${ROSTER.length} on deck`;
+  rail.innerHTML = ROSTER.map((a, i) => `
+    <button class="agent ${i===0?'active':''}" data-agent="${a.id}">
+      <span class="agent-av" style="background:${avatarBg(a.id)}">${a.initial}<span class="status ${a.status}"></span></span>
+      <span class="agent-meta">
+        <span class="agent-name">${a.name}</span>
+        <span class="agent-role">${a.role}</span>
+      </span>
+      <span class="agent-time">${a.last}</span>
+    </button>
+  `).join('');
+
+  function avatarBg(id){
+    const palettes = {
+      'samantha': 'linear-gradient(135deg,#5eead4,#0ea5e9)',
+      'belichick': 'linear-gradient(135deg,#fbbf24,#f97316)',
+      'mila-carb': 'linear-gradient(135deg,#f472b6,#a855f7)',
+      'finbot': 'linear-gradient(135deg,#34d399,#059669)',
+      'datasync': 'linear-gradient(135deg,#60a5fa,#2563eb)',
+      'lead-scraper': 'linear-gradient(135deg,#a3e635,#65a30d)',
+      'jon-jones': 'linear-gradient(135deg,#fb7185,#e11d48)',
+      'sentinel': 'linear-gradient(135deg,#94a3b8,#475569)',
+      'kesha': 'linear-gradient(135deg,#f0abfc,#c026d3)',
+      'musk': 'linear-gradient(135deg,#fde68a,#ca8a04)',
+      'cipher': 'linear-gradient(135deg,#7dd3fc,#0369a1)',
+      'tps': 'linear-gradient(135deg,#cbd5e1,#64748b)',
+    };
+    return palettes[id] || 'linear-gradient(135deg,#1e293b,#0f172a)';
+  }
+
+  // ── Clock ───────────────────────────────────────────────────────────────
+  const clock = document.getElementById('clock');
+  function tick(){
+    const d = new Date();
+    const hh = d.getHours().toString().padStart(2,'0');
+    const mm = d.getMinutes().toString().padStart(2,'0');
+    const ss = d.getSeconds().toString().padStart(2,'0');
+    clock.textContent = `${hh}:${mm}:${ss} PT`;
+  }
+  tick(); setInterval(tick, 1000);
+
+  // ── Feed ────────────────────────────────────────────────────────────────
+  const FEED = [
+    { day:'Today' },
+    {
+      agent:'samantha', initial:'S', role:'COO',
+      time:'06:14',
+      body:`Morning. 27 tests cleared this week, <em>96.4% pass rate</em>. Pulled 6 orphan tests + 77 orphan invoices for triage. I auto-joined every channel I have routing for.`,
+      actions:['Thread','Convert to task','Push to /recon-compliance'],
+      target:'FinBot',
+    },
+    {
+      agent:'belichick', initial:'B', role:'Strategy',
+      time:'06:18',
+      body:`Strategy note: orphan tests = <strong style="color:var(--orange)">revenue leakage</strong>, orphan invoices = work owed but not delivered. Both surfaced on the KPI rail. Don't ship anything until those two columns are green.`,
+      actions:['Thread','Snooze 24h'],
+      target:'Samantha',
+    },
+    {
+      agent:'datasync', initial:'D', role:'Pipeline',
+      time:'06:21',
+      body:`CTC-VIS sync complete. Diff against QuickBooks shows <code>6 tests</code> with no matching invoice in 72h. Top 3 staged in the right rail; full list in <code>/recon-compliance</code>.`,
+      actions:['Open diff','Generate 6 invoices','Notify Mila'],
+      target:'FinBot',
+      urgent:true,
+    },
+    {
+      agent:'jon-jones', initial:'J', role:'Sales',
+      time:'06:34',
+      body:`Maverick Trucking signed. 3-vehicle bundle, <em>$537 net</em>. Handing the appointment over to Samantha for routing — Tracy yard, prefer Friday 7am.`,
+      actions:['Stage route','Send confirmation SMS','Add to CRM'],
+      target:'Samantha',
+    },
+    {
+      agent:'finbot', initial:'F', role:'Finance',
+      time:'06:48',
+      body:`A+ commission cycle closes in <strong>4 days</strong>. Currently <code>$1,976</code> net pending payout. Reconciliation against PayPal and Stripe is clean — no flagged discrepancies above the $5 threshold.`,
+      actions:['Lock period','Export report','Forecast next cycle'],
+      target:'Belichick',
+    },
+    { day:'06:50 — last refresh' },
+    {
+      agent:'mila-carb', initial:'M', role:'CARB',
+      time:'06:51',
+      body:`Reminder: Oct 2027 quarterly mandate triggers <em>4× testing/yr</em> on OBD vehicles. Maverick's fleet falls inside the early cohort — recommend pre-staging slots now while capacity exists.`,
+      actions:['Block calendar','Draft email','Pre-stage 12 slots'],
+      target:'Samantha',
+    },
+  ];
+
+  const feed = document.getElementById('feed');
+  feed.innerHTML = FEED.map(item => {
+    if (item.day){
+      return `<div class="day-divider">${item.day}</div>`;
+    }
+    return `
+      <article class="msg">
+        <span class="msg-av" style="background:${avatarBg(item.agent)}">${item.initial}</span>
+        <div>
+          <div class="msg-head">
+            <span class="msg-name">${capitalize(item.agent)}</span>
+            <span class="msg-role">${item.role}</span>
+            <span class="msg-time">${item.time}</span>
+          </div>
+          <div class="msg-body">${item.body}</div>
+          <div class="msg-actions">
+            ${(item.actions||[]).map((a, i) =>
+              `<button class="chip ${i===0?'primary':''} ${item.urgent && i===1 ? 'urgent':''}">${a}</button>`
+            ).join('')}
+            ${item.target ? `<span class="sendto">send to <span class="target">▶ ${item.target}</span></span>` : ''}
+          </div>
+        </div>
+      </article>
+    `;
+  }).join('');
+
+  function capitalize(s){
+    return s.split('-').map(p => p.charAt(0).toUpperCase()+p.slice(1)).join(' ');
+  }
+
+  feed.scrollTop = feed.scrollHeight;
+
+  // ── Composer ────────────────────────────────────────────────────────────
+  const composer = document.getElementById('composer');
+  const sendBtn = document.getElementById('sendBtn');
+  const targetChip = document.getElementById('targetChip');
+  let target = 'Samantha';
+
+  composer.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey){
+      e.preventDefault();
+      send();
+    }
+  });
+  sendBtn.addEventListener('click', send);
+
+  function send(){
+    const value = composer.value.trim();
+    if (!value) return;
+    const time = new Date().toTimeString().slice(0,5);
+    const div = document.createElement('article');
+    div.className = 'msg';
+    div.innerHTML = `
+      <span class="msg-av" style="background:linear-gradient(135deg,#5eead4,#0ea5e9)">BG</span>
+      <div>
+        <div class="msg-head">
+          <span class="msg-name">You</span>
+          <span class="msg-role">Operator</span>
+          <span class="msg-time">${time}</span>
+        </div>
+        <div class="msg-body">${escapeHtml(value)}</div>
+        <div class="msg-actions">
+          <span class="sendto">dispatched to <span class="target">▶ ${target}</span></span>
+        </div>
+      </div>
+    `;
+    feed.appendChild(div);
+    composer.value = '';
+    feed.scrollTop = feed.scrollHeight;
+
+    setTimeout(() => simulateReply(value), 700);
+  }
+
+  function simulateReply(value){
+    const time = new Date().toTimeString().slice(0,5);
+    const replies = {
+      'Samantha':  'On it. Cross-checking calendar and routing now — expect a staged plan in the thread within 90 seconds.',
+      'Belichick': 'Acknowledged. Holding ship/no-ship until the orphan queue lands under 3.',
+      'FinBot':    'Pulling latest QuickBooks + Stripe deltas. Will flag anything above $5.',
+      'DataSync':  'Re-running CTC-VIS diff. Will post the updated orphan VIN list to /recon-compliance.',
+      'Mila':      'Drafting reply with the exact CARB rule and deadline. Will keep tone urgent but professional.',
+      'Jon Jones': 'Building the dossier and A.C.E.S. pitch. Will hand the warm leads to Lead Scraper for source-backed contacts.',
+    };
+    const body = replies[target] || `Got it. Working on “${escapeHtml(value).slice(0,80)}…”.`;
+    const initial = target.charAt(0);
+    const div = document.createElement('article');
+    div.className = 'msg';
+    div.innerHTML = `
+      <span class="msg-av" style="background:${avatarBg(target.toLowerCase().replace(' ','-'))}">${initial}</span>
+      <div>
+        <div class="msg-head">
+          <span class="msg-name">${target}</span>
+          <span class="msg-role">Agent</span>
+          <span class="msg-time">${time}</span>
+        </div>
+        <div class="msg-body">${body}</div>
+        <div class="msg-actions">
+          <button class="chip primary">Thread</button>
+          <button class="chip">Convert to task</button>
+        </div>
+      </div>
+    `;
+    feed.appendChild(div);
+    feed.scrollTop = feed.scrollHeight;
+  }
+
+  function escapeHtml(s){
+    return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  // Click agent → set target
+  rail.addEventListener('click', (e) => {
+    const btn = e.target.closest('.agent');
+    if (!btn) return;
+    rail.querySelectorAll('.agent').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const name = btn.querySelector('.agent-name').textContent;
+    target = name;
+    targetChip.textContent = '▶ ' + name;
+  });
+
+  // ── Command palette ─────────────────────────────────────────────────────
+  const COMMANDS = [
+    { glyph:'⌘', label:'Dispatch all agents — “What is today’s single best ship?”', sub:'/swarm intel', kind:'cmd' },
+    { glyph:'⚡', label:'Generate invoices for all 6 orphan tests', sub:'finbot · ~6s', kind:'cmd' },
+    { glyph:'📅', label:'Pre-stage 12 quarterly cohort slots', sub:'samantha · routing', kind:'cmd' },
+    { glyph:'#', label:'Jump to #recon-compliance', sub:'channel', kind:'nav' },
+    { glyph:'#', label:'Jump to #recon-leads', sub:'channel', kind:'nav' },
+    { glyph:'#', label:'Jump to #alerts', sub:'channel', kind:'nav' },
+    { glyph:'👤', label:'Summon Samantha', sub:'@samantha', kind:'agent' },
+    { glyph:'👤', label:'Summon Belichick', sub:'@belichick', kind:'agent' },
+    { glyph:'👤', label:'Summon Mila (CARB)', sub:'@mila-carb', kind:'agent' },
+    { glyph:'⎙', label:'Export this channel transcript', sub:'markdown', kind:'cmd' },
+    { glyph:'🔒', label:'Lock A+ commission period', sub:'finbot', kind:'cmd' },
+  ];
+
+  const shell = document.getElementById('paletteShell');
+  const input = document.getElementById('paletteInput');
+  const list = document.getElementById('paletteList');
+  const trigger = document.getElementById('paletteBtn');
+
+  function renderPalette(query){
+    const q = (query || '').toLowerCase();
+    const filtered = COMMANDS.filter(c => !q || c.label.toLowerCase().includes(q) || c.sub.toLowerCase().includes(q));
+    list.innerHTML = filtered.map((c, i) => `
+      <div class="palette-item ${i===0?'sel':''}" data-i="${i}">
+        <span class="glyph">${c.glyph}</span>
+        <span class="lbl">${c.label}</span>
+        <span class="sub">${c.sub}</span>
+      </div>
+    `).join('') || `<div class="palette-item"><span class="lbl" style="color:var(--ink-faint)">No matches</span></div>`;
+  }
+
+  function openPalette(){
+    shell.classList.add('open');
+    input.value = '';
+    renderPalette('');
+    requestAnimationFrame(() => input.focus());
+  }
+  function closePalette(){ shell.classList.remove('open'); }
+
+  trigger.addEventListener('click', openPalette);
+  shell.addEventListener('click', (e) => { if (e.target === shell) closePalette(); });
+  input.addEventListener('input', () => renderPalette(input.value));
+
+  document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k'){
+      e.preventDefault();
+      shell.classList.contains('open') ? closePalette() : openPalette();
+    }
+    if (e.key === 'Escape' && shell.classList.contains('open')){
+      closePalette();
+    }
+    if (shell.classList.contains('open') && (e.key === 'ArrowDown' || e.key === 'ArrowUp')){
+      e.preventDefault();
+      const items = [...list.querySelectorAll('.palette-item')];
+      const idx = items.findIndex(it => it.classList.contains('sel'));
+      const next = e.key === 'ArrowDown'
+        ? Math.min(items.length - 1, idx + 1)
+        : Math.max(0, idx - 1);
+      items.forEach(it => it.classList.remove('sel'));
+      items[next]?.classList.add('sel');
+      items[next]?.scrollIntoView({ block:'nearest' });
+    }
+    if (shell.classList.contains('open') && e.key === 'Enter'){
+      e.preventDefault();
+      const sel = list.querySelector('.palette-item.sel .lbl');
+      if (sel){
+        closePalette();
+        flashToast(`Triggered: ${sel.textContent}`);
+      }
+    }
+  });
+
+  // ── KPI live nudge (simulated) ──────────────────────────────────────────
+  let paidYTD = 16206;
+  setInterval(() => {
+    paidYTD += Math.floor(Math.random() * 12);
+    const node = document.querySelector('[data-kpi="paid"] .kpi-value');
+    if (node) node.innerHTML = `$${paidYTD.toLocaleString()}<span class="cents">.00</span>`;
+  }, 9000);
+
+  // ── Tiny toast ─────────────────────────────────────────────────────────
+  function flashToast(text){
+    const t = document.createElement('div');
+    t.textContent = text;
+    Object.assign(t.style, {
+      position:'fixed', bottom:'24px', left:'50%', transform:'translateX(-50%)',
+      background:'var(--raised-strong)', border:'1px solid var(--line-strong)',
+      color:'var(--ink)', padding:'10px 16px', borderRadius:'999px',
+      fontSize:'13px', boxShadow:'var(--shadow-2)', zIndex:'60',
+      opacity:'0', transition:'opacity .24s var(--ease), transform .24s var(--ease)',
+    });
+    document.body.appendChild(t);
+    requestAnimationFrame(() => { t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(-2px)'; });
+    setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 240); }, 1800);
+  }
+
+})();
+</script>
+</body>
+</html>

@@ -12,6 +12,7 @@ const htmlFiles = [
   'cloudflare/sites/fairfield/index.html',
   'cloudflare/sites/roseville/index.html',
   'cloudflare/sites/lodi/index.html',
+  'braintrust-hq/index.html',
 ];
 
 for (const relativePath of htmlFiles) {
