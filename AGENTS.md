@@ -2,30 +2,51 @@
 
 ## Cursor Cloud specific instructions
 
-### Services overview
+### Overview
 
-| Service | Command | Port | Requires API Key |
-|---------|---------|------|------------------|
-| Mila CARB Chatbot | `npm run mila` | 3001 | `ANTHROPIC_API_KEY` (for `/chat`; health/widget work without it) |
-| Slack Bot | `npm run slack` | — (Socket Mode) | `SLACK_BOT_TOKEN`, `SLACK_APP_TOKEN`, `SLACK_SIGNING_SECRET`, `ANTHROPIC_API_KEY` |
-| Lead Scraper | `npm run scrape -- "query" "location"` | — (CLI) | `GOOGLE_PLACES_API_KEY` |
+This is a Node.js ES module project (`"type": "module"`) with three runtime surfaces:
+
+| Service | Command | Port/Mode | Required Env Vars |
+|---------|---------|-----------|-------------------|
+| **Mila CARB Chatbot** | `npm run mila` | Express on `:3001` | `ANTHROPIC_API_KEY` (for `/chat`; health/widget work without it) |
+| **Slack Bot** | `npm run slack` | Socket Mode (no port) | `SLACK_BOT_TOKEN`, `SLACK_APP_TOKEN`, `SLACK_SIGNING_SECRET`, `ANTHROPIC_API_KEY` |
+| **Lead Scraper** | `npm run scrape` | CLI (run-and-exit) | `GOOGLE_PLACES_API_KEY` |
 
 ### Running tests
 
-All validation is via `npm run check` which runs three steps:
+All tests use Node's built-in test runner with mocked externals — no API keys needed.
 
 ```bash
-npm test              # Node.js test runner (22 tests)
-npm run smoke         # Verifies entry points can import without starting services
-npm run validate:html # Checks static HTML files
+npm run check   # runs: npm test && npm run smoke && npm run validate:html
 ```
 
-### Non-obvious notes
+- `npm test` — 28 unit/integration tests (runtime contract, sessions, missions, scraper, Cloudflare worker, swarm)
+- `npm run smoke` — verifies all three entry points import cleanly without booting services
+- `npm run validate:html` — checks 9 HTML files for structural integrity
 
-- **ES modules only**: The project uses `"type": "module"` — all imports use ESM syntax. No CommonJS `require()`.
-- **No build step**: Source files run directly with Node.js. No transpilation needed.
-- **dotenv loaded at import time**: `dotenv/config` is imported at the top of server entry points, so `.env` is read on process start. Restart the server after changing `.env`. Inline env overrides (e.g. `ANTHROPIC_API_KEY=xxx npm run mila`) do NOT override `.env` values — the `dotenv` package loads the file unconditionally. Always edit `.env` directly.
-- **Mila chatbot starts without a valid `ANTHROPIC_API_KEY`**: The Express server boots and serves `/health`, `/tps`, and `/widget` even without a key. Only `/chat` requires the key (returns 503 if env var is unset, 500 if the key is invalid/rejected by Anthropic).
-- **Smoke test imports all entry points**: `npm run smoke` dynamically imports the 3 entry-point modules. If any module has a top-level side-effect that depends on env vars, the smoke test may fail. Currently all entry points guard side-effects behind `isMainModule()`.
-- **Node 22 required**: CI uses Node 22 (`actions/setup-node` with `node-version: 22`).
-- **punycode deprecation warning is cosmetic**: The `googleapis` package triggers a `[DEP0040]` warning about `punycode`. It does not affect functionality.
+### Mila chatbot (easiest to demo)
+
+Mila is the simplest service to run locally. It starts without Slack credentials and serves:
+- `GET /health` — JSON status (always works)
+- `GET /tps` — agent reporting endpoint (always works)
+- `GET /widget` — embeddable chat UI (always works)
+- `POST /chat` — requires a valid `ANTHROPIC_API_KEY`; returns 503 if the key is missing/empty, or 500 if the key is invalid
+- `DELETE /session/:id` — clears a chat session
+
+### Slack bot caveats
+
+The Slack bot validates four env vars at startup and **throws immediately** if any are missing: `SLACK_BOT_TOKEN`, `SLACK_APP_TOKEN`, `SLACK_SIGNING_SECRET`, `ANTHROPIC_API_KEY`. It cannot be started without real Slack app credentials.
+
+### Lead scraper caveats
+
+The scraper throws at startup if `GOOGLE_PLACES_API_KEY` is not set. Google Sheets export is optional and gracefully degrades to CSV-only if `GOOGLE_SHEETS_ID` is absent.
+
+### Environment setup
+
+Copy `.env.example` to `.env` and fill in real keys. See `README.md` "Runtime contract" for the full variable list.
+
+**dotenv override gotcha:** `dotenv/config` is imported at the top of server entry points, so `.env` is read on process start. Inline env overrides (e.g. `ANTHROPIC_API_KEY=xxx npm run mila`) do NOT override `.env` values — the `dotenv` package loads the file unconditionally. Always edit `.env` directly and restart the server.
+
+### Deprecation warning
+
+Node 22 emits `[DEP0040] DeprecationWarning: The punycode module is deprecated` from the `googleapis` dependency. This is harmless and does not affect functionality.
