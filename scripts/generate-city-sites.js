@@ -244,14 +244,17 @@ function renderCity(slug) {
     `<div class="pricing-price">${p.annual} <span>/ test</span></div>`,
   );
 
-  // ── CTA coverage line + Footer brand description + postal ───────
+  // ── Footer brand description + operator line + postal ──────────
   html = html.replace(
     /Serving Roseville, Sacramento, Rocklin, Lincoln, Auburn, and all of Placer &amp; Sacramento Counties/,
     copy.coverageLine,
   );
+  // Match the original footer sentence with or without any number of trailing
+  // "Operated by Bryan Gillis ..." suffixes that earlier non-idempotent runs may
+  // have left in the template file. Result has exactly one operator line.
   html = html.replace(
-    /CARB credentialed heavy-duty emissions testing serving the greater Roseville and Sacramento area\. Mobile on-site testing for trucks, buses, and fleets\./,
-    `CARB credentialed heavy-duty emissions testing serving ${copy.footerRegion}. Mobile on-site testing for trucks, buses, and fleets.`,
+    /CARB credentialed heavy-duty emissions testing serving the greater Roseville and Sacramento area\. Mobile on-site testing for trucks, buses, and fleets\.(?: Operated by Bryan Gillis · NorCal CARB Mobile LLC\.)*/,
+    `CARB credentialed heavy-duty emissions testing serving ${copy.footerRegion}. Mobile on-site testing for trucks, buses, and fleets. Operated by Bryan Gillis · NorCal CARB Mobile LLC.`,
   );
   html = html.replace(
     /info@cleantruckcheckroseville\.com/g,
@@ -266,16 +269,143 @@ function renderCity(slug) {
     `&copy; 2026 Clean Truck Check ${titleCity}. All rights reserved.`,
   );
 
+  // Build-identification banner at the very top of the document. Visible in
+  // view-source so Bryan can confirm which city is loaded, and unambiguous for
+  // any agent so "fix ${titleCity}" always points at this exact file.
+  const banner =
+    `<!--\n` +
+    `  ============================================================\n` +
+    `  CANONICAL ${titleCity.toUpperCase()} SITE — cloudflare/sites/${slug}/index.html\n` +
+    `  ONLY EDIT THIS FILE FOR ${titleCity.toUpperCase()}.\n` +
+    `  Sourced from /sites-config.json. Regenerate with: npm run sites:generate\n` +
+    `  Team palette: ${site.colors.teamName}\n` +
+    `  Phone: ${phone}    Domain: ${domain}\n` +
+    `  Operated by Bryan Gillis — NorCal CARB Mobile LLC\n` +
+    `  ============================================================\n` +
+    `-->\n`;
+  // Strip any banner the previous run left (single- or multi-line comments
+  // before <!DOCTYPE html>) so the file stays idempotent.
+  html = html.replace(/^(<!--[\s\S]*?-->\s*\n)+(?=<!DOCTYPE html>)/, '');
+  html = html.replace(/^<!DOCTYPE html>\n/, `${banner}<!DOCTYPE html>\n`);
+
   return html;
+}
+
+// Cloudflare Pages ancillary files. Each city's folder is a self-contained
+// Pages project — point a Pages project at `cloudflare/sites/<city>/` and it
+// ships. No Workers, no KV, no other moving parts.
+function renderHeaders() {
+  return [
+    '/*',
+    '  X-Frame-Options: DENY',
+    '  X-Content-Type-Options: nosniff',
+    '  Referrer-Policy: strict-origin-when-cross-origin',
+    "  Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' 'unsafe-inline'; connect-src 'self'",
+    '  Permissions-Policy: geolocation=(), microphone=(), camera=()',
+    '',
+  ].join('\n');
+}
+
+function renderRedirects() {
+  return [
+    '# Catch common typos and old paths and send them home.',
+    '/home /  301',
+    '/index /  301',
+    '',
+  ].join('\n');
+}
+
+function render404(site, copy, phone, phoneE164) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>404 - Page Not Found - Clean Truck Check ${copy.displayCity}</title>
+<style>
+  body{font-family:system-ui,-apple-system,sans-serif;background:${site.colors.bg};color:${site.colors.bgMode === 'light' ? '#1a1a1a' : '#f5f5f5'};display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;padding:24px;text-align:center}
+  h1{font-size:3rem;margin:0 0 12px;color:${site.colors.bgMode === 'light' ? site.colors.primary : site.colors.accent}}
+  p{font-size:1.1rem;margin:0 0 24px}
+  a{color:${site.colors.bgMode === 'light' ? site.colors.primary : site.colors.accent};font-weight:700;text-decoration:none}
+</style>
+</head>
+<body>
+<div>
+  <h1>404</h1>
+  <p>That page doesn't exist on Clean Truck Check ${copy.displayCity}.</p>
+  <p><a href="/">Back to home</a> &nbsp;&middot;&nbsp; <a href="tel:${phoneE164}">Call ${phone}</a></p>
+</div>
+</body>
+</html>
+`;
+}
+
+function renderRobots(site) {
+  return `User-agent: *\nAllow: /\n\nSitemap: https://${site.domain}/sitemap.xml\n`;
+}
+
+function renderSitemap(site) {
+  // No <lastmod> — would defeat sites:check idempotency. Search engines fall
+  // back to crawl-date heuristics when it's missing.
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://${site.domain}/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>
+`;
+}
+
+function renderCityClaudeMd(slug, site, copy, phone) {
+  return `# ${copy.displayCity} - Canonical Site Folder
+
+**Domain:** ${site.domain}
+**Phone:** ${phone}
+**Team palette:** ${site.colors.teamName} (${site.colors.bgMode} background)
+
+## Rules for any agent reading this
+
+1. **This is the ONLY folder for ${copy.displayCity}.** If Bryan says "fix ${copy.displayCity}," every change goes in this folder. No other path in the repo represents ${copy.displayCity}.
+2. **Do not hand-edit \`index.html\`.** It is generated from \`/sites-config.json\` by \`scripts/generate-city-sites.js\`. CI (\`npm run sites:check\`) regenerates it and fails the PR if anything drifted.
+3. **To change a color, phone, price, or copy:** edit \`/sites-config.json\` (and \`scripts/generate-city-sites.js\` only if structure changes), then run \`npm run sites:generate\`. Commit both files.
+4. **Deploy target:** Cloudflare Pages, pointed at \`cloudflare/sites/${slug}/\`. The folder is a complete Pages project (index.html, 404.html, _headers, _redirects, robots.txt, sitemap.xml).
+5. **Operator:** Bryan Gillis - NorCal CARB Mobile LLC. Every site footer carries that line.
+
+## Files
+
+| File | Purpose | Source |
+|------|---------|--------|
+| \`index.html\` | The site | Generated |
+| \`404.html\` | Missing-page redirect | Generated |
+| \`_headers\` | Pages security headers | Generated |
+| \`_redirects\` | URL aliases | Generated |
+| \`robots.txt\` | Crawler permissions | Generated |
+| \`sitemap.xml\` | Search engine sitemap | Generated |
+| \`CLAUDE.md\` | This file - operator + agent rules | Hand-edited (instructions only) |
+`;
 }
 
 let wrote = 0;
 for (const slug of Object.keys(cityMap)) {
   const dir = join(root, 'cloudflare/sites', slug);
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-  const html = renderCity(slug);
-  writeFileSync(join(dir, 'index.html'), html);
+  const siteId = cityMap[slug];
+  const site = config.sites.find((s) => s.id === siteId);
+  const copy = cityCopy[slug];
+  const phone = formatPhone(site.phone);
+  const phoneDigits = digitsOnly(site.phoneFull || site.phone);
+  const phoneE164 = phoneDigits.length === 10 ? `+1${phoneDigits}` : `+${phoneDigits}`;
+
+  writeFileSync(join(dir, 'index.html'), renderCity(slug));
+  writeFileSync(join(dir, '404.html'), render404(site, copy, phone, phoneE164));
+  writeFileSync(join(dir, '_headers'), renderHeaders());
+  writeFileSync(join(dir, '_redirects'), renderRedirects());
+  writeFileSync(join(dir, 'robots.txt'), renderRobots(site));
+  writeFileSync(join(dir, 'sitemap.xml'), renderSitemap(site));
+  writeFileSync(join(dir, 'CLAUDE.md'), renderCityClaudeMd(slug, site, copy, phone));
+
   wrote++;
-  console.log(`wrote cloudflare/sites/${slug}/index.html`);
+  console.log(`wrote cloudflare/sites/${slug}/  (7 files)`);
 }
-console.log(`Generated ${wrote} city site(s) from sites-config.json.`);
+console.log(`Generated ${wrote} Cloudflare Pages project(s) from sites-config.json.`);

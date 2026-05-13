@@ -296,7 +296,11 @@ The primary business domain is **California Air Resources Board (CARB) Clean Tru
 
 ### Cloudflare City Sites — Master Reference
 
-Each city has a one-page landing site on Cloudflare Workers + KV. **Do not duplicate content between cities.** Each site targets a unique service area. Full spec in `sites-config.json` and `CLOUDFLARE-SITES-MASTER.md`.
+**Deploy target: Cloudflare Pages.** Each city's folder under `cloudflare/sites/<city>/` is a complete, self-contained Pages project (index.html, 404.html, _headers, _redirects, robots.txt, sitemap.xml, CLAUDE.md). Point a Cloudflare Pages project at the folder and ship — no Workers, no KV, no other moving parts.
+
+**Hard rule: when Bryan says "fix Hayward" (or any city), there is exactly ONE path to edit:** `cloudflare/sites/<city>/`. No duplicates exist in the repo. Every city folder has its own `CLAUDE.md` re-stating this rule for the next agent.
+
+**Do not duplicate content between cities.** Each site targets a unique service area. Full spec in `sites-config.json` (source of truth) and `CLOUDFLARE-SITES.md` (workflow).
 
 **Global:**
 - Company: NorCal CARB Mobile LLC
