@@ -58,6 +58,16 @@ Co-pilot operating mode (per standing orders 2026-05-19 15:00 UTC):
   3. **Convert** the landing pages to a real Jekyll site (largest change).
 - Files: `.github/workflows/jekyll-docker.yml`
 
+## 2026-05-19 15:09 UTC — No package-lock.json committed; lockfile policy decision needed
+- Status: NEEDS_DECISION
+- Severity: LOW
+- Context: The repo has never committed a `package-lock.json`, and `.gitignore` does not list one. My `npm install` during the readiness pass generated one locally. Without a committed lockfile, every deploy can resolve to slightly different transitive versions of `@slack/bolt`, `@anthropic-ai/sdk`, `googleapis`, etc. — bad for reproducibility on a money-spending bot.
+- Action taken: left the file untracked rather than slip a lockfile policy change into the standing-orders PR.
+- Bryan's call needed: yes — pick one:
+  1. **Commit `package-lock.json`** going forward (recommended for a production Slack bot; pins transitive versions).
+  2. **Add `package-lock.json` to `.gitignore`** if you're intentionally using floating versions.
+- Files: `package.json`, `.gitignore`, would-be new `package-lock.json`
+
 ## 2026-05-19 15:07 UTC — Cloud Agent secret name "cloudflare token" has a space, breaking pre-commit hook
 - Status: NEEDS_DECISION
 - Severity: MED
