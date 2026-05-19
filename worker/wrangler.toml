@@ -1,0 +1,27 @@
+name = "carb-sites-router"
+main = "index.js"
+compatibility_date = "2025-01-01"
+
+[[routes]]
+pattern = "carbteststockton.com/*"
+zone_name = "carbteststockton.com"
+
+[[routes]]
+pattern = "www.carbteststockton.com/*"
+zone_name = "carbteststockton.com"
+
+[[routes]]
+pattern = "cleantruckcheckroseville.com/*"
+zone_name = "cleantruckcheckroseville.com"
+
+[[routes]]
+pattern = "www.cleantruckcheckroseville.com/*"
+zone_name = "cleantruckcheckroseville.com"
+
+[[routes]]
+pattern = "cleantruckcheckhayward.com/*"
+zone_name = "cleantruckcheckhayward.com"
+
+[[routes]]
+pattern = "www.cleantruckcheckhayward.com/*"
+zone_name = "cleantruckcheckhayward.com"
