@@ -9,6 +9,7 @@
     "samantha": "node src/samantha/index.js",
     "scrape": "node src/lead-scraper/index.js",
     "start": "node src/slack-bot/index.js",
+    "setup:hermes": "bash scripts/setup-hermes-agent.sh",
     "test": "node --test",
     "smoke": "node scripts/smoke-imports.js",
     "validate:html": "node scripts/validate-html.js",
