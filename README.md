@@ -20,6 +20,30 @@ cp .env.example .env   # fill in your keys
 npm run check
 ```
 
+## Cloud agent startup bootstrap
+
+To prepare Cursor Cloud agents with Hermes Agent available on startup, run:
+
+```bash
+npm run setup:hermes
+```
+
+The bootstrap script is idempotent and does the following:
+
+- ensures `~/.local/bin` is on `PATH` for the current shell and future bash/profile sessions
+- installs `uv` if it is missing
+- installs Python 3.11 through `uv` if `python3.11` is missing
+- installs Playwright Chromium system dependencies on Ubuntu/apt hosts when root or sudo is available
+- runs the Hermes Agent installer unless a cached `~/.hermes/hermes-agent` install and `~/.local/bin/hermes` launcher already exist
+
+For Cursor environment setup, use this startup command:
+
+```bash
+npm ci && npm run setup:hermes
+```
+
+Run `hermes setup` after startup to configure provider credentials. Hermes config and API keys live under `~/.hermes/` and should not be committed.
+
 ## Samantha-first road workflow
 
 Samantha is now the boss/orchestrator entry point for road-side handoff. The runtime assumes `samantha@norcalcarbmobile.com` is the Google Workspace approval identity unless you override `SAMANTHA_GOOGLE_WORKSPACE_EMAIL`.
