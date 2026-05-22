@@ -2,13 +2,29 @@
 
 > **Last updated:** 2026-05-22
 > **Source of truth** for all CARB testing Cloudflare sites — prices, colors, phones, emails, coverage areas.
+> **Workspace:** [gumption.manus.space](https://gumption.manus.space)
+
+---
+
+## All Sites At-a-Glance
+
+| # | Domain | Nickname | OBD | OVI | Phone | Colors |
+|---|--------|----------|-----|-----|-------|--------|
+| 1 | [mobilecarbsmoketest.com](https://mobilecarbsmoketest.com) | San Diego | $119 | $219 | 916-890-4427 | Padres Brown/Gold |
+| 2 | [cleantruckcheckhayward.com](https://cleantruckcheckhayward.com) | Hayward / East Bay | $85 | $179 | 415-900-8563 | Raiders Silver/Black |
+| 3 | [cleantruckcheckfairfield.com](https://cleantruckcheckfairfield.com) | Fairfield / North Bay | $79 | $209 | 916-890-4427 | Air Force Blue/Silver |
+| 4 | [carbteststockton.com](https://carbteststockton.com) | Stockton / SJV | $69 | $179 | 209-818-1371 | Stockton Heat Red/Gold |
+| 5 | [carb-clean-truck-check.com](https://carb-clean-truck-check.com) | Bay Area (SJ→Novato) | $79 | $219 | 415-900-8563 | SF Giants Orange/Black |
+| 6 | [cleantruckcheckroseville.com](https://cleantruckcheckroseville.com) | Roseville / Sac + Chico | $79 | $209 | 916-890-4427 | SF Giants Orange/Black |
+| 7 | [mobilecarbtest.com](https://mobilecarbtest.com) | Tracy / Tri-Valley | $79 | $219 | 415-900-8563 | 49ers Scarlet/Gold |
+| 8 | [cleantruckchecklodi.com](https://cleantruckchecklodi.com) | Lodi | $75 | $209 | 209-818-1371 | FSU Garnet/Gold |
 
 ---
 
 ## Global Rules (ALL Sites)
 
 - **NEVER** reference `norcalcarbmobile.com` on any Cloudflare site
-- **ALWAYS** link to `cleantruckcheckvin.app` on every site
+- **ALWAYS** link to [`cleantruckcheckvin.app`](https://cleantruckcheckvin.app) on every site
 - **CARB Tester ID:** IF530523 (Valid Jun 2027)
 - **Company:** NorCal CARB Mobile LLC
 - **Hours:** Mon–Fri 6 AM – 5 PM · Sat 8 AM – 4 PM
@@ -18,7 +34,7 @@
 
 ---
 
-## Site 1 — mobilecarbsmoketest.com
+## Site 1 — [mobilecarbsmoketest.com](https://mobilecarbsmoketest.com)
 
 | Field | Value |
 |-------|-------|
@@ -35,7 +51,7 @@
 
 ---
 
-## Site 2 — cleantruckcheckhayward.com
+## Site 2 — [cleantruckcheckhayward.com](https://cleantruckcheckhayward.com)
 
 | Field | Value |
 |-------|-------|
@@ -53,7 +69,7 @@
 
 ---
 
-## Site 3 — cleantruckcheckfairfield.com
+## Site 3 — [cleantruckcheckfairfield.com](https://cleantruckcheckfairfield.com)
 
 | Field | Value |
 |-------|-------|
@@ -71,7 +87,7 @@
 
 ---
 
-## Site 4 — carbteststockton.com
+## Site 4 — [carbteststockton.com](https://carbteststockton.com)
 
 | Field | Value |
 |-------|-------|
@@ -89,7 +105,7 @@
 
 ---
 
-## Site 5 — carb-clean-truck-check.com
+## Site 5 — [carb-clean-truck-check.com](https://carb-clean-truck-check.com)
 
 | Field | Value |
 |-------|-------|
@@ -107,7 +123,7 @@
 
 ---
 
-## Site 6 — cleantruckcheckroseville.com
+## Site 6 — [cleantruckcheckroseville.com](https://cleantruckcheckroseville.com)
 
 | Field | Value |
 |-------|-------|
@@ -125,21 +141,25 @@
 
 ---
 
-## Site 7 — mobilecarbtest.com
+## Site 7 — [mobilecarbtest.com](https://mobilecarbtest.com)
 
 | Field | Value |
 |-------|-------|
 | **Nickname** | Tracy / Tri-Valley / East Contra Costa |
 | **Worker** | `mobilecarbtest` |
-| **Changes Only** | Switch colors to 49ers · Remove norcalcarbmobile.com from footer · Add Fresno by appointment |
+| **OBD Price** | $79 |
+| **Smoke/OVI Price** | $219 |
+| **Motorhome** | OBD $99 · OVI $250 |
+| **Fleet (5+)** | OBD $75 · OVI $199 |
 | **Colors** | 49ers — Scarlet `#AA0000` · Gold `#B3995D` |
+| **Phone** | 415-900-8563 |
+| **Email** | admin@mobilecarbtest.com |
 | **Coverage** | Tracy, Livermore, Brentwood, Antioch, Concord · **Fresno by appointment** |
-| **Prices/Phone/Email** | Keep current (KV-stored content) |
 | **Free Retest** | Yes — 1 free retest if fail |
 
 ---
 
-## Site 8 — cleantruckchecklodi.com (NEW)
+## Site 8 — [cleantruckchecklodi.com](https://cleantruckchecklodi.com)
 
 | Field | Value |
 |-------|-------|
@@ -168,7 +188,7 @@
 | Stockton | $69 | $179 | $99 | $250 | $49 | $149 |
 | Bay Area (CCTC) | $79 | $219 | $99 | $250 | $75 | $199 |
 | Roseville | $79 | $209 | $99 | $250 | $69 | $169 |
-| Tracy (mobilecarbtest) | Keep | Keep | Keep | Keep | Keep | Keep |
+| Tracy (mobilecarbtest) | $79 | $219 | $99 | $250 | $75 | $199 |
 | Lodi | $75 | $209 | $99 | $250 | $69 | $169 |
 
 ---
