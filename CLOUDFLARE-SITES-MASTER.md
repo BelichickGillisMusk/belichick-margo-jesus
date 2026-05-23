@@ -15,7 +15,7 @@
 | 3 | [cleantruckcheckfairfield.com](https://cleantruckcheckfairfield.com) | Fairfield / North Bay | $79 | $209 | 916-890-4427 | Air Force Blue/Silver |
 | 4 | [carbteststockton.com](https://carbteststockton.com) | Stockton / SJV | $69 | $179 | 209-818-1371 | Stockton Heat Red/Gold |
 | 5 | [carb-clean-truck-check.com](https://carb-clean-truck-check.com) | Bay Area (SJ→Novato) | $79 | $219 | 415-900-8563 | SF Giants Orange/Black |
-| 6 | [cleantruckcheckroseville.com](https://cleantruckcheckroseville.com) | Roseville / Sac + Chico | $79 | $209 | 916-890-4427 | SF Giants Orange/Black |
+| 6 | [cleantruckcheckroseville.com](https://cleantruckcheckroseville.com) | Roseville / Sac + Chico/Sutter/Beale | $79 | $209 | 916-890-4427 | SF Giants Orange/Black |
 | 7 | [mobilecarbtest.com](https://mobilecarbtest.com) | Tracy / Tri-Valley | $79 | $219 | 415-900-8563 | 49ers Scarlet/Gold |
 | 8 | [cleantruckchecklodi.com](https://cleantruckchecklodi.com) | Lodi | $75 | $209 | 209-818-1371 | FSU Garnet/Gold |
 
@@ -137,6 +137,7 @@
 | **Phone** | 916-890-4427 |
 | **Email** | admin@cleantruckcheckroseville.com |
 | **Coverage** | Roseville, Rocklin, Lincoln, Citrus Heights, Folsom, Auburn, Elk Grove, Sacramento |
+| **$40 Surcharge Zone** | Chico, Oroville, Paradise (Butte Co.), Yuba City, Marysville, Beale AFB (Sutter Co.) |
 | **Free Retest** | Yes — 1 free retest if fail |
 
 ---
