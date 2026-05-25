@@ -13,13 +13,16 @@
     "test": "node --test",
     "smoke": "node scripts/smoke-imports.js",
     "validate:html": "node scripts/validate-html.js",
-    "check": "npm run test && npm run smoke && npm run validate:html"
+    "check": "npm run test && npm run smoke && npm run validate:html",
+    "audit": "node tools/audit.js",
+    "audit:verbose": "node tools/audit.js --verbose",
+    "audit:json": "node tools/audit.js --json"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
     "@anthropic-ai/vertex-sdk": "^0.7.0",
-    "express": "^4.21.0",
-    "googleapis": "^144.0.0",
+    "@slack/bolt": "^4.1.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.0",
     "express": "^4.21.0",
     "googleapis": "^144.0.0"
