@@ -211,33 +211,19 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 :root{
+  --black:#1A1815;
+  --black-light:#141210;
+  --black-card:#1f1c18;
+  --black-border:#2f2a24;
   --orange:#FD5A1E;
-  --orange-dark:#d94a14;
-  --black:#27251F;
-  --cream:#EFD19F;
-  --cream-light:#F7E8C8;
-  --white:#FFFFFF;
-  --light:#FAF8F5;
-  --gray-100:#F0EDE8;
-  --gray-200:#DDD8D0;
-  --gray-300:#C0BAB0;
-  --gray-500:#888078;
-  --gray-700:#5A554E;
-  --gray-900:#2A2620;
-  --danger:#C62828;
-
-  --accent:var(--orange);
-  --accent-dark:var(--orange-dark);
-  --accent-glow:rgba(253,90,30,.12);
-  --btn-bg:var(--orange);
-  --btn-text:var(--white);
-  --text-primary:var(--gray-900);
-  --text-secondary:var(--gray-700);
-  --text-muted:var(--gray-500);
-  --bg:var(--white);
-  --card:var(--white);
-  --card-border:var(--gray-200);
-  --section-alt:var(--light);
+  --orange-dark:#e04d15;
+  --orange-light:#ff7a48;
+  --orange-glow:rgba(253,90,30,.25);
+  --orange-subtle:rgba(253,90,30,.08);
+  --white:#f5f5f5;
+  --gray:#a3a3a3;
+  --gray-dark:#737373;
+  --red:#ef4444;
 }
 
 html{scroll-behavior:smooth}
@@ -276,8 +262,8 @@ h1,h2,h3,h4,.brand-text,.nav-phone,.btn-primary,.btn-secondary,.price-amount,.bi
 .topbar .tester-id{font-size:.72rem;opacity:.6}
 
 nav{
-  position:sticky;top:0;z-index:1000;
-  background:rgba(255,255,255,.97);
+  position:fixed;top:0;left:0;right:0;
+  background:rgba(26,24,21,.92);
   backdrop-filter:blur(12px);
   border-bottom:1px solid var(--gray-200);
   padding:0 24px;
@@ -329,26 +315,28 @@ nav{
   padding:80px 0 60px;
   position:relative;
   overflow:hidden;
-  background:linear-gradient(135deg,var(--black) 0%,#3a372f 100%);
-  color:#fff;
 }
-.hero::after{
-  content:'';position:absolute;bottom:0;left:0;right:0;height:4px;
-  background:linear-gradient(90deg,transparent,var(--orange),var(--cream),var(--orange),transparent);
+
+.hero::before{
+  content:'';position:absolute;
+  top:-200px;right:-200px;
+  width:600px;height:600px;
+  background:radial-gradient(circle,var(--orange-glow) 0%,transparent 70%);
+  pointer-events:none;
 }
-.hero-layout{
-  display:grid;grid-template-columns:1.1fr .9fr;
-  gap:50px;align-items:center;position:relative;
+
+.hero-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:60px;align-items:center;
 }
-.hero-tagline{
-  display:inline-flex;align-items:center;gap:10px;
-  border:1px solid rgba(255,255,255,.15);
-  background:rgba(253,90,30,.1);
-  padding:8px 18px;border-radius:100px;
-  font-family:'Montserrat',sans-serif;
-  font-size:.75rem;font-weight:700;
-  color:var(--orange);
-  text-transform:uppercase;letter-spacing:.08em;
+
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--orange-subtle);
+  border:1px solid rgba(253,90,30,.2);
+  padding:8px 16px;border-radius:100px;
+  font-size:.8rem;font-weight:600;color:var(--orange);
   margin-bottom:24px;
 }
 .hero-tagline::before{content:'';width:8px;height:8px;background:var(--orange);border-radius:50%}
@@ -369,74 +357,204 @@ nav{
 .btn-primary:hover{background:var(--orange-dark);transform:translateY(-2px);box-shadow:0 8px 24px rgba(253,90,30,.25)}
 .btn-secondary{
   display:inline-flex;align-items:center;gap:8px;
-  background:transparent;color:#fff;
-  padding:14px 32px;border-radius:6px;
-  font-weight:700;font-size:1rem;text-decoration:none;
-  border:2px solid rgba(255,255,255,.3);
-  transition:background .2s,border-color .2s;
-  font-family:'Montserrat',sans-serif;
+  background:transparent;color:var(--white);
+  padding:14px 32px;border-radius:10px;
+  font-weight:700;font-size:1rem;
+  text-decoration:none;
+  border:2px solid var(--black-border);
+  cursor:pointer;
+  transition:border-color .2s,color .2s;
 }
-.btn-secondary:hover{background:rgba(255,255,255,.1);border-color:var(--orange)}
+.btn-outline:hover{border-color:var(--orange);color:var(--orange)}
 
-.hero-trust{
-  display:flex;gap:28px;
-  font-family:'Montserrat',sans-serif;
-  font-size:.78rem;color:rgba(255,255,255,.5);
+.hero-visual{
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
 }
-.hero-trust-item{display:flex;align-items:center;gap:8px}
-.hero-trust-item::before{content:'';width:6px;height:6px;background:var(--orange);border-radius:50%;flex-shrink:0}
 
-.hero-prices{display:flex;flex-direction:column;gap:16px}
-.price-card{
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:12px;padding:28px;
-  position:relative;overflow:hidden;
+.hero-card{
+  background:var(--black-card);
+  border:1px solid var(--black-border);
+  border-radius:16px;
+  padding:40px;width:100%;
+  position:relative;
+  overflow:hidden;
+}
+
+.hero-card::before{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,var(--orange),var(--orange-light));
+}
+
+.hero-stat{margin-bottom:28px}
+.hero-stat:last-child{margin-bottom:0}
+.hero-stat-label{font-size:.8rem;color:var(--gray-dark);font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.hero-stat-value{font-size:2rem;font-weight:800;color:var(--orange)}
+.hero-stat-sub{font-size:.85rem;color:var(--gray);margin-top:2px}
+
+/* ── Warning Banner ── */
+.warning-banner{
+  background:linear-gradient(135deg,rgba(239,68,68,.12),rgba(253,90,30,.12));
+  border:1px solid rgba(239,68,68,.25);
+  border-radius:12px;
+  padding:24px 32px;
+  display:flex;align-items:center;gap:16px;
+  max-width:1200px;margin:-20px auto 0;
+  position:relative;z-index:1;
+}
+
+.warning-icon{
+  font-size:2rem;flex-shrink:0;
+}
+
+.warning-text{font-size:.95rem;color:var(--gray)}
+.warning-text strong{color:var(--red);font-weight:700}
+
+/* ── Services ── */
+.section-header{margin-bottom:60px}
+.section-header h2{font-size:2.5rem;font-weight:800;margin-bottom:12px}
+.section-header p{font-size:1.05rem;color:var(--gray);max-width:600px}
+.section-header.text-center p{margin:0 auto}
+
+.services-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:24px;
+}
+
+.service-card{
+  background:var(--black-card);
+  border:1px solid var(--black-border);
+  border-radius:16px;
+  padding:36px;
   transition:border-color .3s,transform .2s;
 }
-.price-card:hover{border-color:var(--orange);transform:translateY(-3px)}
-.price-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:4px;background:var(--orange)}
-.price-card.smoke-card::before{background:var(--cream)}
-.price-label{font-family:'Montserrat',sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.5);margin-bottom:4px}
-.price-name{font-family:'Montserrat',sans-serif;font-size:1.2rem;font-weight:800;color:#fff;margin-bottom:4px}
-.price-amount{font-size:2.4rem;font-weight:900;color:var(--orange);line-height:1;margin-bottom:6px}
-.price-card.smoke-card .price-amount{color:var(--cream)}
-.price-amount small{font-size:.8rem;font-weight:500;color:rgba(255,255,255,.5)}
-.price-detail{font-size:.85rem;color:rgba(255,255,255,.6);line-height:1.6}
-.price-badge{
-  display:inline-flex;align-items:center;gap:6px;
-  background:rgba(253,90,30,.1);border:1px solid rgba(253,90,30,.2);
-  padding:5px 14px;border-radius:100px;
-  font-family:'Montserrat',sans-serif;font-size:.72rem;font-weight:700;
-  color:var(--orange);margin-top:10px;text-transform:uppercase;letter-spacing:.06em;
+.service-card:hover{
+  border-color:var(--orange);
+  transform:translateY(-4px);
 }
 
-.retest-banner{
-  background:linear-gradient(135deg,rgba(253,90,30,.05),rgba(239,209,159,.08));
-  border:1px solid rgba(253,90,30,.15);border-left:4px solid var(--orange);
-  border-radius:8px;padding:20px 24px;margin:32px auto 0;max-width:1140px;
-  display:flex;align-items:center;gap:14px;font-size:.9rem;color:var(--text-secondary);line-height:1.7;
+.service-icon{
+  width:56px;height:56px;
+  background:var(--orange-subtle);
+  border:1px solid rgba(253,90,30,.15);
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;
+  margin-bottom:20px;
 }
-.retest-banner strong{color:var(--orange);font-weight:700}
-.retest-icon{font-size:1.4rem;flex-shrink:0}
 
-.alert-banner{
-  background:linear-gradient(135deg,rgba(198,40,40,.06),rgba(198,40,40,.03));
-  border:1px solid rgba(198,40,40,.2);border-left:4px solid var(--danger);
-  border-radius:8px;padding:22px 24px;margin:24px auto 0;max-width:1140px;
-  display:flex;align-items:flex-start;gap:14px;font-size:.9rem;color:var(--text-secondary);line-height:1.7;
+.service-card h3{font-size:1.2rem;font-weight:700;margin-bottom:10px}
+.service-card p{font-size:.9rem;color:var(--gray);line-height:1.7}
+
+.service-tag{
+  display:inline-block;
+  background:var(--orange-subtle);
+  color:var(--orange);
+  font-size:.75rem;font-weight:600;
+  padding:4px 12px;border-radius:100px;
+  margin-top:16px;
 }
-.alert-banner strong{color:var(--danger);font-weight:700}
-.alert-icon{font-size:1.4rem;flex-shrink:0;margin-top:2px}
 
-.section-divider{display:flex;align-items:center;justify-content:center;gap:16px;padding:8px 0;color:var(--gray-300)}
-.section-divider::before,.section-divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gray-200),transparent)}
-.section-divider span{font-family:'Montserrat',sans-serif;font-size:.75rem;font-weight:700;color:var(--orange);opacity:.5;letter-spacing:.15em;text-transform:uppercase}
+/* ── Pricing ── */
+.pricing-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:24px;
+}
 
-.section-header{margin-bottom:56px}
-.section-header h2{font-size:2.2rem;font-weight:800;margin-bottom:12px;color:var(--black)}
-.section-header p{font-size:1rem;color:var(--text-secondary);max-width:580px}
-.section-header.text-center p{margin:0 auto}
+.pricing-card{
+  background:var(--black-card);
+  border:1px solid var(--black-border);
+  border-radius:16px;
+  padding:40px;
+  text-align:center;
+  transition:border-color .3s,transform .2s;
+  position:relative;
+}
+
+.pricing-card.featured{
+  border-color:var(--orange);
+  box-shadow:0 0 40px var(--orange-glow);
+}
+
+.pricing-card.featured::before{
+  content:'MOST POPULAR';
+  position:absolute;top:-14px;left:50%;
+  transform:translateX(-50%);
+  background:var(--orange);color:var(--black);
+  font-size:.7rem;font-weight:800;
+  padding:6px 20px;border-radius:100px;
+  letter-spacing:.05em;
+}
+
+.pricing-card:hover{transform:translateY(-4px)}
+
+.pricing-name{font-size:1rem;font-weight:600;color:var(--gray);margin-bottom:8px}
+.pricing-price{font-size:3rem;font-weight:900;margin-bottom:4px}
+.pricing-price span{font-size:1rem;font-weight:500;color:var(--gray)}
+.pricing-desc{font-size:.85rem;color:var(--gray-dark);margin-bottom:28px}
+
+.pricing-features{
+  list-style:none;text-align:left;
+  margin-bottom:32px;
+}
+
+.pricing-features li{
+  padding:10px 0;
+  border-bottom:1px solid var(--black-border);
+  font-size:.9rem;color:var(--gray);
+  display:flex;align-items:center;gap:10px;
+}
+
+.pricing-features li::before{
+  content:'';width:20px;height:20px;flex-shrink:0;
+  background:var(--orange-subtle);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23f97316' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:center;
+}
+
+/* ── Deadlines ── */
+.deadline-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:24px;
+}
+
+.deadline-card{
+  background:var(--black-card);
+  border:1px solid var(--black-border);
+  border-radius:16px;
+  padding:32px;
+  display:flex;gap:20px;
+}
+
+.deadline-date{
+  flex-shrink:0;
+  width:72px;height:72px;
+  background:var(--orange-subtle);
+  border:1px solid rgba(253,90,30,.15);
+  border-radius:12px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+}
+
+.deadline-date .year{font-size:.65rem;font-weight:600;color:var(--orange);letter-spacing:.08em}
+.deadline-date .period{font-size:1.3rem;font-weight:800;color:var(--orange)}
+
+.deadline-info h3{font-size:1.05rem;font-weight:700;margin-bottom:6px}
+.deadline-info p{font-size:.85rem;color:var(--gray);line-height:1.6}
+
+/* ── FAQ ── */
+.faq-list{max-width:800px;margin:0 auto}
+
+.faq-item{
+  border-bottom:1px solid var(--black-border);
+}
 
 .features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 .feature-card{
@@ -627,8 +745,7 @@ footer{background:var(--black);color:var(--gray-300);padding:56px 0 28px}
       <li><a href="#pricing">Pricing</a></li>
       <li><a href="#area">Coverage</a></li>
       <li><a href="#faq">FAQ</a></li>
-      <li><a href="#book">Book Now</a></li>
-      <li><a href="tel:+19168904427" class="nav-phone">(916) 890-4427</a></li>
+      <li><a href="tel:+19168904427" class="nav-cta">Call Now</a></li>
     </ul>
     <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">&#9776;</button>
   </div>
@@ -898,11 +1015,10 @@ footer{background:var(--black);color:var(--gray-300);padding:56px 0 28px}
 
 <section class="section cta-section" id="contact">
   <div class="container">
-    <h2>Get <span style="color:var(--orange)">Compliant</span> Today</h2>
-    <a href="tel:+19168904427" class="cta-phone">(916) 890-4427</a>
-    <p>OBD $79 &bull; Smoke $209 &bull; Chico/Sutter/Beale +$40 &bull; 1 Free Retest &bull; 100% Mobile</p>
-    <a href="#book" class="btn-primary">Book Your Test Now</a>
-    <div class="cta-hours"><span>Mon&ndash;Fri: 6am&ndash;5pm</span><span>Saturday: 8am&ndash;4pm</span></div>
+    <h2>Ready to Get <span class="text-orange">Compliant</span>?</h2>
+    <p>Don't wait for a $10,000/day fine or a DMV registration hold. Schedule your Clean Truck Check test today.</p>
+    <a href="tel:+19168904427" class="btn-primary">Call (916) 890-4427</a>
+    <p style="margin-top:20px;font-size:.85rem;color:var(--gray-dark);position:relative">Serving Roseville, Sacramento, Rocklin, Lincoln, Auburn, and all of Placer &amp; Sacramento Counties</p>
   </div>
 </section>
 
@@ -914,7 +1030,28 @@ footer{background:var(--black);color:var(--gray-300);padding:56px 0 28px}
           <div class="logo-mark" style="width:38px;height:38px"><span style="font-size:.72rem">CTC</span></div>
           <div class="logo-text"><span class="brand-text" style="font-size:1rem;color:#fff">Clean Truck Check Roseville</span><span class="brand-sub" style="color:var(--gray-500)">Mobile Emissions Testing</span></div>
         </a>
-        <p>CARB credentialed mobile heavy-duty emissions testing. Serving Roseville, Sacramento metro, I-80 corridor, Chico, Yuba City, Beale AFB, and Butte &amp; Sutter Counties. CARB Tester ID: IF530523.</p>
+        <p>CARB credentialed heavy-duty emissions testing serving the greater Roseville and Sacramento area. Mobile on-site testing for trucks, buses, and fleets.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <a href="#services">OBD Compliance Scan</a>
+        <a href="#services">Smoke Opacity Test</a>
+        <a href="#services">Fleet Management</a>
+        <a href="#services">Mobile Testing</a>
+        <a href="#services">DMV Hold Resolution</a>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <a href="https://cleantruckcheck.arb.ca.gov/" target="_blank" rel="noopener">CTC-VIS Portal</a>
+        <a href="https://ww2.arb.ca.gov/clean-truck-check-overview-fact-sheet" target="_blank" rel="noopener">CARB Fact Sheet</a>
+        <a href="https://ww2.arb.ca.gov/resources/fact-sheets/clean-truck-check-faq-0" target="_blank" rel="noopener">CARB FAQ</a>
+        <a href="#faq">Our FAQ</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a href="tel:+19168904427">(916) 890-4427</a>
+        <a href="mailto:info@cleantruckcheckroseville.com">info@cleantruckcheckroseville.com</a>
+        <a>Roseville, CA 95678</a>
       </div>
       <div class="footer-col"><h4>Services</h4><a href="#pricing">OBD Scan &mdash; $79</a><a href="#pricing">Smoke Test &mdash; $209</a><a href="#pricing">Motorhome Testing</a><a href="#services">Fleet Testing</a><a href="#services">CTC-VIS Help</a></div>
       <div class="footer-col"><h4>Resources</h4><a href="https://cleantruckcheckvin.app" target="_blank" rel="noopener">Check VIN Compliance</a><a href="https://cleantruckcheck.arb.ca.gov/" target="_blank" rel="noopener">CTC-VIS Portal</a><a href="https://ww2.arb.ca.gov/clean-truck-check-overview-fact-sheet" target="_blank" rel="noopener">CARB Fact Sheet</a><a href="#faq">Our FAQ</a></div>

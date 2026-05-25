@@ -1,0 +1,33 @@
+name: Cloudflare Worker deploy (city sites)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+    paths:
+      - "cloudflare/**"
+      - "sites-config.json"
+      - "CLOUDFLARE-SITES*.md"
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install wrangler
+        run: npm i -g wrangler
+
+      - name: Sync KV + deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: node cloudflare/worker/scripts/deploy.mjs all
+
