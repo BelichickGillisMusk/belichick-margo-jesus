@@ -1,7 +1,7 @@
 # Personal Reminders — Bryan
 
 Durable inbox for items the Cloud Agent (Co-pilot) handled or flagged while Bryan was off the road.
-Newest entries on top. Each entry follows the format below.
+Prefer newest entries on top (sort by timestamp when editing). Each entry follows the format below.
 
 ```
 ## YYYY-MM-DD HH:MM UTC — <short title>
