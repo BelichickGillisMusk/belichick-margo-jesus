@@ -31,6 +31,5 @@ kv_namespaces = [{ binding = "SITE_KV", id = "a7499c3416a74d37a828e6e29f0b727f" 
 name = "cleantruckchecklodi"
 vars = { SITE_ID = "cleantruckchecklodi" }
 routes = [{ pattern = "cleantruckchecklodi.com/*", zone_name = "cleantruckchecklodi.com" }]
-# TODO: replace with the real KV namespace id when created in Cloudflare.
-kv_namespaces = [{ binding = "SITE_KV", id = "REPLACE_ME" }]
+kv_namespaces = [{ binding = "SITE_KV", id = "5b32c626359f4f4c83136bcf588c6428" }]
 
