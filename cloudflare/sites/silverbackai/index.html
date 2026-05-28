@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SilverbackAI Agency | AI Automation, Agents &amp; Custom AI Systems</title>
+<meta name="description" content="SilverbackAI builds practical AI for small and mid-sized businesses: custom AI agents, workflow automation, chatbots, and data pipelines. We turn repetitive work into systems that run themselves.">
+<meta name="keywords" content="AI agency, AI automation, AI agents, business automation, custom AI, chatbot development, workflow automation, AI consulting">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0d0f12">
+<link rel="canonical" href="https://silverbackai.agency/">
+
+<!-- Open Graph -->
+<meta property="og:title" content="SilverbackAI Agency | AI Automation &amp; Agents">
+<meta property="og:description" content="Custom AI agents, automation, and AI systems for real businesses. We turn repetitive work into systems that run themselves.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://silverbackai.agency/">
+<meta property="og:locale" content="en_US">
+
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "SilverbackAI Agency",
+  "description": "AI automation agency building custom AI agents, workflow automation, chatbots, and data pipelines for small and mid-sized businesses.",
+  "url": "https://silverbackai.agency",
+  "email": "hello@silverbackai.agency",
+  "areaServed": "US",
+  "serviceType": ["AI Automation", "AI Agents", "Chatbot Development", "Workflow Automation", "AI Consulting"]
+}
+</script>
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d0f12'/%3E%3Ctext x='32' y='44' font-size='38' text-anchor='middle' fill='%23c9a227' font-family='Georgia,serif' font-weight='bold'%3ES%3C/text%3E%3C/svg%3E">
+
+<style>
+  :root {
+    --bg: #0d0f12;
+    --bg-soft: #14181d;
+    --bg-card: #181d23;
+    --line: #262d35;
+    --gold: #c9a227;
+    --gold-soft: #e2c25a;
+    --text: #eef1f4;
+    --muted: #9aa6b2;
+    --maxw: 1080px;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: .18em;
+    font-size: .78rem;
+    font-weight: 700;
+    color: var(--gold);
+  }
+  h1, h2, h3 { line-height: 1.15; letter-spacing: -0.01em; }
+
+  /* Header */
+  header {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(13,15,18,.82);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.15rem; }
+  .brand .mark {
+    width: 32px; height: 32px; border-radius: 9px;
+    background: linear-gradient(145deg, #20262e, #0d0f12);
+    border: 1px solid var(--line);
+    display: grid; place-items: center;
+    color: var(--gold); font-family: Georgia, serif; font-weight: 700;
+  }
+  .brand b { color: var(--gold); }
+  .nav-links { display: flex; gap: 28px; align-items: center; }
+  .nav-links a { color: var(--muted); font-size: .95rem; font-weight: 600; }
+  .nav-links a:hover { color: var(--text); }
+  .btn {
+    display: inline-block;
+    background: var(--gold);
+    color: #14110a;
+    font-weight: 800;
+    padding: 12px 22px;
+    border-radius: 999px;
+    border: 1px solid var(--gold);
+    transition: transform .15s ease, background .15s ease;
+    font-size: .95rem;
+  }
+  .btn:hover { background: var(--gold-soft); transform: translateY(-1px); }
+  .btn.ghost { background: transparent; color: var(--text); border-color: var(--line); }
+  .btn.ghost:hover { border-color: var(--gold); color: var(--gold); }
+  @media (max-width: 720px) { .nav-links a:not(.btn) { display: none; } }
+
+  /* Hero */
+  .hero { padding: 96px 0 72px; position: relative; overflow: hidden; }
+  .hero::before {
+    content: ""; position: absolute; inset: 0;
+    background:
+      radial-gradient(60% 50% at 75% 0%, rgba(201,162,39,.13), transparent 70%),
+      radial-gradient(50% 40% at 10% 20%, rgba(80,120,160,.10), transparent 70%);
+    pointer-events: none;
+  }
+  .hero h1 { font-size: clamp(2.3rem, 5.5vw, 3.9rem); margin: 18px 0; max-width: 16ch; }
+  .hero p.lead { font-size: 1.2rem; color: var(--muted); max-width: 56ch; }
+  .hero-cta { display: flex; gap: 14px; margin-top: 34px; flex-wrap: wrap; }
+  .trust { margin-top: 40px; display: flex; gap: 26px; flex-wrap: wrap; color: var(--muted); font-size: .9rem; }
+  .trust span { display: flex; align-items: center; gap: 8px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); }
+
+  /* Sections */
+  section { padding: 72px 0; }
+  .section-head { max-width: 60ch; margin-bottom: 44px; }
+  .section-head h2 { font-size: clamp(1.7rem, 3.5vw, 2.5rem); margin: 12px 0; }
+  .section-head p { color: var(--muted); font-size: 1.05rem; }
+  .alt { background: var(--bg-soft); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+
+  /* Grid cards */
+  .grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 28px;
+    transition: border-color .2s ease, transform .2s ease;
+  }
+  .card:hover { border-color: var(--gold); transform: translateY(-3px); }
+  .card .ico {
+    width: 46px; height: 46px; border-radius: 11px;
+    background: rgba(201,162,39,.12);
+    display: grid; place-items: center; margin-bottom: 16px;
+    font-size: 1.4rem;
+  }
+  .card h3 { font-size: 1.2rem; margin-bottom: 8px; }
+  .card p { color: var(--muted); font-size: .97rem; }
+
+  /* Steps */
+  .steps { counter-reset: step; display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); }
+  .step { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; position: relative; }
+  .step::before {
+    counter-increment: step; content: "0" counter(step);
+    font-family: Georgia, serif; font-size: 1.6rem; font-weight: 700; color: var(--gold);
+    display: block; margin-bottom: 10px;
+  }
+  .step h3 { font-size: 1.1rem; margin-bottom: 6px; }
+  .step p { color: var(--muted); font-size: .95rem; }
+
+  /* CTA band */
+  .cta-band { text-align: center; padding: 86px 0; }
+  .cta-band h2 { font-size: clamp(1.9rem, 4vw, 2.8rem); margin-bottom: 14px; }
+  .cta-band p { color: var(--muted); font-size: 1.1rem; max-width: 52ch; margin: 0 auto 30px; }
+
+  /* Footer */
+  footer { border-top: 1px solid var(--line); padding: 40px 0; color: var(--muted); font-size: .9rem; }
+  .foot { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: center; }
+  footer a:hover { color: var(--gold); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="#top" class="brand"><span class="mark">S</span>Silverback<b>AI</b></a>
+    <nav class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#process">Process</a>
+      <a href="#why">Why us</a>
+      <a href="#contact" class="btn">Get in touch</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <span class="eyebrow">AI Automation Agency</span>
+      <h1>We build AI that does the work, so your team doesn't have to.</h1>
+      <p class="lead">SilverbackAI designs and ships custom AI agents, automations, and assistants for small and mid-sized businesses — practical systems that handle the repetitive work and free your people for the high-value stuff.</p>
+      <div class="hero-cta">
+        <a href="#contact" class="btn">Book a free intro call</a>
+        <a href="#services" class="btn ghost">See what we build</a>
+      </div>
+      <div class="trust">
+        <span><span class="dot"></span>Custom-built, not off-the-shelf</span>
+        <span><span class="dot"></span>Fixed-scope projects</span>
+        <span><span class="dot"></span>You own everything we build</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="services" class="alt">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">What we do</span>
+        <h2>AI systems built around your actual business</h2>
+        <p>Every business has work that's predictable, repetitive, and quietly expensive. We find it, then build the system that handles it.</p>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <div class="ico">&#129302;</div>
+          <h3>AI Agents</h3>
+          <p>Autonomous assistants that triage email, qualify leads, draft replies, and take action across your tools — with guardrails you control.</p>
+        </div>
+        <div class="card">
+          <div class="ico">&#9889;</div>
+          <h3>Workflow Automation</h3>
+          <p>Connect the apps you already use and remove the copy-paste. Quotes, invoices, scheduling, follow-ups — running on their own.</p>
+        </div>
+        <div class="card">
+          <div class="ico">&#128172;</div>
+          <h3>Chatbots &amp; Assistants</h3>
+          <p>Customer-facing assistants that answer real questions from your own knowledge base, capture leads, and hand off to a human when it matters.</p>
+        </div>
+        <div class="card">
+          <div class="ico">&#128202;</div>
+          <h3>Data &amp; Reporting</h3>
+          <p>Pipelines that pull your scattered data together and turn it into clean dashboards and plain-English summaries you'll actually read.</p>
+        </div>
+        <div class="card">
+          <div class="ico">&#129520;</div>
+          <h3>Custom AI Builds</h3>
+          <p>Have something specific in mind? We scope, design, and build it — from a single tool to a full multi-agent system.</p>
+        </div>
+        <div class="card">
+          <div class="ico">&#129504;</div>
+          <h3>AI Strategy</h3>
+          <p>Not sure where to start? We audit your operations and map the few automations that pay for themselves fastest.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="process">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">How it works</span>
+        <h2>A straight line from problem to working system</h2>
+        <p>No jargon, no endless retainers. We scope tightly, build fast, and hand you something that works.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <h3>Discover</h3>
+          <p>A short call to find the work that's eating your time and worth automating first.</p>
+        </div>
+        <div class="step">
+          <h3>Scope</h3>
+          <p>A clear plan with fixed deliverables, timeline, and price. No surprises.</p>
+        </div>
+        <div class="step">
+          <h3>Build</h3>
+          <p>We build and test the system, keeping you in the loop with working demos.</p>
+        </div>
+        <div class="step">
+          <h3>Hand off</h3>
+          <p>You get a working system you own, with docs and support to keep it running.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="why" class="alt">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Why SilverbackAI</span>
+        <h2>Built for owners, not for hype</h2>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <h3>Practical over flashy</h3>
+          <p>We measure success in hours saved and money made — not in buzzwords. If an automation won't earn its keep, we'll tell you.</p>
+        </div>
+        <div class="card">
+          <h3>You own the result</h3>
+          <p>Code, accounts, and access live in your name. No lock-in, no holding your business hostage.</p>
+        </div>
+        <div class="card">
+          <h3>Senior hands</h3>
+          <p>You work directly with the people building your system — not a layer of account managers.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="cta-band">
+    <div class="wrap">
+      <span class="eyebrow">Let's talk</span>
+      <h2>Tell us what's slowing you down.</h2>
+      <p>Send a few sentences about the work you wish would just run itself. We'll reply with whether AI can help and what it would take.</p>
+      <a class="btn" href="mailto:hello@silverbackai.agency?subject=AI%20project%20inquiry">hello@silverbackai.agency</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div>&copy; <span id="yr">2026</span> SilverbackAI Agency. All rights reserved.</div>
+    <div><a href="mailto:hello@silverbackai.agency">hello@silverbackai.agency</a></div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

@@ -34,10 +34,21 @@ const target = process.argv[2];
 if (!target) usageAndExit(1);
 
 if (target === 'all') {
-  run('node', [syncScript, 'all']);
   const sites = await listSites();
+  const failed = [];
   for (const site of sites) {
-    run('wrangler', ['deploy', '--env', site, '--config', configPath]);
+    try {
+      run('node', [syncScript, site]);
+      run('wrangler', ['deploy', '--env', site, '--config', configPath]);
+      console.log(`✓ deployed ${site}`);
+    } catch (err) {
+      failed.push(site);
+      console.error(`✗ skipped ${site}: ${err.message}`);
+    }
+  }
+  if (failed.length) {
+    console.error(`\nDeployed with ${failed.length} failure(s): ${failed.join(', ')}`);
+    process.exit(1);
   }
   process.exit(0);
 }
