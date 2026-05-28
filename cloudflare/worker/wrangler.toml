@@ -33,3 +33,10 @@ vars = { SITE_ID = "cleantruckchecklodi" }
 routes = [{ pattern = "cleantruckchecklodi.com/*", zone_name = "cleantruckchecklodi.com" }]
 kv_namespaces = [{ binding = "SITE_KV", id = "5b32c626359f4f4c83136bcf588c6428" }]
 
+[env.silverbackai]
+name = "silverbackai"
+vars = { SITE_ID = "silverbackai" }
+routes = [{ pattern = "silverbackai.agency/*", zone_name = "silverbackai.agency" }]
+# Run `wrangler kv namespace create SITE_KV --env silverbackai` (or create via dashboard) and paste the id below.
+kv_namespaces = [{ binding = "SITE_KV", id = "REPLACE_ME" }]
+

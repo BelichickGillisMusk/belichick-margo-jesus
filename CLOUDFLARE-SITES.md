@@ -95,4 +95,4 @@ If you want to ship lots of city sites quickly, use the single reusable Worker a
 
 | Domain | Purpose | Status |
 |--------|---------|--------|
-| `silverbackai.agency` | Client portal — SilverbackAI Agency | Planned |
+| `silverbackai.agency` | AI automation agency landing page | Built (`cloudflare/sites/silverbackai/`) — pending KV namespace id + first deploy |
