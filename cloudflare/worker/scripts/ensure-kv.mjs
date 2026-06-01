@@ -29,18 +29,34 @@ function extractJsonArray(text) {
   return JSON.parse(text.slice(start, end + 1));
 }
 
+function extractJsonObject(text) {
+  const start = text.indexOf('{');
+  const end = text.lastIndexOf('}');
+  if (start === -1 || end === -1 || end < start) return null;
+  try {
+    return JSON.parse(text.slice(start, end + 1));
+  } catch {
+    return null;
+  }
+}
+
 function listKvNamespaces() {
-  const stdout = runWranglerCapture(['kv:namespace', 'list']);
+  // `--json` is supported by current wrangler and is the default for `list`;
+  // passing it explicitly makes the behavior stable across versions/locales.
+  const stdout = runWranglerCapture(['kv:namespace', 'list', '--json']);
   return extractJsonArray(stdout);
 }
 
 function createKvNamespace(title) {
-  const stdout = runWranglerCapture(['kv:namespace', 'create', title]);
+  // Ask for JSON output so we get a stable `{ id, title, ... }` shape rather
+  // than the human-readable TOML snippet that wrangler prints by default.
+  // Fall back to scraping the legacy format if `--json` isn't honored.
+  const stdout = runWranglerCapture(['kv:namespace', 'create', title, '--json']);
+  const obj = extractJsonObject(stdout);
+  if (obj && typeof obj.id === 'string' && obj.id) return obj.id;
   const match = stdout.match(/id\s*=\s*"([0-9a-fA-F]+)"/);
-  if (!match) {
-    throw new Error(`Could not parse new KV namespace id from wrangler output:\n${stdout}`);
-  }
-  return match[1];
+  if (match) return match[1];
+  throw new Error(`Could not parse new KV namespace id from wrangler output:\n${stdout}`);
 }
 
 function patchEnvKvId(configPath, site, newId) {
