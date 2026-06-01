@@ -8,7 +8,14 @@ import cors from 'cors';
 import { AnthropicVertex } from '@anthropic-ai/vertex-sdk';
 import { SAMANTHA_CONFIG, SAMANTHA_SYSTEM_PROMPT } from './config.js';
 
-const WIDGET_HTML_PATH = join(dirname(fileURLToPath(import.meta.url)), 'widget.html');
+// Read the widget HTML once at module load. The file is bundled with the
+// deploy and never changes at runtime, so caching it removes the per-request
+// filesystem access (and the CodeQL "missing rate limiting" surface that
+// comes with hitting the disk in a route handler).
+const WIDGET_HTML = readFileSync(
+  join(dirname(fileURLToPath(import.meta.url)), 'widget.html'),
+  'utf8',
+);
 
 function tokensMatch(provided, expected) {
   if (typeof provided !== 'string' || typeof expected !== 'string') return false;
@@ -64,7 +71,7 @@ export function createSamanthaApp({
   app.get(['/widget', '/'], (_req, res) => {
     res.set('Content-Type', 'text/html; charset=utf-8');
     res.set('Cache-Control', 'public, max-age=300');
-    res.send(readFileSync(WIDGET_HTML_PATH, 'utf8'));
+    res.send(WIDGET_HTML);
   });
 
   // Status endpoint — minimal by default to avoid leaking operational
