@@ -3,6 +3,7 @@ import { readdir } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
+import { ensureKvNamespace } from './ensure-kv.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const workerDir = resolve(here, '..');
@@ -48,12 +49,15 @@ async function listSites() {
 }
 
 async function syncSite(site) {
-  const kvId = getEnvKvNamespaceId(site);
+  let kvId = getEnvKvNamespaceId(site);
   if (!kvId) {
     throw new Error(`No [env.${site}] found in ${configPath}`);
   }
   if (kvId === 'REPLACE_ME') {
-    throw new Error(`KV namespace id for [env.${site}] is REPLACE_ME. Update ${configPath} first.`);
+    const title = `${site}-SITE_KV`;
+    console.log(`==> Provisioning KV namespace "${title}" for ${site}`);
+    kvId = ensureKvNamespace({ configPath, site, title });
+    console.log(`==> Using KV namespace id ${kvId} for ${site}`);
   }
 
   const indexPath = resolve(sitesDir, site, 'index.html');
