@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0c0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Samantha">
+<title>Samantha</title>
+<style>
+  :root {
+    --bg: #0b0c0f;
+    --panel: #15171c;
+    --panel-2: #1c1f26;
+    --text: #e7e9ee;
+    --muted: #8a90a0;
+    --accent: #ff7a1a;
+    --user: #2a3344;
+    --bot: #1c1f26;
+    --danger: #ef4444;
+    --safe: env(safe-area-inset-bottom, 0);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    height: 100%; overflow: hidden; }
+  body { display: flex; flex-direction: column; height: 100dvh; }
+  header { padding: 14px 16px calc(10px + env(safe-area-inset-top, 0px)); display: flex;
+    align-items: center; gap: 10px; border-bottom: 1px solid #23262d;
+    padding-top: calc(14px + env(safe-area-inset-top, 0px)); background: var(--panel); }
+  header .dot { width: 10px; height: 10px; border-radius: 50%; background: #22c55e; }
+  header .dot.offline { background: var(--danger); }
+  header h1 { font-size: 17px; font-weight: 600; margin: 0; }
+  header .sub { font-size: 12px; color: var(--muted); margin-left: auto; }
+  #log { flex: 1; overflow-y: auto; padding: 12px 12px 4px; -webkit-overflow-scrolling: touch; }
+  .msg { max-width: 86%; padding: 10px 13px; border-radius: 16px; margin: 6px 0;
+    white-space: pre-wrap; word-wrap: break-word; }
+  .msg.user { background: var(--user); margin-left: auto; border-bottom-right-radius: 4px; }
+  .msg.bot { background: var(--bot); margin-right: auto; border-bottom-left-radius: 4px; }
+  .msg.sys { background: transparent; color: var(--muted); font-size: 12px; text-align: center;
+    margin: 8px auto; max-width: 100%; }
+  .msg.err { background: #3a1a1a; color: #ffd0d0; }
+  form { display: flex; gap: 8px; padding: 8px 10px calc(8px + var(--safe)); background: var(--panel);
+    border-top: 1px solid #23262d; }
+  textarea { flex: 1; resize: none; background: var(--panel-2); color: var(--text);
+    border: 1px solid #2a2d36; border-radius: 14px; padding: 10px 12px; font: inherit;
+    max-height: 140px; min-height: 44px; }
+  textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  button { background: var(--accent); color: #000; border: none; border-radius: 14px;
+    width: 48px; height: 48px; font-size: 20px; font-weight: 700; cursor: pointer; flex-shrink: 0; }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  button.secondary { background: var(--panel-2); color: var(--text); border: 1px solid #2a2d36; }
+  button.mic.listening { background: var(--danger); color: #fff; animation: pulse 1.2s infinite; }
+  @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+  .toolbar { display: flex; gap: 6px; padding: 4px 12px 0; font-size: 12px; color: var(--muted); }
+  .toolbar label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+  .toolbar .spacer { flex: 1; }
+  .toolbar a { color: var(--muted); text-decoration: underline; cursor: pointer; }
+  .typing { display: inline-block; }
+  .typing span { display: inline-block; width: 6px; height: 6px; margin: 0 2px;
+    background: var(--muted); border-radius: 50%; animation: bounce 1.2s infinite; }
+  .typing span:nth-child(2) { animation-delay: 0.15s; }
+  .typing span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes bounce { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="dot" id="statusDot"></div>
+  <h1>Samantha</h1>
+  <div class="sub" id="status">connecting...</div>
+</header>
+<div id="log" role="log" aria-live="polite"></div>
+<div class="toolbar">
+  <label><input type="checkbox" id="speakToggle" checked> Speak replies</label>
+  <span class="spacer"></span>
+  <a id="clearBtn" role="button">Clear</a>
+</div>
+<form id="form" autocomplete="off">
+  <button type="button" class="mic secondary" id="micBtn" title="Voice input" aria-label="Voice input">🎙</button>
+  <textarea id="input" placeholder="Ask Samantha... (or tap 🎙 to talk)" rows="1" aria-label="Message"></textarea>
+  <button type="submit" id="sendBtn" title="Send" aria-label="Send">↑</button>
+</form>
+
+<script>
+(() => {
+  const HISTORY_KEY = 'samantha:history:v1';
+  const SPEAK_KEY = 'samantha:speak:v1';
+  const MAX_HISTORY = 40;
+  const log = document.getElementById('log');
+  const form = document.getElementById('form');
+  const input = document.getElementById('input');
+  const sendBtn = document.getElementById('sendBtn');
+  const micBtn = document.getElementById('micBtn');
+  const speakToggle = document.getElementById('speakToggle');
+  const clearBtn = document.getElementById('clearBtn');
+  const statusEl = document.getElementById('status');
+  const statusDot = document.getElementById('statusDot');
+
+  let history = loadHistory();
+  speakToggle.checked = localStorage.getItem(SPEAK_KEY) !== 'false';
+  speakToggle.addEventListener('change', () => {
+    localStorage.setItem(SPEAK_KEY, speakToggle.checked ? 'true' : 'false');
+  });
+
+  function loadHistory() {
+    try {
+      const raw = localStorage.getItem(HISTORY_KEY);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed.slice(-MAX_HISTORY) : [];
+    } catch { return []; }
+  }
+  function saveHistory() {
+    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(-MAX_HISTORY))); } catch {}
+  }
+  function render() {
+    log.innerHTML = '';
+    if (history.length === 0) {
+      addBubble('sys', 'Tap 🎙 and ask Samantha anything — route planning, job dispatch, ops, leads.');
+      return;
+    }
+    for (const m of history) addBubble(m.role === 'user' ? 'user' : 'bot', m.content);
+  }
+  function addBubble(kind, text) {
+    const el = document.createElement('div');
+    el.className = 'msg ' + kind;
+    el.textContent = text;
+    log.appendChild(el);
+    log.scrollTop = log.scrollHeight;
+    return el;
+  }
+  function addTyping() {
+    const el = document.createElement('div');
+    el.className = 'msg bot';
+    el.innerHTML = '<span class="typing"><span></span><span></span><span></span></span>';
+    log.appendChild(el);
+    log.scrollTop = log.scrollHeight;
+    return el;
+  }
+
+  async function checkStatus() {
+    try {
+      const r = await fetch('/api/samantha/status');
+      const j = await r.json();
+      if (j.ready) {
+        statusEl.textContent = 'online';
+        statusDot.classList.remove('offline');
+      } else {
+        statusEl.textContent = 'offline';
+        statusDot.classList.add('offline');
+      }
+    } catch {
+      statusEl.textContent = 'unreachable';
+      statusDot.classList.add('offline');
+    }
+  }
+
+  async function send(message) {
+    if (!message.trim()) return;
+    history.push({ role: 'user', content: message.trim() });
+    saveHistory();
+    addBubble('user', message.trim());
+    input.value = '';
+    input.style.height = 'auto';
+    sendBtn.disabled = true;
+    const typing = addTyping();
+    try {
+      const res = await fetch('/api/samantha/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: message.trim(), history: history.slice(0, -1) }),
+      });
+      typing.remove();
+      if (!res.ok) {
+        const errText = await res.text().catch(() => '');
+        addBubble('err', `Samantha hit an error (HTTP ${res.status}). ${errText.slice(0, 200)}`);
+        return;
+      }
+      const data = await res.json();
+      const reply = data.reply || '(empty reply)';
+      history.push({ role: 'assistant', content: reply });
+      if (history.length > MAX_HISTORY) history = history.slice(-MAX_HISTORY);
+      saveHistory();
+      addBubble('bot', reply);
+      if (speakToggle.checked) speak(reply);
+    } catch (err) {
+      typing.remove();
+      addBubble('err', `Network error: ${err.message}`);
+    } finally {
+      sendBtn.disabled = false;
+      input.focus();
+    }
+  }
+
+  function speak(text) {
+    if (!('speechSynthesis' in window)) return;
+    try {
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = 1.05;
+      u.pitch = 1.0;
+      window.speechSynthesis.speak(u);
+    } catch {}
+  }
+
+  // Web Speech API recognition
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let recognition = null;
+  let listening = false;
+  if (SR) {
+    recognition = new SR();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+    recognition.onresult = (e) => {
+      let final = '';
+      let interim = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const r = e.results[i];
+        if (r.isFinal) final += r[0].transcript;
+        else interim += r[0].transcript;
+      }
+      if (final) {
+        input.value = (input.value + ' ' + final).trim();
+      } else if (interim) {
+        // show interim as placeholder in textarea
+        input.value = interim;
+      }
+    };
+    recognition.onend = () => {
+      listening = false;
+      micBtn.classList.remove('listening');
+      // Auto-send if there's content
+      const text = input.value.trim();
+      if (text) send(text);
+    };
+    recognition.onerror = (e) => {
+      listening = false;
+      micBtn.classList.remove('listening');
+      if (e.error && e.error !== 'no-speech' && e.error !== 'aborted') {
+        addBubble('err', `Mic error: ${e.error}. Tap 🎙 to retry, or type instead.`);
+      }
+    };
+  } else {
+    micBtn.disabled = true;
+    micBtn.title = 'Voice input not supported on this browser';
+  }
+
+  micBtn.addEventListener('click', () => {
+    if (!recognition) return;
+    if (listening) {
+      recognition.stop();
+      return;
+    }
+    try {
+      input.value = '';
+      listening = true;
+      micBtn.classList.add('listening');
+      recognition.start();
+    } catch (err) {
+      listening = false;
+      micBtn.classList.remove('listening');
+    }
+  });
+
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 140) + 'px';
+  });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      form.requestSubmit();
+    }
+  });
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    send(input.value);
+  });
+  clearBtn.addEventListener('click', () => {
+    history = [];
+    saveHistory();
+    render();
+  });
+
+  render();
+  checkStatus();
+  setInterval(checkStatus, 30000);
+})();
+</script>
+</body>
+</html>

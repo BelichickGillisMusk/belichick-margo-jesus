@@ -1,9 +1,14 @@
 import 'dotenv/config';
 import { timingSafeEqual } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 import express from 'express';
 import cors from 'cors';
 import { AnthropicVertex } from '@anthropic-ai/vertex-sdk';
 import { SAMANTHA_CONFIG, SAMANTHA_SYSTEM_PROMPT } from './config.js';
+
+const WIDGET_HTML_PATH = join(dirname(fileURLToPath(import.meta.url)), 'widget.html');
 
 function tokensMatch(provided, expected) {
   if (typeof provided !== 'string' || typeof expected !== 'string') return false;
@@ -50,6 +55,16 @@ export function createSamanthaApp({
 
   app.get('/health', (_req, res) => {
     res.json({ status: 'ok', agent: 'Samantha', backend: 'vertex-ai' });
+  });
+
+  // Phone-friendly chat widget. Designed to be added to the iOS/Android
+  // home screen as a PWA — uses the browser's Web Speech API for
+  // voice-in / text-to-speech-out, and posts to `/api/samantha/chat`
+  // on this same origin (no CORS, no token needed).
+  app.get(['/widget', '/'], (_req, res) => {
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    res.set('Cache-Control', 'public, max-age=300');
+    res.send(readFileSync(WIDGET_HTML_PATH, 'utf8'));
   });
 
   // Status endpoint — minimal by default to avoid leaking operational
