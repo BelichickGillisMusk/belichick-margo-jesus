@@ -37,6 +37,7 @@ kv_namespaces = [{ binding = "SITE_KV", id = "5b32c626359f4f4c83136bcf588c6428" 
 name = "silverbackai"
 vars = { SITE_ID = "silverbackai" }
 routes = [{ pattern = "silverbackai.agency/*", zone_name = "silverbackai.agency" }]
-# Run `wrangler kv namespace create SITE_KV --env silverbackai` (or create via dashboard) and paste the id below.
+# The deploy workflow auto-provisions this KV namespace (title "silverbackai-SITE_KV")
+# when CLOUDFLARE_API_TOKEN is set; see cloudflare/worker/scripts/ensure-kv.mjs.
 kv_namespaces = [{ binding = "SITE_KV", id = "REPLACE_ME" }]
 
