@@ -30,17 +30,31 @@ const DEFAULT_ALLOWED_ORIGINS = new Set([
   'http://localhost:8080',
 ]);
 
-function createCorsOptions(allowedOrigins) {
-  const allowed = new Set(allowedOrigins.length > 0 ? allowedOrigins : DEFAULT_ALLOWED_ORIGINS);
-  return {
-    origin(origin, callback) {
-      if (!origin || allowed.has(origin)) {
-        callback(null, true);
-        return;
-      }
-      callback(new Error('Origin not allowed by Samantha CORS policy.'));
-    },
-  };
+function isSameOriginRequest(req, origin) {
+  try {
+    return new URL(origin).host === req.header('host');
+  } catch {
+    return false;
+  }
+}
+
+// Request-aware CORS so the phone widget (served from the same Cloud Run
+// host as `/api/samantha/chat`) can talk to itself without needing an
+// operator to add the Cloud Run URL to `SAMANTHA_ALLOWED_ORIGINS`.
+// Browsers send an `Origin` header on same-origin POSTs too, so a static
+// allowlist would reject the widget's first fetch.
+export function createCorsMiddleware(allowedOrigins) {
+  const staticAllowed = new Set(
+    allowedOrigins.length > 0 ? allowedOrigins : DEFAULT_ALLOWED_ORIGINS,
+  );
+
+  return cors((req, callback) => {
+    const origin = req.header('Origin');
+    if (!origin) return callback(null, { origin: true });
+    if (staticAllowed.has(origin)) return callback(null, { origin: true });
+    if (isSameOriginRequest(req, origin)) return callback(null, { origin: true });
+    callback(new Error('Origin not allowed by Samantha CORS policy.'));
+  });
 }
 
 // On Cloud Run, AnthropicVertex picks up Google Application Default
@@ -57,7 +71,7 @@ export function createSamanthaApp({
   vertexClient = null,
 } = {}) {
   const app = express();
-  app.use(cors(createCorsOptions(config.allowedOrigins)));
+  app.use(createCorsMiddleware(config.allowedOrigins));
   app.use(express.json({ limit: '200kb' }));
 
   app.get('/health', (_req, res) => {
