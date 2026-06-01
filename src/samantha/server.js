@@ -1,9 +1,21 @@
 import 'dotenv/config';
 import { timingSafeEqual } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 import express from 'express';
 import cors from 'cors';
 import { AnthropicVertex } from '@anthropic-ai/vertex-sdk';
 import { SAMANTHA_CONFIG, SAMANTHA_SYSTEM_PROMPT } from './config.js';
+
+// Read the widget HTML once at module load. The file is bundled with the
+// deploy and never changes at runtime, so caching it removes the per-request
+// filesystem access (and the CodeQL "missing rate limiting" surface that
+// comes with hitting the disk in a route handler).
+const WIDGET_HTML = readFileSync(
+  join(dirname(fileURLToPath(import.meta.url)), 'widget.html'),
+  'utf8',
+);
 
 function tokensMatch(provided, expected) {
   if (typeof provided !== 'string' || typeof expected !== 'string') return false;
@@ -18,17 +30,31 @@ const DEFAULT_ALLOWED_ORIGINS = new Set([
   'http://localhost:8080',
 ]);
 
-function createCorsOptions(allowedOrigins) {
-  const allowed = new Set(allowedOrigins.length > 0 ? allowedOrigins : DEFAULT_ALLOWED_ORIGINS);
-  return {
-    origin(origin, callback) {
-      if (!origin || allowed.has(origin)) {
-        callback(null, true);
-        return;
-      }
-      callback(new Error('Origin not allowed by Samantha CORS policy.'));
-    },
-  };
+function isSameOriginRequest(req, origin) {
+  try {
+    return new URL(origin).host === req.header('host');
+  } catch {
+    return false;
+  }
+}
+
+// Request-aware CORS so the phone widget (served from the same Cloud Run
+// host as `/api/samantha/chat`) can talk to itself without needing an
+// operator to add the Cloud Run URL to `SAMANTHA_ALLOWED_ORIGINS`.
+// Browsers send an `Origin` header on same-origin POSTs too, so a static
+// allowlist would reject the widget's first fetch.
+export function createCorsMiddleware(allowedOrigins) {
+  const staticAllowed = new Set(
+    allowedOrigins.length > 0 ? allowedOrigins : DEFAULT_ALLOWED_ORIGINS,
+  );
+
+  return cors((req, callback) => {
+    const origin = req.header('Origin');
+    if (!origin) return callback(null, { origin: true });
+    if (staticAllowed.has(origin)) return callback(null, { origin: true });
+    if (isSameOriginRequest(req, origin)) return callback(null, { origin: true });
+    callback(new Error('Origin not allowed by Samantha CORS policy.'));
+  });
 }
 
 // On Cloud Run, AnthropicVertex picks up Google Application Default
@@ -45,11 +71,21 @@ export function createSamanthaApp({
   vertexClient = null,
 } = {}) {
   const app = express();
-  app.use(cors(createCorsOptions(config.allowedOrigins)));
+  app.use(createCorsMiddleware(config.allowedOrigins));
   app.use(express.json({ limit: '200kb' }));
 
   app.get('/health', (_req, res) => {
     res.json({ status: 'ok', agent: 'Samantha', backend: 'vertex-ai' });
+  });
+
+  // Phone-friendly chat widget. Designed to be added to the iOS/Android
+  // home screen as a PWA — uses the browser's Web Speech API for
+  // voice-in / text-to-speech-out, and posts to `/api/samantha/chat`
+  // on this same origin (no CORS, no token needed).
+  app.get(['/widget', '/'], (_req, res) => {
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    res.set('Cache-Control', 'public, max-age=300');
+    res.send(WIDGET_HTML);
   });
 
   // Status endpoint — minimal by default to avoid leaking operational

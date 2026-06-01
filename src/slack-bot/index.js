@@ -10,6 +10,8 @@ import {
 } from './agents.js';
 import { runAgent, runMission, runSwarm } from './dispatch.js';
 import { createMissionStore } from './mission-store.js';
+import { callSamantha, samanthaEnabled } from './samantha-client.js';
+import { createSamanthaDmStore } from './samantha-dm-store.js';
 import {
   ENVIRONMENT_VARIABLES,
   parseCsvEnv,
@@ -260,8 +262,42 @@ export function createSlackApp({
   });
 
   const missionStore = createMissionStore(Object.keys(AGENTS));
+  const samanthaDmStore = createSamanthaDmStore();
   const guardCommand = createGuard(allowedUserIds, payload => payload.command.user_id);
   const guardAction = createGuard(allowedUserIds, payload => payload.body.user.id);
+
+  function isUserAllowed(userId) {
+    return allowedUserIds.length === 0 || allowedUserIds.includes(userId);
+  }
+
+  function stripMention(text) {
+    return (text || '').replace(/<@[UW][A-Z0-9]+>\s*/g, '').trim();
+  }
+
+  async function respondAsSamantha({ userId, text, postMessage }) {
+    if (!samanthaEnabled()) {
+      await postMessage(
+        ':warning: Samantha DM mode is not configured. Set `SAMANTHA_URL` ' +
+        '(her Cloud Run URL) in the bot\'s env and restart.',
+      );
+      return;
+    }
+
+    if (!text) {
+      await postMessage('What do you need, Bryan? (Send me a task and I\'ll dispatch.)');
+      return;
+    }
+
+    const history = samanthaDmStore.getHistory(userId);
+    try {
+      const { reply } = await callSamantha(text, history);
+      samanthaDmStore.appendExchange(userId, text, reply);
+      await postMessage(reply);
+    } catch (error) {
+      console.error('Samantha DM error:', error.message);
+      await postMessage(`:x: Samantha couldn't reply: ${error.message}`);
+    }
+  }
 
   app.command('/roster', guardCommand, async ({ ack, respond }) => {
     await ack();
@@ -565,7 +601,35 @@ export function createSlackApp({
     await respond({ text: `:skull: *[KILL]* ${AGENTS[agentId]?.name || agentId} marked as cancelled for mission ${cancelledMission.id}.` });
   });
 
-  return { app, missionStore };
+  // DMs to the bot route to Samantha (Cloud Run), with per-user conversation
+  // history. Lets Bryan voice-DM the bot from Slack mobile using Slack's
+  // built-in voice memo transcription. Requires SAMANTHA_URL env var.
+  app.message(async ({ message, say }) => {
+    if (message.channel_type !== 'im') return;
+    if (message.subtype || message.bot_id) return;
+    if (!isUserAllowed(message.user)) return;
+
+    await respondAsSamantha({
+      userId: message.user,
+      text: stripMention(message.text),
+      postMessage: (text) => say({ text, thread_ts: message.thread_ts }),
+    });
+  });
+
+  // @mentions in any channel also route to Samantha so Bryan can summon
+  // her from the road without remembering slash command syntax.
+  app.event('app_mention', async ({ event, say }) => {
+    if (event.bot_id) return;
+    if (!isUserAllowed(event.user)) return;
+
+    await respondAsSamantha({
+      userId: event.user,
+      text: stripMention(event.text),
+      postMessage: (text) => say({ text, thread_ts: event.thread_ts || event.ts }),
+    });
+  });
+
+  return { app, missionStore, samanthaDmStore };
 }
 
 export async function startSlackBot() {
