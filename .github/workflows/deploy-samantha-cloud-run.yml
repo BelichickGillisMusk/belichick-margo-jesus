@@ -35,6 +35,9 @@ name: Deploy Samantha to Cloud Run
 #   CLOUD_RUN_SERVICE_ACCOUNT defaults to "samantha@<project>.iam.gserviceaccount.com"
 
 on:
+  # Manual trigger from the Actions tab — use this to redeploy on demand
+  # (e.g. after rotating SAMANTHA_STATUS_TOKEN or GCP_SA_KEY) without
+  # needing a code change to fall under the push paths below.
   workflow_dispatch:
   push:
     branches: [main]
