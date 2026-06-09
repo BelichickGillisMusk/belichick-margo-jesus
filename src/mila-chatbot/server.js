@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import Anthropic from '@anthropic-ai/sdk';
+import { AnthropicVertex } from '@anthropic-ai/vertex-sdk';
 import { MILA_CONFIG } from './config.js';
 import { loadKnowledgeBase, buildSystemPrompt } from './knowledge-base.js';
 import { createSessionStore } from './session-store.js';
@@ -74,9 +74,18 @@ function validateLead(lead) {
   return { valid: true };
 }
 
+// On Cloud Run, AnthropicVertex picks up Google Application Default
+// Credentials from the runtime service account — no key file required.
+function buildVertexClient(config) {
+  return new AnthropicVertex({
+    region: config.vertexRegion,
+    projectId: config.vertexProjectId,
+  });
+}
+
 export function createMilaApp({
-  anthropic = new Anthropic(),
   config = MILA_CONFIG,
+  anthropic = buildVertexClient(config),
   knowledgeBase = loadKnowledgeBase(),
   sessionStore = createSessionStore({
     ttlMs: config.sessionTtlMs,
@@ -95,6 +104,7 @@ export function createMilaApp({
     res.json({
       status: 'ok',
       agent: 'Mila-CARB',
+      backend: 'vertex-ai',
       sessions: sessionStore.getStats().activeSessions,
       knowledgeBasePath: knowledgeBase.path,
       knowledgeBaseCharacters: knowledgeBase.characters,
@@ -113,10 +123,6 @@ export function createMilaApp({
 
   app.post('/chat', async (req, res) => {
     const { message, sessionId = 'default', lead } = req.body || {};
-
-    if (!process.env.ANTHROPIC_API_KEY) {
-      return res.status(503).json({ error: 'ANTHROPIC_API_KEY is required for chat responses.' });
-    }
 
     if (!validateSessionId(sessionId)) {
       return res.status(400).json({ error: 'A valid sessionId is required.' });
@@ -139,8 +145,8 @@ export function createMilaApp({
 
     try {
       const response = await anthropic.messages.create({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1024,
+        model: config.model,
+        max_tokens: config.maxTokens,
         system: systemPrompt,
         messages: userHistory,
       });
