@@ -6,7 +6,7 @@ import { dirname, join } from 'node:path';
 import express from 'express';
 import cors from 'cors';
 import { AnthropicVertex } from '@anthropic-ai/vertex-sdk';
-import { SAMANTHA_CONFIG, SAMANTHA_SYSTEM_PROMPT } from './config.js';
+import { SAMANTHA_CONFIG, SAMANTHA_SYSTEM_PROMPT, PERSONAS } from './config.js';
 
 // Read the widget HTML once at module load. The file is bundled with the
 // deploy and never changes at runtime, so caching it removes the per-request
@@ -137,7 +137,7 @@ export function createSamanthaApp({
   });
 
   app.post('/api/samantha/chat', async (req, res) => {
-    const { message, history = [] } = req.body || {};
+    const { message, history = [], persona = 'samantha' } = req.body || {};
     if (typeof message !== 'string' || !message.trim()) {
       return res.status(400).json({ error: 'Message is required.' });
     }
@@ -147,6 +147,10 @@ export function createSamanthaApp({
     if (!Array.isArray(history)) {
       return res.status(400).json({ error: 'history must be an array.' });
     }
+
+    const systemPrompt = (typeof persona === 'string' && PERSONAS[persona])
+      ? PERSONAS[persona]
+      : SAMANTHA_SYSTEM_PROMPT;
 
     const messages = [
       ...history.slice(-config.historyLimit),
@@ -158,7 +162,7 @@ export function createSamanthaApp({
       const response = await client.messages.create({
         model: config.model,
         max_tokens: config.maxTokens,
-        system: SAMANTHA_SYSTEM_PROMPT,
+        system: systemPrompt,
         messages,
       });
       const reply = response.content
