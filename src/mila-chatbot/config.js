@@ -8,4 +8,12 @@ export const MILA_CONFIG = {
   sessionTtlMs: parseIntegerEnv('MILA_SESSION_TTL_MINUTES', 720, 5) * 60 * 1000,
   maxActiveSessions: parseIntegerEnv('MILA_MAX_ACTIVE_SESSIONS', 200, 1),
   leadRetentionLimit: parseIntegerEnv('MILA_LEAD_RETENTION_LIMIT', 200, 1),
+  // Claude on Vertex AI: auth via the Cloud Run service account's identity
+  // (Application Default Credentials). No ANTHROPIC_API_KEY required.
+  vertexRegion: process.env.CLOUD_ML_REGION || 'us-east5',
+  vertexProjectId:
+    process.env.ANTHROPIC_VERTEX_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT || 'samantha',
+  // Anthropic-on-Vertex model IDs use `@` instead of `-` before the date.
+  model: process.env.MILA_MODEL || 'claude-haiku-4-5@20251001',
+  maxTokens: parseIntegerEnv('MILA_MAX_TOKENS', 1024, 64),
 };
