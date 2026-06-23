@@ -633,7 +633,12 @@ export function createSlackApp({
 }
 
 export async function startSlackBot() {
-  const { app } = createSlackApp();
+  const allowedUserIds = parseCsvEnv('ALLOWED_USER_IDS');
+  if (allowedUserIds.length === 0) {
+    console.warn('⚠️  ALLOWED_USER_IDS is empty — ALL workspace members can use slash commands.');
+    console.warn('   Set ALLOWED_USER_IDS to a comma-separated list of Slack user IDs to restrict access.');
+  }
+  const { app } = createSlackApp({ allowedUserIds });
   await app.start();
   console.log('⚡ Slack bot is running (Socket Mode)');
   console.log(`📋 ${Object.keys(AGENTS).length} agents loaded`);
