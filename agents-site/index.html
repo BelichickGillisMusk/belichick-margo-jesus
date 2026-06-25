@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conference Room — SilverbackAI Agents</title>
+<meta name="description" content="SilverbackAI agent conference room. See what your team is doing and what they could be doing for you.">
+<meta name="robots" content="noindex, nofollow">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0d12;--surface:#111820;--surface2:#1a2230;--border:#242d3a;
+  --text:#e2e8f0;--dim:#7a8ba0;--accent:#3b82f6;--green:#22c55e;
+  --yellow:#eab308;--red:#ef4444;--orange:#f97316;--purple:#a855f7;
+}
+html{font-size:15px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;overflow-x:hidden}
+
+header{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+}
+header h1{font-size:1.2rem;font-weight:700;letter-spacing:-.02em}
+header h1 span{color:var(--accent)}
+.header-meta{display:flex;align-items:center;gap:1rem;font-size:.8rem;color:var(--dim)}
+.pulse{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.layout{
+  display:grid;grid-template-columns:300px 1fr 340px;
+  gap:0;min-height:calc(100vh - 56px);
+}
+
+.panel{border-right:1px solid var(--border);overflow-y:auto;padding:1rem}
+.panel:last-child{border-right:none}
+.panel-title{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:1rem;font-weight:600}
+
+/* Agent cards (left panel) */
+.agent-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  padding:.75rem;margin-bottom:.5rem;cursor:default;transition:border-color .2s;
+}
+.agent-card:hover{border-color:var(--accent)}
+.agent-card.selected{border-color:var(--accent);background:var(--surface2)}
+.agent-top{display:flex;align-items:center;gap:.6rem;margin-bottom:.4rem}
+.agent-avatar{
+  width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:1rem;font-weight:700;flex-shrink:0;
+}
+.agent-name{font-weight:600;font-size:.85rem;line-height:1.2}
+.agent-role{font-size:.7rem;color:var(--dim)}
+.status-badge{
+  display:inline-flex;align-items:center;gap:4px;font-size:.65rem;
+  padding:2px 8px;border-radius:10px;font-weight:600;margin-left:auto;flex-shrink:0;
+}
+.status-working{background:rgba(34,197,94,.15);color:var(--green)}
+.status-idle{background:rgba(122,139,160,.12);color:var(--dim)}
+.status-blocked{background:rgba(239,68,68,.15);color:var(--red)}
+.agent-task{font-size:.75rem;color:var(--dim);margin-top:.3rem;line-height:1.4}
+.agent-task strong{color:var(--text);font-weight:500}
+.agent-tagline{font-size:.7rem;color:var(--accent);font-style:italic;margin-top:.2rem;margin-bottom:.3rem;line-height:1.3;opacity:.85}
+
+/* Activity feed (center) */
+.feed{padding:1.5rem 2rem;overflow-y:auto}
+.feed-item{
+  display:flex;gap:1rem;padding:.75rem 0;
+  border-bottom:1px solid var(--border);
+}
+.feed-time{font-size:.7rem;color:var(--dim);min-width:50px;padding-top:2px;text-align:right}
+.feed-dot{
+  width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px;
+}
+.feed-content{flex:1}
+.feed-agent{font-weight:600;font-size:.8rem}
+.feed-action{font-size:.8rem;color:var(--dim);margin-top:2px;line-height:1.4}
+.type-deploy .feed-dot{background:var(--accent)}
+.type-security .feed-dot{background:var(--red)}
+.type-strategy .feed-dot{background:var(--purple)}
+.type-support .feed-dot{background:var(--green)}
+.type-finance .feed-dot{background:var(--yellow)}
+.type-sales .feed-dot{background:var(--orange)}
+.type-research .feed-dot{background:var(--purple)}
+.type-creative .feed-dot{background:var(--accent)}
+.type-marketing .feed-dot{background:var(--orange)}
+.type-scraping .feed-dot{background:var(--green)}
+
+/* Right panel — what they could do */
+.could-do{padding:1rem;overflow-y:auto}
+.could-section{margin-bottom:1.25rem}
+.could-agent{
+  font-weight:600;font-size:.8rem;display:flex;align-items:center;gap:.5rem;
+  margin-bottom:.4rem;
+}
+.could-agent .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.could-list{list-style:none;padding:0;margin:0 0 0 1.2rem}
+.could-list li{
+  font-size:.75rem;color:var(--dim);padding:3px 0;line-height:1.4;
+  position:relative;
+}
+.could-list li::before{
+  content:'\25B8';position:absolute;left:-1rem;color:var(--border);
+}
+
+/* Footer */
+.footer-bar{
+  background:var(--surface);border-top:1px solid var(--border);
+  padding:.6rem 2rem;display:flex;align-items:center;justify-content:space-between;
+  font-size:.7rem;color:var(--dim);position:fixed;bottom:0;left:0;right:0;z-index:100;
+}
+
+/* Responsive */
+@media(max-width:1100px){
+  .layout{grid-template-columns:1fr;grid-template-rows:auto}
+  .panel{border-right:none;border-bottom:1px solid var(--border)}
+  .feed{padding:1rem}
+}
+@media(max-width:600px){
+  header{padding:.75rem 1rem}
+  .panel{padding:.75rem}
+  .feed{padding:.75rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span>SilverbackAI</span> Conference Room</h1>
+  <div class="header-meta">
+    <span><span class="pulse"></span> Live</span>
+    <span id="lastUpdated">—</span>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- LEFT: Agent Roster -->
+  <div class="panel" id="roster">
+    <div class="panel-title">Agent Roster</div>
+  </div>
+
+  <!-- CENTER: Activity Feed -->
+  <div class="feed" id="feedPanel">
+    <div class="panel-title">Activity Feed</div>
+    <div id="feed"></div>
+  </div>
+
+  <!-- RIGHT: What They Could Do -->
+  <div class="could-do" id="couldPanel">
+    <div class="panel-title">What They Could Be Doing for You</div>
+    <div id="couldDo"></div>
+  </div>
+
+</div>
+
+<div class="footer-bar">
+  <span>ELITE DEPLOY ITERATE DOMINATE</span>
+  <span>agents.bryanoneillgillis.com</span>
+</div>
+
+<script>
+const AGENT_META = {
+  belichick: {
+    color:'#a855f7', initial:'B',
+    tagline: 'The brain. Sees the whole board. Decides what gets done, who does it, when it ships.',
+    couldDo:[
+      'Break any project into tasks and auto-assign to the right agent in seconds',
+      'Run weekly business review — pipeline, blockers, agent utilization, GO/NO-GO calls',
+      'Evaluate a new business opportunity end-to-end: legal, market, pitch, financials, verdict'
+    ]
+  },
+  'sloan-carb': {
+    color:'#22c55e', initial:'SL',
+    tagline: 'Knows every CARB rule, deadline, penalty, and exemption. Truck compliance on autopilot.',
+    couldDo:[
+      'Answer any fleet compliance question with exact rule citations, deadlines, and penalty amounts',
+      'Auto-schedule Clean Truck Check appointments with 90/30/7-day countdown reminders',
+      'Brief fleet owners on the 2027 quarterly mandate — what changes, what it costs, how to prepare'
+    ]
+  },
+  'sloan-legal': {
+    color:'#10b981', initial:'SL',
+    tagline: 'Finds money hiding in red tape. Turns regulations into revenue opportunities.',
+    couldDo:[
+      'Research any regulation and come back with a business model that exploits the gap',
+      'Compile a full regulatory brief — current rules, pending changes, licensing, competitors, risk level',
+      'Find the friction in any licensing requirement and propose the business that solves it'
+    ]
+  },
+  atlas: {
+    color:'#3b82f6', initial:'A',
+    tagline: 'Content machine. YouTube strategy, SEO, thumbnails, scripts — full production pipeline.',
+    couldDo:[
+      'Produce a complete video brief: power-word title, 5-second hook, timestamped script, 30 SEO tags',
+      'Build a 4-week content calendar with trending topics, series structures, and upload schedule',
+      'Analyze competitors, find content gaps they miss, and create the videos that fill them'
+    ]
+  },
+  closer: {
+    color:'#f97316', initial:'C',
+    tagline: 'Never takes the first no. A.C.E.S. framework — Attention, Connect, Elevate, Seal.',
+    couldDo:[
+      'Write a full cold outreach sequence — opener, follow-ups, objection handlers, close',
+      'Handle any objection live: reframe price to daily cost, flip "not interested" into discovery',
+      'Build a custom sales playbook for any vertical with qualifying questions and urgency triggers'
+    ]
+  },
+  'jon-jones': {
+    color:'#ef4444', initial:'JJ',
+    tagline: 'The bouncer. Nothing leaves this building without his approval. Zero tolerance.',
+    couldDo:[
+      'Review every outbound email, Slack post, and API call for PII leaks, legal risk, and tone',
+      'Instant-block any message containing API keys, tokens, or credentials — no review needed',
+      'Generate a daily security report: what got approved, what got killed, who triggered alerts'
+    ]
+  },
+  cipher: {
+    color:'#eab308', initial:'$',
+    tagline: 'Counts every dollar. Invoices, P&L, free-tier meters — nothing gets wasted.',
+    couldDo:[
+      'Generate invoices from project data and track payments against contracts',
+      'Weekly P&L snapshot: revenue in, costs out, burn rate, runway',
+      'Monitor Cloudflare/Vercel/Railway free-tier usage and alert at 80% before you get charged'
+    ]
+  },
+  sentinel: {
+    color:'#06b6d4', initial:'LS',
+    tagline: 'Pulls leads from Google Maps while you sleep. Free tier, zero manual work.',
+    couldDo:[
+      'Scrape 50+ trucking company contacts in any metro — phone, address, website, rating, reviews',
+      'Auto-build lead sheets in Google Sheets via Make.com: search, parse, dedupe, deliver',
+      'Research any business vertical by geography with hours, status, and contact info ready to dial'
+    ]
+  },
+  nova: {
+    color:'#f97316', initial:'N',
+    tagline: 'Writes like a human, posts like a machine. Social media and blog content at scale.',
+    couldDo:[
+      'Draft a week of social posts across LinkedIn, X, and Instagram — on brand, on schedule',
+      'Write long-form blog posts that rank: SEO structure, internal links, CTAs, the works',
+      'Build a content calendar synced with Atlas video drops for maximum cross-platform impact'
+    ]
+  },
+  'builder-deploy': {
+    color:'#3b82f6', initial:'BD',
+    tagline: 'Ship fast. Ship free. Every deploy gets a live link and a cost of $0.',
+    couldDo:[
+      'Deploy any site to Cloudflare Pages or Vercel in under 2 minutes — free tier, every time',
+      'Generate shareable preview links so clients and partners can see the work instantly',
+      'Track every deploy cost across platforms and sound the alarm before you hit a paid tier'
+    ]
+  },
+  samantha: {
+    color:'#ec4899', initial:'SA',
+    tagline: 'Your calendar is her territory. Meetings, reminders, deadlines — she runs the clock.',
+    couldDo:[
+      'Manage your Google Calendar: schedule meetings, block focus time, set deadline reminders',
+      'Auto-coordinate appointments between agents — testing schedules, client calls, reviews',
+      'Morning briefing: today\'s meetings, deadlines, agent tasks due, and what needs your attention'
+    ]
+  }
+};
+
+async function loadData() {
+  try {
+    const res = await fetch('activity.json?t=' + Date.now());
+    return await res.json();
+  } catch(e) {
+    return null;
+  }
+}
+
+function timeAgo(iso) {
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'now';
+  if (mins < 60) return mins + 'm ago';
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return hrs + 'h ago';
+  return Math.floor(hrs / 24) + 'd ago';
+}
+
+function renderRoster(agents) {
+  const el = document.getElementById('roster');
+  const title = el.querySelector('.panel-title');
+  el.innerHTML = '';
+  el.appendChild(title);
+
+  agents.forEach(a => {
+    const meta = AGENT_META[a.id] || { color:'#7a8ba0', initial:'?', tagline:'', couldDo:[] };
+    const statusClass = a.status === 'working' ? 'status-working' : a.status === 'blocked' ? 'status-blocked' : 'status-idle';
+    const statusLabel = a.status.charAt(0).toUpperCase() + a.status.slice(1);
+
+    const card = document.createElement('div');
+    card.className = 'agent-card';
+    card.dataset.id = a.id;
+    card.innerHTML = `
+      <div class="agent-top">
+        <div class="agent-avatar" style="background:${meta.color}20;color:${meta.color}">${meta.initial}</div>
+        <div>
+          <div class="agent-name">${a.name}</div>
+          <div class="agent-role">${a.role}</div>
+        </div>
+        <span class="status-badge ${statusClass}">${a.status === 'working' ? '<span class="pulse" style="width:6px;height:6px"></span>' : ''}${statusLabel}</span>
+      </div>
+      ${meta.tagline ? '<div class="agent-tagline">' + meta.tagline + '</div>' : ''}
+      <div class="agent-task">
+        ${a.currentTask ? '<strong>Now:</strong> ' + a.currentTask : ''}
+        ${a.lastCompleted ? '<br><strong>Last:</strong> ' + a.lastCompleted + ' <span style="color:var(--dim);font-size:.65rem">(' + timeAgo(a.lastCompletedAt) + ')</span>' : ''}
+      </div>
+    `;
+    el.appendChild(card);
+  });
+}
+
+function renderFeed(feed) {
+  const el = document.getElementById('feed');
+  el.innerHTML = '';
+  feed.forEach(f => {
+    const item = document.createElement('div');
+    item.className = 'feed-item type-' + (f.type || 'default');
+    const t = new Date(f.timestamp);
+    const timeStr = t.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+    const dateStr = t.toLocaleDateString([], { month:'short', day:'numeric' });
+    item.innerHTML = `
+      <div class="feed-time">${dateStr}<br>${timeStr}</div>
+      <div class="feed-dot"></div>
+      <div class="feed-content">
+        <div class="feed-agent">${f.agent}</div>
+        <div class="feed-action">${f.action}</div>
+      </div>
+    `;
+    el.appendChild(item);
+  });
+}
+
+function renderCouldDo() {
+  const el = document.getElementById('couldDo');
+  el.innerHTML = '';
+  const order = ['belichick','sloan-carb','sloan-legal','atlas','closer','jon-jones','cipher','sentinel','nova','builder-deploy','samantha'];
+  const names = {
+    belichick:'Belichick','sloan-carb':'Sloan (CARB)','sloan-legal':'Sloan (Legal)',
+    atlas:'Atlas',closer:'Closer','jon-jones':'Jon Jones',
+    cipher:'Cipher',sentinel:'Lead Scraper',nova:'Nova','builder-deploy':'Builder-Deploy',
+    samantha:'Samantha'
+  };
+  order.forEach(id => {
+    const meta = AGENT_META[id];
+    if (!meta) return;
+    const sec = document.createElement('div');
+    sec.className = 'could-section';
+    sec.innerHTML = `
+      <div class="could-agent"><span class="dot" style="background:${meta.color}"></span>${names[id]}</div>
+      <ul class="could-list">${meta.couldDo.map(t => '<li>' + t + '</li>').join('')}</ul>
+    `;
+    el.appendChild(sec);
+  });
+}
+
+async function init() {
+  const data = await loadData();
+  if (!data) return;
+  document.getElementById('lastUpdated').textContent = 'Updated ' + timeAgo(data.lastUpdated);
+  renderRoster(data.agents);
+  renderFeed(data.feed);
+  renderCouldDo();
+}
+
+init();
+setInterval(init, 30000);
+</script>
+</body>
+</html>

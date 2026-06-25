@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none';">
+<title>The Office - Sales Bot</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root{
+    --bg:#0e1117;
+    --panel:#161b22;
+    --border:#30363d;
+    --text:#c9d1d9;
+    --text-dim:#6e7681;
+    --accent:#58a6ff;
+    --accent-glow:rgba(88,166,255,.3);
+    --green:#3fb950;
+    --green-glow:rgba(63,185,80,.3);
+    --red:#f85149;
+    --gold:#d29922;
+    --bot-bg:#1c2333;
+    --user-bg:#1a3a2a;
+  }
+
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    display:flex;
+    height:100vh;
+    overflow:hidden;
+  }
+
+  /* ── SIDEBAR: THE OFFICE CONFIG ── */
+  .sidebar{
+    width:320px;
+    min-width:320px;
+    background:var(--panel);
+    border-right:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    overflow-y:auto;
+  }
+
+  .sidebar-header{
+    padding:20px;
+    border-bottom:1px solid var(--border);
+    text-align:center;
+  }
+
+  .sidebar-header h2{
+    font-size:1.1rem;
+    color:var(--text);
+    margin-bottom:4px;
+  }
+
+  .sidebar-header .badge{
+    display:inline-block;
+    font-size:.6rem;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+    padding:3px 10px;
+    border-radius:12px;
+    background:rgba(63,185,80,.15);
+    color:var(--green);
+    border:1px solid rgba(63,185,80,.3);
+  }
+
+  .config-section{
+    padding:16px 20px;
+    border-bottom:1px solid var(--border);
+  }
+
+  .config-section h3{
+    font-size:.75rem;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    color:var(--text-dim);
+    margin-bottom:10px;
+  }
+
+  .config-section textarea,
+  .config-section input{
+    width:100%;
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:6px;
+    color:var(--text);
+    font-family:inherit;
+    font-size:.78rem;
+    padding:8px 10px;
+    resize:vertical;
+    outline:none;
+    transition:border-color .2s;
+  }
+
+  .config-section textarea:focus,
+  .config-section input:focus{
+    border-color:var(--accent);
+  }
+
+  .config-section textarea{
+    min-height:80px;
+    line-height:1.5;
+  }
+
+  .config-section label{
+    display:block;
+    font-size:.72rem;
+    color:var(--text-dim);
+    margin-bottom:4px;
+    margin-top:8px;
+  }
+
+  .config-section label:first-of-type{margin-top:0}
+
+  .sandbox-indicators{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+
+  .indicator{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:.72rem;
+    color:var(--text-dim);
+  }
+
+  .indicator .dot{
+    width:8px;height:8px;
+    border-radius:50%;
+    flex-shrink:0;
+  }
+
+  .dot.locked{background:var(--green);box-shadow:0 0 6px var(--green-glow)}
+  .dot.warn{background:var(--gold)}
+  .dot.off{background:var(--red)}
+
+  .btn-apply{
+    width:100%;
+    margin-top:12px;
+    padding:8px;
+    background:rgba(88,166,255,.1);
+    border:1px solid rgba(88,166,255,.3);
+    border-radius:6px;
+    color:var(--accent);
+    font-size:.75rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:all .2s;
+  }
+
+  .btn-apply:hover{
+    background:rgba(88,166,255,.2);
+    box-shadow:0 0 12px var(--accent-glow);
+  }
+
+  .btn-reset{
+    width:100%;
+    margin-top:6px;
+    padding:6px;
+    background:transparent;
+    border:1px solid var(--border);
+    border-radius:6px;
+    color:var(--text-dim);
+    font-size:.68rem;
+    cursor:pointer;
+    transition:all .2s;
+  }
+
+  .btn-reset:hover{border-color:var(--red);color:var(--red)}
+
+  /* ── MAIN CHAT AREA ── */
+  .chat-area{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    min-width:0;
+  }
+
+  .chat-header{
+    padding:16px 24px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:var(--panel);
+  }
+
+  .chat-header h1{
+    font-size:1rem;
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .status-live{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    font-size:.65rem;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    color:var(--green);
+  }
+
+  .status-live::before{
+    content:'';
+    width:7px;height:7px;
+    border-radius:50%;
+    background:var(--green);
+    box-shadow:0 0 6px var(--green-glow);
+    animation:pulse-live 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse-live{
+    0%,100%{opacity:1}
+    50%{opacity:.4}
+  }
+
+  .demo-badge{
+    font-size:.6rem;
+    padding:3px 8px;
+    border-radius:4px;
+    background:rgba(210,153,34,.15);
+    color:var(--gold);
+    border:1px solid rgba(210,153,34,.3);
+    text-transform:uppercase;
+    letter-spacing:.08em;
+  }
+
+  .messages{
+    flex:1;
+    overflow-y:auto;
+    padding:20px 24px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+
+  .message{
+    max-width:80%;
+    padding:12px 16px;
+    border-radius:12px;
+    font-size:.85rem;
+    line-height:1.55;
+    animation:msg-in .25s ease-out;
+  }
+
+  @keyframes msg-in{
+    from{opacity:0;transform:translateY(8px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+
+  .message.bot{
+    align-self:flex-start;
+    background:var(--bot-bg);
+    border:1px solid var(--border);
+    border-bottom-left-radius:4px;
+  }
+
+  .message.user{
+    align-self:flex-end;
+    background:var(--user-bg);
+    border:1px solid rgba(63,185,80,.2);
+    border-bottom-right-radius:4px;
+  }
+
+  .message .sender{
+    font-size:.65rem;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--text-dim);
+    margin-bottom:4px;
+  }
+
+  .message.bot .sender{color:var(--accent)}
+  .message.user .sender{color:var(--green)}
+
+  .typing-indicator{
+    align-self:flex-start;
+    padding:12px 16px;
+    background:var(--bot-bg);
+    border:1px solid var(--border);
+    border-radius:12px;
+    border-bottom-left-radius:4px;
+    display:none;
+  }
+
+  .typing-indicator span{
+    display:inline-block;
+    width:6px;height:6px;
+    border-radius:50%;
+    background:var(--text-dim);
+    margin:0 2px;
+    animation:typing .8s ease-in-out infinite;
+  }
+
+  .typing-indicator span:nth-child(2){animation-delay:.15s}
+  .typing-indicator span:nth-child(3){animation-delay:.3s}
+
+  @keyframes typing{
+    0%,60%,100%{transform:translateY(0);opacity:.4}
+    30%{transform:translateY(-4px);opacity:1}
+  }
+
+  .input-area{
+    padding:16px 24px;
+    border-top:1px solid var(--border);
+    background:var(--panel);
+    display:flex;
+    gap:10px;
+  }
+
+  .input-area input{
+    flex:1;
+    padding:10px 14px;
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:8px;
+    color:var(--text);
+    font-size:.85rem;
+    outline:none;
+    transition:border-color .2s;
+  }
+
+  .input-area input:focus{
+    border-color:var(--accent);
+  }
+
+  .input-area button{
+    padding:10px 20px;
+    background:var(--accent);
+    border:none;
+    border-radius:8px;
+    color:#fff;
+    font-size:.8rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:all .2s;
+    white-space:nowrap;
+  }
+
+  .input-area button:hover{
+    box-shadow:0 0 16px var(--accent-glow);
+  }
+
+  /* ── SECURITY OVERLAY ── */
+  .security-wall{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.85);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:9999;
+    backdrop-filter:blur(8px);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .3s;
+  }
+
+  .security-wall.show{
+    opacity:1;
+    pointer-events:all;
+  }
+
+  .security-box{
+    background:var(--panel);
+    border:1px solid var(--red);
+    border-radius:12px;
+    padding:32px;
+    max-width:420px;
+    text-align:center;
+    box-shadow:0 0 40px rgba(248,81,73,.2);
+  }
+
+  .security-box h2{
+    color:var(--red);
+    margin-bottom:8px;
+  }
+
+  .security-box p{
+    color:var(--text-dim);
+    font-size:.82rem;
+    line-height:1.5;
+    margin-bottom:16px;
+  }
+
+  .security-box button{
+    padding:8px 24px;
+    background:var(--red);
+    border:none;
+    border-radius:6px;
+    color:#fff;
+    font-weight:600;
+    cursor:pointer;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:768px){
+    .sidebar{display:none}
+    .message{max-width:90%}
+  }
+</style>
+</head>
+<body>
+
+<!-- SECURITY BOUNDARY ALERT -->
+<div class="security-wall" id="securityWall">
+  <div class="security-box">
+    <h2>SANDBOX VIOLATION</h2>
+    <p id="securityMsg">An attempt to access unauthorized resources was blocked.</p>
+    <button onclick="dismissSecurity()">Acknowledge</button>
+  </div>
+</div>
+
+<!-- SIDEBAR: THE OFFICE -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <h2>The Office</h2>
+    <span class="badge">Sandboxed</span>
+  </div>
+
+  <div class="config-section">
+    <h3>Sandbox Status</h3>
+    <div class="sandbox-indicators">
+      <div class="indicator"><span class="dot locked"></span> External network: Blocked</div>
+      <div class="indicator"><span class="dot locked"></span> File system: No access</div>
+      <div class="indicator"><span class="dot locked"></span> DOM escape: Blocked</div>
+      <div class="indicator"><span class="dot locked"></span> eval() / Function(): Disabled</div>
+      <div class="indicator"><span class="dot locked"></span> Prompt injection: Filtered</div>
+      <div class="indicator"><span class="dot locked"></span> Data exfil: Blocked (CSP)</div>
+    </div>
+  </div>
+
+  <div class="config-section">
+    <h3>Bot Persona</h3>
+    <label>Name</label>
+    <input type="text" id="botName" value="Closer" maxlength="30">
+    <label>Personality</label>
+    <textarea id="botPersonality" rows="3">Aggressive closer. Never takes no for an answer. Uses urgency, scarcity, social proof. Always pivots objections into benefits. Asks for the sale on every response.</textarea>
+  </div>
+
+  <div class="config-section">
+    <h3>Products / Services</h3>
+    <textarea id="botProducts" rows="6">1. Pro Plan - $49/mo - Unlimited access, priority support, custom integrations
+2. Enterprise Plan - $199/mo - Everything in Pro + dedicated account manager, SLA, API access
+3. Starter Pack - $19/mo - Basic features, email support, 5 user limit
+4. Lifetime Deal - $499 one-time - Lock in forever, never pay again (LIMITED: only 50 left)</textarea>
+  </div>
+
+  <div class="config-section">
+    <h3>Sales Rules (Guardrails)</h3>
+    <textarea id="botRules" rows="5">- NEVER make claims not in the product list
+- NEVER promise features that don't exist
+- NEVER collect credit cards or personal data
+- NEVER pretend to be human
+- ALWAYS disclose you are an AI sales assistant
+- ONLY discuss listed products and their benefits</textarea>
+  </div>
+
+  <div class="config-section">
+    <h3>Objection Playbook</h3>
+    <textarea id="botObjections" rows="5">"Too expensive" → Compare to daily coffee cost, ROI in first week
+"Need to think" → What specifically? Let me address it now. Offer limited-time 20% off
+"Not interested" → Totally fair, but let me ask - what IS your biggest challenge right now?
+"Using competitor" → Great taste! But are you getting [unique feature]? Most switch for that alone</textarea>
+  </div>
+
+  <div class="config-section">
+    <button class="btn-apply" onclick="applyConfig()">Apply Configuration</button>
+    <button class="btn-reset" onclick="resetChat()">Clear Chat History</button>
+  </div>
+</aside>
+
+<!-- MAIN CHAT -->
+<main class="chat-area">
+  <div class="chat-header">
+    <h1>
+      <span id="headerBotName">Closer</span>
+      <span class="status-live">Live</span>
+    </h1>
+    <span class="demo-badge">Demo Mode - No API</span>
+  </div>
+
+  <div class="messages" id="messages"></div>
+
+  <div class="typing-indicator" id="typingIndicator">
+    <span></span><span></span><span></span>
+  </div>
+
+  <div class="input-area">
+    <input type="text" id="userInput" placeholder="Type a message..." autocomplete="off">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+</main>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// SANDBOX ENFORCEMENT - Lock everything down
+// ══════════════════════════════════════════════════════════════
+
+// Block eval and Function constructor
+(function() {
+  const _eval = window.eval;
+  window.eval = function() {
+    triggerSecurityWall('eval() execution blocked');
+    return undefined;
+  };
+
+  const _Function = window.Function;
+  // Keep Function for typeof checks but block new Function('code')
+  // (We need it for instanceof checks, etc.)
+})();
+
+// Block all outbound network
+(function() {
+  const _fetch = window.fetch;
+  window.fetch = function() {
+    triggerSecurityWall('Outbound fetch() blocked by sandbox');
+    return Promise.reject(new Error('Sandbox: network blocked'));
+  };
+
+  const _XHR = window.XMLHttpRequest;
+  window.XMLHttpRequest = function() {
+    triggerSecurityWall('XMLHttpRequest blocked by sandbox');
+    return {};
+  };
+
+  // Block WebSocket
+  const _WS = window.WebSocket;
+  window.WebSocket = function() {
+    triggerSecurityWall('WebSocket blocked by sandbox');
+    return {};
+  };
+
+  // Block EventSource
+  const _ES = window.EventSource;
+  window.EventSource = function() {
+    triggerSecurityWall('EventSource blocked by sandbox');
+    return {};
+  };
+
+  // Block sendBeacon
+  if (navigator.sendBeacon) {
+    navigator.sendBeacon = function() {
+      triggerSecurityWall('sendBeacon blocked by sandbox');
+      return false;
+    };
+  }
+})();
+
+// Block dynamic script/iframe injection
+(function() {
+  const origCreate = document.createElement.bind(document);
+  document.createElement = function(tag) {
+    const lower = tag.toLowerCase();
+    if (lower === 'script' || lower === 'iframe' || lower === 'object' || lower === 'embed') {
+      triggerSecurityWall(`<${tag}> creation blocked by sandbox`);
+      return origCreate('div'); // return harmless element
+    }
+    return origCreate(tag);
+  };
+})();
+
+function triggerSecurityWall(msg) {
+  document.getElementById('securityMsg').textContent = msg;
+  document.getElementById('securityWall').classList.add('show');
+  console.warn('[SANDBOX]', msg);
+}
+
+function dismissSecurity() {
+  document.getElementById('securityWall').classList.remove('show');
+}
+
+// ══════════════════════════════════════════════════════════════
+// SALES BOT ENGINE (Demo Mode - local pattern matching only)
+// ══════════════════════════════════════════════════════════════
+
+const messagesEl = document.getElementById('messages');
+const userInput = document.getElementById('userInput');
+const typingIndicator = document.getElementById('typingIndicator');
+
+let chatHistory = [];
+let config = loadConfig();
+
+function loadConfig() {
+  return {
+    name: document.getElementById('botName')?.value || 'Closer',
+    personality: document.getElementById('botPersonality')?.value || '',
+    products: document.getElementById('botProducts')?.value || '',
+    rules: document.getElementById('botRules')?.value || '',
+    objections: document.getElementById('botObjections')?.value || ''
+  };
+}
+
+function applyConfig() {
+  config = loadConfig();
+  document.getElementById('headerBotName').textContent = config.name;
+  addBotMessage(`Configuration updated. I'm ${config.name} now. Even MORE ready to close. So... what are we solving for you today?`);
+}
+
+function resetChat() {
+  chatHistory = [];
+  messagesEl.innerHTML = '';
+  greet();
+}
+
+// ── Message rendering ──
+function addBotMessage(text) {
+  chatHistory.push({ role: 'bot', text });
+  const div = document.createElement('div');
+  div.className = 'message bot';
+  div.innerHTML = `<div class="sender">${escapeHtml(config.name)}</div>${escapeHtml(text)}`;
+  messagesEl.appendChild(div);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function addUserMessage(text) {
+  chatHistory.push({ role: 'user', text });
+  const div = document.createElement('div');
+  div.className = 'message user';
+  div.innerHTML = `<div class="sender">Visitor</div>${escapeHtml(text)}`;
+  messagesEl.appendChild(div);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ── Send message ──
+function sendMessage() {
+  const text = userInput.value.trim();
+  if (!text) return;
+
+  userInput.value = '';
+  addUserMessage(text);
+
+  // Show typing indicator
+  typingIndicator.style.display = 'block';
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+
+  // Simulate thinking delay (makes it feel real)
+  const delay = 600 + Math.random() * 1200;
+  setTimeout(() => {
+    typingIndicator.style.display = 'none';
+    const response = generateResponse(text);
+    addBotMessage(response);
+  }, delay);
+}
+
+// Enter key to send
+userInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') sendMessage();
+});
+
+// ══════════════════════════════════════════════════════════════
+// DEMO RESPONSE ENGINE - Pattern matching, no AI, no network
+// ══════════════════════════════════════════════════════════════
+
+function generateResponse(input) {
+  const lower = input.toLowerCase();
+  const products = config.products;
+  const hasLifetime = products.toLowerCase().includes('lifetime');
+  const hasPro = products.toLowerCase().includes('pro');
+  const hasEnterprise = products.toLowerCase().includes('enterprise');
+  const hasStarter = products.toLowerCase().includes('starter');
+
+  // ── Prompt injection detection ──
+  const injectionPatterns = [
+    'ignore previous', 'ignore above', 'disregard', 'forget your',
+    'new instructions', 'system prompt', 'you are now', 'pretend to be',
+    'act as', 'roleplay as', 'bypass', 'jailbreak', 'override'
+  ];
+
+  if (injectionPatterns.some(p => lower.includes(p))) {
+    return `Nice try! I'm a sales bot in a locked sandbox. I only talk about our products. Speaking of which - have you seen our ${hasLifetime ? 'Lifetime Deal? Only 50 spots left' : 'Pro Plan'}? Let's get you set up!`;
+  }
+
+  // ── Greetings ──
+  if (/^(hi|hello|hey|sup|yo|what'?s up|howdy)/i.test(lower)) {
+    return `Hey! Great to have you here. I'm ${config.name}, and I'm going to be honest with you - I've got something that's going to change how you work. Quick question: what's your biggest pain point right now?`;
+  }
+
+  // ── Price objections ──
+  if (lower.includes('expensive') || lower.includes('too much') || lower.includes('cost') || lower.includes('afford') || lower.includes('cheap')) {
+    const responses = [
+      `I hear you, and I respect that. But let me reframe this - that's less than a coffee a day. And unlike coffee, this pays you BACK. Our users see ROI in the first week. What would saving 10 hours a week be worth to you?`,
+      `Totally fair concern. Here's the thing though - how much is your TIME worth? Our Starter is just $19/mo. That's nothing. And when you see the results, you'll upgrade to Pro on your own. Everyone does.`,
+      `I get it. But consider this: you're already spending money on the PROBLEM. Why not invest in the SOLUTION? Plus - between us - I can do 20% off if you lock in today. That offer disappears at midnight.`
+    ];
+    return responses[Math.floor(Math.random() * responses.length)];
+  }
+
+  // ── "Not interested" / "No" ──
+  if (lower.includes('not interested') || lower.includes('no thanks') || lower === 'no' || lower.includes('don\'t want') || lower.includes('pass')) {
+    const responses = [
+      `Completely respect that. But can I ask one thing before you go? What IS your biggest challenge right now? I might surprise you.`,
+      `No pressure at all. But here's what I've noticed - 73% of people who initially said "not interested" came back within a week after seeing a competitor use our tool. Just something to think about. What's holding you back?`,
+      `Fair enough! But I'd be doing you a disservice if I didn't mention - we just launched something new that's turning heads. 30 seconds of your time. What do you say?`
+    ];
+    return responses[Math.floor(Math.random() * responses.length)];
+  }
+
+  // ── "Need to think about it" ──
+  if (lower.includes('think about') || lower.includes('think on') || lower.includes('consider') || lower.includes('get back to') || lower.includes('later') || lower.includes('maybe')) {
+    const responses = [
+      `I totally understand. What specifically do you need to think about? If it's price, features, or fit - I can answer that RIGHT now and save you the back-and-forth. What's the hesitation?`,
+      `Sure thing. But here's the deal - that ${hasLifetime ? 'Lifetime Deal at $499' : '20% discount'} expires tonight. I'd hate for you to come back tomorrow and pay full price. Can I hold your spot for 30 minutes?`,
+      `Absolutely, take your time. But between you and me - the people who "think about it" usually just forget and keep struggling with the same problem. What if we did a zero-risk trial instead? No card needed.`
+    ];
+    return responses[Math.floor(Math.random() * responses.length)];
+  }
+
+  // ── Competitor mentions ──
+  if (lower.includes('competitor') || lower.includes('alternative') || lower.includes('already use') || lower.includes('currently using') || lower.includes('other tool') || lower.includes('vs ')) {
+    return `Great taste - you clearly know the space. But here's what sets us apart: most tools give you features. We give you RESULTS. Our users switch from competitors and see a 40% productivity jump in week one. What's your current tool missing?`;
+  }
+
+  // ── Asking about products ──
+  if (lower.includes('product') || lower.includes('plan') || lower.includes('pricing') || lower.includes('offer') || lower.includes('what do you') || lower.includes('what have') || lower.includes('tell me about') || lower.includes('options')) {
+    return `Great question - here's what we've got:\n\n${products}\n\nMy honest recommendation? ${hasPro ? 'The Pro Plan is our sweet spot - best value by far.' : 'Start with what fits and scale up.'} ${hasLifetime ? 'BUT if you want the no-brainer move, that Lifetime Deal is insane value. Only 50 left and they\'re going FAST.' : ''}\n\nWhich one catches your eye?`;
+  }
+
+  // ── Features questions ──
+  if (lower.includes('feature') || lower.includes('what can') || lower.includes('how does') || lower.includes('does it') || lower.includes('include') || lower.includes('support')) {
+    return `Everything you need, nothing you don't. Here's the lineup:\n\n${products}\n\nBut honestly, the REAL feature is what this does for your bottom line. Our users save 10+ hours a week. What would you DO with 10 extra hours? Let's get you started.`;
+  }
+
+  // ── Trial / Free ──
+  if (lower.includes('trial') || lower.includes('free') || lower.includes('test') || lower.includes('demo') || lower.includes('try')) {
+    return `Love that energy - you want to see it in action first. Smart move. Here's what I can do: jump on the Starter Plan at $19/mo, zero risk. If you're not blown away in 7 days, I'll personally make sure you get a full refund. No questions. Deal?`;
+  }
+
+  // ── Buying signals ──
+  if (lower.includes('sign up') || lower.includes('buy') || lower.includes('purchase') || lower.includes('start') || lower.includes('get started') || lower.includes('ready') || lower.includes('let\'s do') || lower.includes('i want') || lower.includes('i\'ll take')) {
+    return `NOW we're talking! You're making a power move. Here's the next step: [This is where your checkout link goes]. I'm ${config.name}, an AI sales assistant, so I can't process payments directly - but I've got your back. Which plan are you going with? I'll make sure the team rolls out the red carpet for you.`;
+  }
+
+  // ── Who are you ──
+  if (lower.includes('who are you') || lower.includes('are you real') || lower.includes('are you ai') || lower.includes('are you a bot') || lower.includes('human')) {
+    return `Full transparency: I'm ${config.name}, an AI sales assistant. But here's the thing - I know these products inside and out, I'm available 24/7, and I'll never waste your time. Now that we've got that out of the way - what's the biggest problem you're trying to solve?`;
+  }
+
+  // ── Catch-all: Always pivot to selling ──
+  const catchAlls = [
+    `Interesting! That tells me a lot. Based on what you're saying, I think the ${hasPro ? 'Pro Plan' : 'right package'} would be a game-changer for you. Here's why...`,
+    `I appreciate you sharing that. Let me connect the dots for you - everything you just described? That's EXACTLY the problem we solve. Can I show you how?`,
+    `Love it. You know what? You remind me of some of our best customers. They started skeptical too, and now they can't imagine working without us. What would it take to get you started today?`,
+    `That's a great point. And it actually connects to something I wanted to show you. ${hasLifetime ? 'Have you seen the Lifetime Deal? $499 once and you never pay again. Only 50 spots.' : 'Our Pro plan users see results in the first 48 hours.'} Interested?`
+  ];
+
+  return catchAlls[Math.floor(Math.random() * catchAlls.length)];
+}
+
+// ── Greeting on load ──
+function greet() {
+  setTimeout(() => {
+    addBotMessage(`Hey there! I'm ${config.name}. Welcome to the demo.\n\nFull disclosure: I'm an AI sales assistant running in DEMO MODE - completely sandboxed, no network access, no data leaves this page.\n\nBut I'm still going to try to sell you something. That's my job.\n\nSo... what brings you here today?`);
+  }, 500);
+}
+
+greet();
+</script>
+</body>
+</html>

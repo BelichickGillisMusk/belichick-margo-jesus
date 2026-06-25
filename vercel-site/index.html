@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bryan O'Neill Gillis</title>
+<meta name="description" content="Bryan O'Neill Gillis - Founder, Gillis Intelligence Agency. Building autonomous AI agent teams.">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root{
+    --bg:#0a0d12;
+    --panel:#161b22;
+    --border:#21262d;
+    --text:#e6edf3;
+    --text-dim:#7d8590;
+    --accent:#58a6ff;
+    --green:#3fb950;
+    --gold:#d29922;
+    --gradient:linear-gradient(135deg,#58a6ff 0%,#3fb950 100%);
+  }
+
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    padding:24px;
+  }
+
+  .card{
+    max-width:600px;
+    width:100%;
+    text-align:center;
+  }
+
+  .initials{
+    width:100px;height:100px;
+    border-radius:50%;
+    background:var(--gradient);
+    display:flex;align-items:center;justify-content:center;
+    font-size:2.2rem;font-weight:800;
+    color:#fff;
+    margin:0 auto 24px;
+    box-shadow:0 0 40px rgba(88,166,255,.2);
+  }
+
+  h1{
+    font-size:2.2rem;font-weight:700;
+    margin-bottom:4px;
+    letter-spacing:-.02em;
+  }
+
+  .title{
+    color:var(--accent);
+    font-size:.9rem;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    margin-bottom:20px;
+  }
+
+  .bio{
+    color:var(--text-dim);
+    font-size:1rem;
+    line-height:1.7;
+    margin-bottom:32px;
+    max-width:480px;
+    margin-left:auto;margin-right:auto;
+  }
+
+  .links{
+    display:flex;gap:12px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-bottom:40px;
+  }
+
+  .links a{
+    padding:12px 28px;
+    border-radius:8px;
+    text-decoration:none;
+    font-size:.9rem;
+    font-weight:600;
+    transition:all .2s;
+  }
+
+  .link-primary{
+    background:var(--accent);
+    color:#fff;
+  }
+  .link-primary:hover{box-shadow:0 0 24px rgba(88,166,255,.3);transform:translateY(-1px)}
+
+  .link-secondary{
+    background:transparent;
+    color:var(--text);
+    border:1px solid var(--border);
+  }
+  .link-secondary:hover{border-color:var(--text-dim)}
+
+  /* ── VENTURES ── */
+  .ventures{
+    display:flex;flex-direction:column;gap:12px;
+    text-align:left;
+    margin-bottom:32px;
+  }
+
+  .venture{
+    padding:16px 20px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:10px;
+    transition:all .2s;
+  }
+
+  .venture:hover{border-color:rgba(88,166,255,.3)}
+
+  .venture h3{
+    font-size:.95rem;font-weight:600;
+    display:flex;align-items:center;gap:8px;
+    margin-bottom:4px;
+  }
+
+  .venture .tag{
+    font-size:.6rem;
+    padding:2px 8px;
+    border-radius:10px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    font-weight:600;
+  }
+
+  .tag.live{background:rgba(63,185,80,.12);color:var(--green);border:1px solid rgba(63,185,80,.25)}
+  .tag.building{background:rgba(210,153,34,.12);color:var(--gold);border:1px solid rgba(210,153,34,.25)}
+
+  .venture p{
+    font-size:.82rem;
+    color:var(--text-dim);
+    line-height:1.5;
+  }
+
+  .motto{
+    font-size:.7rem;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    margin-top:20px;
+  }
+
+  .motto strong{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="initials">BOG</div>
+  <h1>Bryan O'Neill Gillis</h1>
+  <div class="title">Founder &amp; Operator</div>
+  <p class="bio">Building autonomous AI agent teams that replace departments, not people. One-person company. Ten-person output.</p>
+
+  <div class="links">
+    <a href="https://silverbackai.agency" class="link-primary">GIA - Gillis Intelligence Agency</a>
+    <a href="mailto:hello@silverbackai.agency" class="link-secondary">Contact</a>
+  </div>
+
+  <div class="ventures">
+    <div class="venture">
+      <h3>Gillis Intelligence Agency <span class="tag live">Live</span></h3>
+      <p>AI agent teams for business automation. Sales, compliance, marketing, ops &mdash; all handled by purpose-built agents with security guardrails.</p>
+    </div>
+    <div class="venture">
+      <h3>CARB Clean Truck Check <span class="tag building">Building</span></h3>
+      <p>Compliance management and mobile testing services for California's Heavy-Duty Vehicle Inspection program. Every truck over 14,000 lbs needs testing 2-4x/year.</p>
+    </div>
+    <div class="venture">
+      <h3>SilverbackAI <span class="tag building">Building</span></h3>
+      <p>The platform behind GIA. Agent orchestration, security gating, and deployment infrastructure for autonomous AI teams.</p>
+    </div>
+  </div>
+
+  <div class="motto">
+    <strong>ELITE</strong> &mdash; <strong>DEPLOY</strong> &mdash; <strong>ITERATE</strong> &mdash; <strong>DOMINATE</strong>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,3 +1,7 @@
+# OpenClaw config contains API keys — keep local only
+openclaw-config.json5
+
+# Dependencies
 node_modules/
 .env
 *.csv

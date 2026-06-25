@@ -1,0 +1,172 @@
+{
+  "lastUpdated": "2026-04-21T12:00:00Z",
+  "agents": [
+    {
+      "id": "belichick",
+      "name": "Belichick",
+      "role": "The Strategist",
+      "status": "working",
+      "currentTask": "Weekly review for week of Apr 21",
+      "lastCompleted": "Approved Atlas deploy of bots.html",
+      "lastCompletedAt": "2026-04-21T11:30:00Z"
+    },
+    {
+      "id": "sloan-carb",
+      "name": "Sloan (CARB CS)",
+      "role": "Clean Truck Check Support",
+      "status": "idle",
+      "currentTask": null,
+      "lastCompleted": "Answered fleet compliance question for 2027 quarterly mandate",
+      "lastCompletedAt": "2026-04-21T09:15:00Z"
+    },
+    {
+      "id": "sloan-legal",
+      "name": "Sloan (Legal)",
+      "role": "Regulatory Research",
+      "status": "idle",
+      "currentTask": null,
+      "lastCompleted": "Compiled IL trucking regulation brief",
+      "lastCompletedAt": "2026-04-20T16:45:00Z"
+    },
+    {
+      "id": "atlas",
+      "name": "Atlas",
+      "role": "YouTube & Creative",
+      "status": "idle",
+      "currentTask": null,
+      "lastCompleted": "Created 4-week content calendar draft",
+      "lastCompletedAt": "2026-04-20T14:00:00Z"
+    },
+    {
+      "id": "closer",
+      "name": "Closer",
+      "role": "Sales Agent",
+      "status": "idle",
+      "currentTask": null,
+      "lastCompleted": "Drafted cold email sequence for fleet managers",
+      "lastCompletedAt": "2026-04-20T17:30:00Z"
+    },
+    {
+      "id": "jon-jones",
+      "name": "Jon Jones",
+      "role": "Guardian Bot",
+      "status": "working",
+      "currentTask": "Daily security audit scan",
+      "lastCompleted": "Reviewed 12 outbound actions — 0 blocked",
+      "lastCompletedAt": "2026-04-21T10:00:00Z"
+    },
+    {
+      "id": "cipher",
+      "name": "Cipher",
+      "role": "Finance & Ops",
+      "status": "idle",
+      "currentTask": null,
+      "lastCompleted": "Free-tier usage report — all platforms under 20%",
+      "lastCompletedAt": "2026-04-21T08:00:00Z"
+    },
+    {
+      "id": "sentinel",
+      "name": "Sentinel",
+      "role": "Lead Scraper",
+      "status": "idle",
+      "currentTask": null,
+      "lastCompleted": "Pulled 47 trucking contacts in Chicago metro",
+      "lastCompletedAt": "2026-04-19T13:00:00Z"
+    },
+    {
+      "id": "nova",
+      "name": "Nova",
+      "role": "Marketing & Content",
+      "status": "idle",
+      "currentTask": null,
+      "lastCompleted": "Drafted social media posts for SilverbackAI launch",
+      "lastCompletedAt": "2026-04-20T11:00:00Z"
+    },
+    {
+      "id": "builder-deploy",
+      "name": "Builder-Deploy",
+      "role": "Ship & Deploy",
+      "status": "working",
+      "currentTask": "Deploying Conference Room to agents.bryanoneillgillis.com",
+      "lastCompleted": "Deployed silverbackai.agency to Cloudflare Pages",
+      "lastCompletedAt": "2026-04-20T19:00:00Z"
+    },
+    {
+      "id": "samantha",
+      "name": "Samantha",
+      "role": "Calendar & Scheduling",
+      "status": "idle",
+      "currentTask": null,
+      "lastCompleted": "Synced Google Calendar and set 3 deadline reminders",
+      "lastCompletedAt": "2026-04-21T07:00:00Z"
+    }
+  ],
+  "feed": [
+    {
+      "agent": "builder-deploy",
+      "action": "Deploying Conference Room to agents.bryanoneillgillis.com",
+      "timestamp": "2026-04-21T12:00:00Z",
+      "type": "deploy"
+    },
+    {
+      "agent": "belichick",
+      "action": "Started weekly review for week of Apr 21",
+      "timestamp": "2026-04-21T11:45:00Z",
+      "type": "strategy"
+    },
+    {
+      "agent": "jon-jones",
+      "action": "Reviewed 12 outbound actions — all clear",
+      "timestamp": "2026-04-21T10:00:00Z",
+      "type": "security"
+    },
+    {
+      "agent": "sloan-carb",
+      "action": "Answered fleet compliance question re: 2027 quarterly mandate",
+      "timestamp": "2026-04-21T09:15:00Z",
+      "type": "support"
+    },
+    {
+      "agent": "cipher",
+      "action": "Free-tier usage report — Cloudflare 8%, Vercel 3%, Railway $0",
+      "timestamp": "2026-04-21T08:00:00Z",
+      "type": "finance"
+    },
+    {
+      "agent": "closer",
+      "action": "Drafted 5-email cold sequence for fleet managers",
+      "timestamp": "2026-04-20T17:30:00Z",
+      "type": "sales"
+    },
+    {
+      "agent": "sloan-legal",
+      "action": "Compiled IL trucking regulation brief — 3 opportunities flagged",
+      "timestamp": "2026-04-20T16:45:00Z",
+      "type": "research"
+    },
+    {
+      "agent": "builder-deploy",
+      "action": "Deployed silverbackai.agency to Cloudflare Pages",
+      "timestamp": "2026-04-20T19:00:00Z",
+      "type": "deploy"
+    },
+    {
+      "agent": "atlas",
+      "action": "Created 4-week YouTube content calendar",
+      "timestamp": "2026-04-20T14:00:00Z",
+      "type": "creative"
+    },
+    {
+      "agent": "nova",
+      "action": "Drafted 10 social posts for SilverbackAI launch week",
+      "timestamp": "2026-04-20T11:00:00Z",
+      "type": "marketing"
+    },
+    {
+      "agent": "sentinel",
+      "action": "Scraped 47 trucking company contacts — Chicago metro",
+      "timestamp": "2026-04-19T13:00:00Z",
+      "type": "scraping"
+    }
+  ]
+}
