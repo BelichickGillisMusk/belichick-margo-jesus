@@ -3,3 +3,10 @@ openclaw-config.json5
 
 # Dependencies
 node_modules/
+.env
+*.csv
+google-service-account.json
+.wrangler/
+.dev.vars
+.dev.vars.*
+.hermes/

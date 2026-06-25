@@ -1,0 +1,47 @@
+{
+  "requiredSchemaTypes": [
+    "LocalBusiness",
+    "AutoRepair",
+    "FAQPage",
+    "AggregateRating",
+    "BreadcrumbList"
+  ],
+  "requiredElements": {
+    "cleantruckcheckvin.app": {
+      "description": "VIN check app link must appear on every site",
+      "pattern": "cleantruckcheckvin.app"
+    },
+    "freeRetest": {
+      "description": "Free retest policy must be mentioned",
+      "patterns": ["free retest", "retest free", "1 free retest", "retest at no charge"]
+    },
+    "carbTesterId": {
+      "description": "CARB Tester ID must be displayed",
+      "pattern": "IF530523"
+    }
+  },
+  "blacklistedContent": {
+    "norcalcarbmobile.com": {
+      "description": "NEVER reference norcalcarbmobile.com on any Cloudflare site",
+      "severity": "critical"
+    },
+    "DELETE THIS SECTION": {
+      "description": "Remove dev/placeholder sections",
+      "severity": "warning"
+    }
+  },
+  "seo": {
+    "titleMaxLength": 60,
+    "titleMinLength": 30,
+    "metaDescMinLength": 120,
+    "metaDescMaxLength": 160,
+    "requiredMetaTags": ["description", "viewport", "robots"],
+    "requiredOGTags": ["og:title", "og:description", "og:type", "og:url"],
+    "maxHtmlSizeKB": 200
+  },
+  "accessibility": {
+    "minContrastRatio": 4.5,
+    "minLargeTextContrast": 3.0,
+    "requiredAttributes": ["lang", "charset"]
+  }
+}

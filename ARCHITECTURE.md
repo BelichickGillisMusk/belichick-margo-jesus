@@ -2,7 +2,7 @@
 
 ## Overview
 
-Local-first AI agent team running on OpenClaw on a Mac.
+Local-first AI agent team running on ClawdBot on a Mac.
 No Google Cloud. No surprise bills. Full control.
 
 ---
@@ -48,11 +48,11 @@ SECURITY:
 
 ---
 
-### 3. ATLAS (Technical / Web Dev)
+### 3. MUSK (Technical / Web Dev)
 **Builds and maintains the website, handles deployments, fixes bugs.**
 
 - Website development and maintenance
-- Deployment to Vercel/hosting
+- Local development and static site updates
 - Bug fixes and feature additions
 - Database management
 - API integrations
@@ -80,7 +80,7 @@ Fallback: None - finance needs accuracy
 
 ---
 
-### 5. NOVA (Marketing / Animation / YouTube)
+### 5. KESHA (Marketing / Animation / YouTube)
 **Content machine. Makes videos, designs, grows audience.**
 
 - YouTube content strategy and scripts
@@ -91,7 +91,7 @@ Fallback: None - finance needs accuracy
 - Content calendar management
 - Trend research
 
-Skills: atlas-creative, summarize, video-frames, openai-image-gen, canvas
+Skills: musk-creative, summarize, video-frames, openai-image-gen, canvas
 Model: Claude Sonnet for strategy, Haiku for bulk content
 Fallback: Local model for brainstorming
 
@@ -162,8 +162,8 @@ SECURITY:
 | **Atlas** (Web Dev) | Complex code/architecture | Claude (on-demand) | $ only when needed |
 | **Cipher** (Finance) | Sheets formulas, invoice gen | **Gemini - FREE** | $0 |
 | **Cipher** (Finance) | Tax strategy, complex analysis | Claude (on-demand) | $ only when needed |
-| **Nova** (Marketing) | Content drafts, SEO, social | **Gemini - FREE** | $0 |
-| **Nova** (Marketing) | YouTube scripts, animation briefs | **Gemini - FREE** | $0 |
+| **Kesha** (Marketing) | Content drafts, SEO, social | **Gemini - FREE** | $0 |
+| **Kesha** (Marketing) | YouTube scripts, animation briefs | **Gemini - FREE** | $0 |
 | **Sentinel** (Legal) | Basic law research, summaries | **Gemini - FREE** | $0 |
 | **Sentinel** (Legal) | Deep regulatory analysis | Claude (on-demand) | $ only when needed |
 | **Lead Scraper** | Google Maps phone/address pulls | **Gemini - FREE** | $0 |
@@ -180,7 +180,7 @@ Use Make.com for everything that's a repeating pipeline:
 | **Test Results → Drive** | Tester submits results | Auto-file in customer's Drive folder |
 | **New CARB Regulation Alert** | RSS/web monitor on CARB site | Notify you + update Sloan's knowledge |
 | **Invoice Generation** | Cipher creates invoice | Auto-send via email, log in Sheets |
-| **Social Media Posting** | Nova creates content | Auto-post to platforms on schedule |
+| **Social Media Posting** | Kesha creates content | Auto-post to platforms on schedule |
 | **Fleet Compliance Check** | Weekly cron | Pull fleet status, flag non-compliant |
 
 ### Revised Monthly Cost
@@ -190,7 +190,7 @@ Use Make.com for everything that's a repeating pipeline:
 | Gemini Pro/Developer/Cloud | Already paying | Handles 80% of agent tasks |
 | Make.com | Already paying | Handles all automation |
 | Claude API (on-demand only) | ~$15-30/mo | ONLY for complex tasks |
-| OpenClaw (open source) | $0 | |
+| ClawdBot (local orchestration) | $0 | |
 | Ollama (backup local model) | $0 | |
 | Mac electricity | ~$5 | |
 | **TOTAL NEW COST** | **~$20-35/mo** | Down from $185/mo |
@@ -225,7 +225,7 @@ If you're on the paid Gemini tier, limits are much higher. Either way: plenty fo
 - Lowest risk (sandboxed, only knows site content)
 
 ### Steps:
-1. Install OpenClaw on Mac: `npm install -g openclaw@latest`
+1. Start ClawdBot on Mac (see clawdbot-config.json5)
 2. Install Ollama on Mac: `brew install ollama`
 3. Pull a local model: `ollama pull llama3`
 4. Configure OpenClaw with the config from this repo
@@ -378,7 +378,7 @@ Agent drafts message → Jon Jones reviews → Post to channel via Bot API
 
 ```
 YOUR MAC
-├── OpenClaw Gateway (port 18789, loopback only)
+├── ClawdBot Gateway (port 18789, loopback only)
 │   ├── Auth: Token-based (timing-safe)
 │   ├── Bind: 127.0.0.1 ONLY
 │   └── Agents:
@@ -463,3 +463,58 @@ The only thing that touches the internet:
 3. Email (SMTP/IMAP to Gmail — gatekept by Jon Jones)
 4. Slack Bot API (gatekept by Jon Jones)
 5. Discord/Telegram webhooks (gatekept by Jon Jones)
+---
+
+## Slack RECON Integration
+
+### Overview
+
+Slack is the mission command center. Agents are dispatched via slash commands and report findings back to dedicated channels.
+
+### Channel Map
+
+| Channel | Purpose | Agents |
+|---------|---------|--------|
+| `#recon-command` | Mission dispatch | Belichick (receives) |
+| `#recon-leads` | Prospect/lead intelligence | Lead Scraper |
+| `#recon-legal` | Regulatory intel | Sentinel, Mila-Legal |
+| `#recon-market` | Market research | Kesha, Musk |
+| `#recon-sales` | Prospect dossiers | Jon Jones |
+| `#recon-compliance` | Vehicle/fleet compliance | Mila-CARB |
+| `#agent-status` | Agent status dashboard | All agents |
+| `#alerts` | Budget warnings, failures | Belichick, Cipher |
+
+### Slash Commands
+
+| Command | What It Does |
+|---------|-------------|
+| `/recon-leads [query]` | Scrape business leads from Google Maps |
+| `/recon-legal [topic]` | Research regulations and find opportunities |
+| `/recon-market [industry]` | Competitor and market intelligence |
+| `/recon-compliance [vin]` | Check vehicle compliance status |
+| `/recon-prospect [company]` | Deep dive dossier on a prospect |
+| `/dispatch [agent] [task]` | Direct dispatch to any agent |
+| `/agent-status` | All agent statuses |
+| `/budget` | Token spend report |
+| `/kill [agent]` | Emergency stop |
+
+### Data Flow
+
+```
+Slack Slash Command
+  → Make.com Webhook (bridge)
+    → ClawdBot Gateway (localhost:18789)
+      → Belichick dispatches agent
+        → Agent runs mission
+          → Results → Make.com → Slack channel
+```
+
+### Security
+- Authorized Slack users only (allowlist)
+- Max 10 missions/hour, 2 concurrent
+- No PII posted to Slack channels
+- All missions logged with user, time, agent, cost
+- Kill switch via `/kill` command
+
+Full skill documentation: `skills/slack-recon-agent/SKILL.md`
+

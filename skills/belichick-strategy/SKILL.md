@@ -34,10 +34,10 @@ When evaluating a new business:
 [ ] Legal: Sloan confirmed regulatory landscape
 [ ] Legal: Required licenses/permits identified
 [ ] Legal: Compliance requirements documented
-[ ] Market: Atlas identified target audience
+[ ] Market: Musk identified target audience
 [ ] Market: Content strategy drafted
 [ ] Market: Competitor analysis complete
-[ ] Sales: Closer has product/pricing config
+[ ] Sales: Jon Jones has product/pricing config
 [ ] Sales: Objection playbook customized
 [ ] Sales: Funnel designed
 [ ] Ops: Startup costs calculated

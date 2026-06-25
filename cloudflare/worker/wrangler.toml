@@ -1,0 +1,43 @@
+name = "norcal-city-sites"
+main = "src/worker.js"
+compatibility_date = "2026-05-10"
+
+[vars]
+BOOKING_URL = "https://cleantruckcheckvin.app"
+
+# Each environment is one site (domain + KV namespace + worker name).
+# Deploy with: wrangler deploy --config cloudflare/worker/wrangler.toml --env <site>
+# Sync KV with: node cloudflare/worker/scripts/sync-kv.mjs <site>
+
+[env.hayward]
+name = "cleantruckcheckhayward"
+vars = { SITE_ID = "cleantruckcheckhayward" }
+routes = [{ pattern = "cleantruckcheckhayward.com/*", zone_name = "cleantruckcheckhayward.com" }]
+kv_namespaces = [{ binding = "SITE_KV", id = "f55313eabf3b415d83fb7036e4873834" }]
+
+[env.fairfield]
+name = "cleantruckcheckfairfield"
+vars = { SITE_ID = "cleantruckcheckfairfield" }
+routes = [{ pattern = "cleantruckcheckfairfield.com/*", zone_name = "cleantruckcheckfairfield.com" }]
+kv_namespaces = [{ binding = "SITE_KV", id = "18c13f0d18cd49519e1f3688484fc9dc" }]
+
+[env.roseville]
+name = "cleantruckcheckroseville"
+vars = { SITE_ID = "cleantruckcheckroseville" }
+routes = [{ pattern = "cleantruckcheckroseville.com/*", zone_name = "cleantruckcheckroseville.com" }]
+kv_namespaces = [{ binding = "SITE_KV", id = "a7499c3416a74d37a828e6e29f0b727f" }]
+
+[env.lodi]
+name = "cleantruckchecklodi"
+vars = { SITE_ID = "cleantruckchecklodi" }
+routes = [{ pattern = "cleantruckchecklodi.com/*", zone_name = "cleantruckchecklodi.com" }]
+kv_namespaces = [{ binding = "SITE_KV", id = "5b32c626359f4f4c83136bcf588c6428" }]
+
+[env.silverbackai]
+name = "silverbackai"
+vars = { SITE_ID = "silverbackai" }
+routes = [{ pattern = "silverbackai.agency/*", zone_name = "silverbackai.agency" }]
+# The deploy workflow auto-provisions this KV namespace (title "silverbackai-SITE_KV")
+# when CLOUDFLARE_API_TOKEN is set; see cloudflare/worker/scripts/ensure-kv.mjs.
+kv_namespaces = [{ binding = "SITE_KV", id = "REPLACE_ME" }]
+

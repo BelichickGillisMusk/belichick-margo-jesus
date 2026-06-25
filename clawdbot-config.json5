@@ -1,0 +1,144 @@
+// ClawdBot Configuration for BelichickGillisMusk
+// Local-first agent orchestration — runs on your Mac
+// Agents: Mila (Research/Legal), Musk (YouTube/Creative), Jon Jones (Sales), Kesha (Marketing), Belichick (Strategy)
+{
+  "gateway": {
+    "bind": "loopback",          // ONLY accessible from your machine - not the internet
+    "port": 18789,
+    "auth": {
+      "token": "GENERATE-WITH: openssl rand -hex 32"
+    }
+  },
+
+  // ── IDENTITY ──
+  "identity": {
+    "name": "BelichickGillisMusk HQ",
+    "systemPrompt": "You are part of the BelichickGillisMusk agent team. You operate within strict budgets and guardrails. Never exceed your role boundaries."
+  },
+
+  // ── COST CONTROLS (the kill switches) ──
+  "auth": {
+    "cooldowns": {
+      "billingBackoffHours": 1,        // Disable API key 1 hour after billing error
+      "billingMaxHours": 12,           // Max 12 hour cooldown
+      "failureWindowHours": 6          // Track failures over 6 hours
+    }
+  },
+
+  // ── AGENT DEFAULTS (apply to ALL agents) ──
+  "agents": {
+    "defaults": {
+      "maxConcurrent": 2,              // Max 2 agents running at once
+      "contextTokens": 60000,          // Cap context to 60K tokens per turn
+      "timeoutSeconds": 300,           // Kill any agent after 5 minutes of silence
+      "bootstrapMaxChars": 15000,      // Limit bootstrap prompt size
+
+      "subagents": {
+        "maxConcurrent": 2,            // Max 2 sub-agents
+        "archiveAfterMinutes": 30      // Auto-kill idle sub-agents after 30 min
+      },
+
+      "contextPruning": {
+        "mode": "cache-ttl",
+        "ttl": "20m",                  // Prune old context after 20 min
+        "softTrimRatio": 0.70,
+        "hardClearRatio": 0.85
+      },
+
+      "compaction": {
+        "reserveTokensFloor": 2000,
+        "maxHistoryShare": 0.4,
+        "memoryFlush": {
+          "enabled": true,
+          "softThresholdTokens": 1000
+        }
+      }
+    }
+  },
+
+  // ── CRON (scheduled tasks) ──
+  "cron": {
+    "enabled": true,
+    "maxConcurrentRuns": 1,            // One cron job at a time
+    "sessionRetention": "6h",          // Clean up cron sessions after 6 hours
+
+    // ── SCHEDULED RECON & STATUS PULSE ──
+    "jobs": [
+      {
+        "name": "agent-status-pulse",
+        "schedule": "0 8,10,12,14,16,18,20 * * *",  // Every 2h, 8AM-8PM
+        "agent": "belichick",
+        "task": "Post agent status pulse to #agent-status on Slack",
+        "slackChannel": "#agent-status"
+      },
+      {
+        "name": "carb-regulation-watch",
+        "schedule": "0 6 * * *",       // Daily 6 AM
+        "agent": "sentinel",
+        "task": "Check CARB site and eCFR for new HD I/M regulations, post to Slack",
+        "slackChannel": "#recon-legal"
+      },
+      {
+        "name": "weekly-lead-scrape",
+        "schedule": "0 7 * * 1",       // Monday 7 AM
+        "agent": "lead-scraper",
+        "task": "Scrape Google Places for new trucking/freight companies in CA, post to Slack",
+        "slackChannel": "#recon-leads"
+      },
+      {
+        "name": "competitor-watch",
+        "schedule": "0 7 * * 3",       // Wednesday 7 AM
+        "agent": "musk",
+        "task": "Check competitor websites for pricing/service changes, post to Slack",
+        "slackChannel": "#recon-market"
+      },
+      {
+        "name": "compliance-deadline-alerts",
+        "schedule": "0 8 * * *",       // Daily 8 AM
+        "agent": "mila-carb",
+        "task": "Check fleet compliance deadlines within 7 days, post alerts to Slack",
+        "slackChannel": "#recon-compliance"
+      },
+      {
+        "name": "weekly-budget-report",
+        "schedule": "0 17 * * 5",      // Friday 5 PM
+        "agent": "cipher",
+        "task": "Compile weekly token spend and cost breakdown by agent, post to Slack",
+        "slackChannel": "#alerts"
+      }
+    ]
+  },
+
+  // ── CHANNELS (enable what you need) ──
+  "channels": {
+    "discord": {
+      "enabled": false
+    },
+    "telegram": {
+      "enabled": false
+    },
+    "slack": {
+      "enabled": true,
+      "botName": "BelichickGillisMusk-HQ",
+      "channels": {
+        "reconCommand": "#recon-command",
+        "reconLeads": "#recon-leads",
+        "reconLegal": "#recon-legal",
+        "reconMarket": "#recon-market",
+        "reconSales": "#recon-sales",
+        "reconCompliance": "#recon-compliance",
+        "agentStatus": "#agent-status",
+        "alerts": "#alerts"
+      },
+      "rateLimits": {
+        "maxMissionsPerHour": 10,
+        "maxConcurrentMissions": 2
+      },
+      "auth": {
+        "tokenEnv": "SLACK_BOT_TOKEN",
+        "appTokenEnv": "SLACK_APP_TOKEN",
+        "signingSecretEnv": "SLACK_SIGNING_SECRET"
+      }
+    }
+  }
+}
