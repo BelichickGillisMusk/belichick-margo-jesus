@@ -1,0 +1,20 @@
+{
+  "name": "belichick-gillis-musk",
+  "version": "1.0.0",
+  "description": "Local-first AI agent team - Slack bot, CARB chatbot, lead scraper",
+  "type": "module",
+  "scripts": {
+    "slack": "node src/slack-bot/index.js",
+    "mila": "node src/mila-chatbot/index.js",
+    "scrape": "node src/lead-scraper/index.js",
+    "start": "node src/slack-bot/index.js"
+  },
+  "dependencies": {
+    "@slack/bolt": "^4.1.0",
+    "@anthropic-ai/sdk": "^0.39.0",
+    "express": "^4.21.0",
+    "googleapis": "^144.0.0",
+    "dotenv": "^16.4.0",
+    "cors": "^2.8.5"
+  }
+}
