@@ -20,6 +20,10 @@
     --yarmulke:#21262d;
     --yarmulke-dark:#0d1117;
     --avatar-bg:#30363d;
+    --panel-bg:#161b22;
+    --panel-border:#21262d;
+    --success:#3fb950;
+    --warning:#d29922;
   }
 
   body{
@@ -29,9 +33,10 @@
     display:flex;
     flex-direction:column;
     align-items:center;
-    justify-content:center;
+    justify-content:flex-start;
+    padding:2rem 0 4rem;
     min-height:100vh;
-    overflow:hidden;
+    overflow-y:auto;
   }
 
   h1{
@@ -280,6 +285,297 @@
     line-height:1.4;
   }
   .tooltip.show{opacity:1}
+
+  /* ---------- mission control panel ---------- */
+  .mission-panel{
+    width:min(92vw,900px);
+    margin-top:2.5rem;
+    padding:0 1rem;
+  }
+
+  .panel-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:.75rem;
+    margin-bottom:1rem;
+  }
+
+  .panel-title{
+    font-family:'SF Mono','Fira Code','Cascadia Code',monospace;
+    font-size:.85rem;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+    color:var(--text);
+  }
+
+  .panel-title .panel-icon{
+    color:var(--halo);
+    margin-right:.4rem;
+  }
+
+  .panel-subtitle{
+    font-size:.7rem;
+    color:var(--text-dim);
+    text-transform:none;
+    letter-spacing:normal;
+    margin-left:.75rem;
+  }
+
+  .panel-tabs{
+    display:flex;
+    gap:.4rem;
+  }
+
+  .panel-tabs .tab{
+    font-size:.68rem;
+    padding:4px 12px;
+    border:1px solid var(--table-rim);
+    border-radius:20px;
+    background:transparent;
+    color:var(--text-dim);
+    cursor:pointer;
+    transition:all .2s;
+    font-family:inherit;
+  }
+
+  .panel-tabs .tab:hover{
+    border-color:var(--halo);
+    color:var(--text);
+  }
+
+  .panel-tabs .tab.active{
+    border-color:var(--halo);
+    color:var(--halo);
+    background:rgba(88,166,255,.08);
+  }
+
+  .stats-bar{
+    display:flex;
+    gap:1.5rem;
+    flex-wrap:wrap;
+    padding:10px 14px;
+    background:var(--panel-bg);
+    border:1px solid var(--panel-border);
+    border-radius:8px;
+    margin-bottom:1rem;
+    font-family:'SF Mono','Fira Code','Cascadia Code',monospace;
+    font-size:.68rem;
+    color:var(--text-dim);
+  }
+
+  .stats-bar .stat-value{
+    color:var(--text);
+    font-weight:600;
+  }
+
+  .stats-bar .stat-value.green{color:var(--success)}
+  .stats-bar .stat-value.yellow{color:var(--warning)}
+  .stats-bar .stat-value.blue{color:var(--halo)}
+
+  .feed{
+    display:flex;
+    flex-direction:column;
+    gap:.5rem;
+  }
+
+  .feed-item{
+    background:var(--panel-bg);
+    border:1px solid var(--panel-border);
+    border-left:3px solid var(--table-rim);
+    border-radius:8px;
+    padding:12px 16px;
+    transition:opacity .25s,border-color .25s;
+  }
+
+  .feed-item.type-activity{border-left-color:var(--halo)}
+  .feed-item.type-tps-deployed{border-left-color:var(--success)}
+  .feed-item.type-tps-blocked{border-left-color:var(--warning)}
+  .feed-item.type-tps-config{border-left-color:var(--table-rim)}
+  .feed-item.type-discovery{border-left-color:#bc8cff}
+
+  .feed-item.dimmed{opacity:.2}
+
+  .feed-row{
+    display:flex;
+    align-items:center;
+    gap:.6rem;
+    flex-wrap:wrap;
+  }
+
+  .feed-agent{
+    font-size:.75rem;
+    font-weight:600;
+    color:var(--text);
+  }
+
+  .feed-time{
+    font-family:'SF Mono','Fira Code','Cascadia Code',monospace;
+    font-size:.62rem;
+    color:var(--text-dim);
+    margin-left:auto;
+  }
+
+  .feed-body{
+    font-size:.74rem;
+    color:var(--text);
+    margin-top:4px;
+    line-height:1.5;
+  }
+
+  .feed-tags{
+    display:flex;
+    gap:.4rem;
+    flex-wrap:wrap;
+    margin-top:6px;
+  }
+
+  .feed-tag{
+    font-size:.6rem;
+    padding:2px 8px;
+    border-radius:10px;
+    font-family:'SF Mono','Fira Code','Cascadia Code',monospace;
+  }
+
+  .feed-tag.tokens{background:rgba(88,166,255,.1);color:var(--halo)}
+
+  .status-badge{
+    display:inline-block;
+    font-size:.6rem;
+    padding:2px 8px;
+    border-radius:10px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+  }
+
+  .status-badge.deployed{background:rgba(63,185,80,.15);color:var(--success)}
+  .status-badge.blocked{background:rgba(210,153,34,.15);color:var(--warning)}
+  .status-badge.config-only{background:rgba(110,118,129,.15);color:var(--text-dim)}
+  .status-badge.complete{background:rgba(63,185,80,.1);color:var(--success)}
+  .status-badge.trouble{background:rgba(248,81,73,.15);color:var(--trouble)}
+
+  .discovery-type{
+    font-size:.6rem;
+    padding:2px 8px;
+    border-radius:10px;
+    background:rgba(188,140,255,.12);
+    color:#bc8cff;
+    font-weight:600;
+    text-transform:uppercase;
+  }
+
+  .discovery-rec{
+    font-size:.62rem;
+    font-weight:600;
+    margin-left:auto;
+  }
+
+  .discovery-rec.go{color:var(--success)}
+  .discovery-rec.research{color:var(--warning)}
+
+  .blocked-note{
+    font-size:.66rem;
+    color:var(--warning);
+    margin-top:4px;
+    font-style:italic;
+  }
+
+  .section-label{
+    font-family:'SF Mono','Fira Code','Cascadia Code',monospace;
+    font-size:.62rem;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    color:var(--text-dim);
+    margin-top:1rem;
+    margin-bottom:.4rem;
+    padding-left:4px;
+  }
+
+  /* ---------- add agent ---------- */
+  .add-agent-bar{
+    display:flex;
+    gap:.5rem;
+    flex-wrap:wrap;
+    justify-content:center;
+    margin-top:1.2rem;
+    align-items:center;
+  }
+
+  .add-agent-bar input, .add-agent-bar select{
+    font-size:.72rem;
+    padding:6px 10px;
+    border:1px solid var(--table-rim);
+    border-radius:6px;
+    background:var(--panel-bg);
+    color:var(--text);
+    font-family:inherit;
+    outline:none;
+    transition:border-color .2s;
+  }
+
+  .add-agent-bar input:focus, .add-agent-bar select:focus{
+    border-color:var(--halo);
+  }
+
+  .add-agent-bar input::placeholder{color:var(--text-dim)}
+
+  .add-agent-bar select option{background:var(--panel-bg)}
+
+  .add-agent-btn{
+    font-size:.72rem;
+    padding:6px 16px;
+    border:1px solid var(--halo);
+    border-radius:6px;
+    background:rgba(88,166,255,.1);
+    color:var(--halo);
+    cursor:pointer;
+    font-family:inherit;
+    font-weight:600;
+    transition:all .2s;
+  }
+
+  .add-agent-btn:hover{
+    background:rgba(88,166,255,.2);
+    box-shadow:0 0 12px rgba(88,166,255,.2);
+  }
+
+  /* agent entrance animation */
+  @keyframes agent-enter{
+    0%{opacity:0;transform:translate(-50%,-50%) scale(0.3)}
+    60%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}
+    100%{transform:translate(-50%,-50%) scale(1)}
+  }
+
+  .agent.entering{
+    animation:agent-enter .6s ease-out forwards;
+  }
+
+  /* agent working animation (orbiting dots) */
+  .agent[data-status="active"] .agent-role.working::after{
+    content:'';
+    display:inline-block;
+    width:4px;height:4px;
+    background:var(--halo);
+    border-radius:50%;
+    margin-left:4px;
+    animation:blink-dot 1s steps(3,end) infinite;
+  }
+
+  @keyframes blink-dot{
+    0%{opacity:.2}
+    50%{opacity:1}
+    100%{opacity:.2}
+  }
+
+  @media(max-width:640px){
+    .mission-panel{padding:0 .5rem}
+    .panel-header{flex-direction:column;align-items:flex-start}
+    .stats-bar{flex-direction:column;gap:.5rem}
+    .feed-item{padding:10px 12px}
+    .feed-time{margin-left:0;margin-top:4px}
+  }
 </style>
 </head>
 <body>
@@ -308,6 +604,45 @@
 
 <div class="controls" id="controls"></div>
 
+<div class="add-agent-bar">
+  <input type="text" id="newAgentName" placeholder="Agent name" maxlength="16">
+  <select id="newAgentEmoji">
+    <option value="🤖">🤖 Robot</option>
+    <option value="🧠">🧠 Brain</option>
+    <option value="🦅">🦅 Eagle</option>
+    <option value="🔥">🔥 Fire</option>
+    <option value="💎">💎 Diamond</option>
+    <option value="⚡">⚡ Bolt</option>
+    <option value="🎯">🎯 Target</option>
+    <option value="🛠️">🛠️ Tools</option>
+    <option value="📊">📊 Charts</option>
+    <option value="🌐">🌐 Globe</option>
+  </select>
+  <input type="text" id="newAgentRole" placeholder="Role (e.g. Analyst)" maxlength="20">
+  <button class="add-agent-btn" onclick="addNewAgent()">+ Add Agent</button>
+</div>
+
+<section class="mission-panel" id="missionPanel">
+  <div class="panel-header">
+    <div class="panel-title">
+      <span class="panel-icon">&#9608;&#9608;</span>MISSION CONTROL
+      <span class="panel-subtitle" id="filterLabel">All agents</span>
+    </div>
+    <div class="panel-tabs" id="panelTabs">
+      <button class="tab active" data-filter="all">All</button>
+      <button class="tab" data-filter="activity">Activity</button>
+      <button class="tab" data-filter="tps">TPS Status</button>
+      <button class="tab" data-filter="discoveries">Discoveries</button>
+    </div>
+  </div>
+  <div class="stats-bar">
+    <span><span class="stat-value">11</span> agents built</span>
+    <span><span class="stat-value green">2</span> running</span>
+    <span><span class="stat-value yellow">6</span> discoveries pending</span>
+  </div>
+  <div class="feed" id="feed"></div>
+</section>
+
 <div class="tooltip" id="tooltip"></div>
 
 <script>
@@ -324,6 +659,37 @@ const agents = [
 ];
 
 const STATUS_CYCLE = ['active', 'inactive', 'trouble'];
+
+// ── Sample data (mirrors reports/ format) ─────────────────────
+const sampleActivity = [
+  { time:'2026-02-13T18:00Z', agent:'margo',    emoji:'🔬', task:'Evening wrap-up report generated',              tokens:1240, cost:0.004, status:'complete' },
+  { time:'2026-02-13T12:00Z', agent:'sentinel',  emoji:'🛡️', task:'Security scan — 0 vulnerabilities found',       tokens:890,  cost:0.003, status:'complete' },
+  { time:'2026-02-13T11:30Z', agent:'kesha',     emoji:'🎤', task:'Content gap analysis for CARB keywords',        tokens:2100, cost:0.007, status:'complete' },
+  { time:'2026-02-13T06:00Z', agent:'margo',     emoji:'🔬', task:'DNS health check + infra audit',                tokens:650,  cost:0.002, status:'complete' },
+  { time:'2026-02-13T00:00Z', agent:'margo',     emoji:'🔬', task:'Repo cleanup + issue triage',                   tokens:780,  cost:0.003, status:'complete' },
+  { time:'2026-02-12T17:00Z', agent:'belichick', emoji:'🏈', task:'Strategy review — prioritize Cloud Run deploy', tokens:3200, cost:0.01,  status:'complete' },
+  { time:'2026-02-12T14:00Z', agent:'cipher',    emoji:'🔐', task:'Secrets audit — 3 missing keys flagged',        tokens:1100, cost:0.004, status:'trouble' },
+  { time:'2026-02-12T09:00Z', agent:'spark',     emoji:'✨', task:'Chat widget UI mockup for Squarespace',         tokens:1800, cost:0.006, status:'complete' },
+];
+
+const sampleTPS = [
+  { agent:'margo',     emoji:'🔬', name:'Mila (Autonomous Ops)',  status:'deployed',    summary:'Running every 6 hours on GitHub Actions', blocked:null,                        cost:'$0.32/day' },
+  { agent:'margo',     emoji:'🔬', name:'Mila (Evening Wrap-Up)', status:'deployed',    summary:'Daily summary at 5 PM PT',                blocked:null,                        cost:'~$0.08/run' },
+  { agent:'margo',     emoji:'🔬', name:'Mila (Cloud Run)',       status:'blocked',     summary:'Built — NOT YET DEPLOYED',                 blocked:'Needs gcloud deploy command',cost:'$0/mo (free tier)' },
+  { agent:'belichick', emoji:'🏈', name:'Belichick (Strategy)',   status:'config-only', summary:'Config file ready',                        blocked:'Needs OpenClaw on Mac',      cost:'N/A' },
+  { agent:'sentinel',  emoji:'🛡️', name:'Sentinel (Guardian)',    status:'config-only', summary:'Legal/regulatory research agent',           blocked:'Needs OpenClaw on Mac',      cost:'N/A' },
+  { agent:'kesha',     emoji:'🎤', name:'Kesha (Content)',        status:'config-only', summary:'Market intelligence agent',                 blocked:'Needs OpenClaw on Mac',      cost:'N/A' },
+];
+
+const sampleDiscoveries = [
+  { id:1, agent:'margo',    emoji:'🔬', title:'Cloud Run Free Tier',        type:'FREE TOOL',          summary:'2M requests/month free — Mila CS will cost $0/mo in compute',        recommendation:'GO' },
+  { id:3, agent:'margo',    emoji:'🔬', title:'Gemini Flash for Grunt Work', type:'CHEAPER ALTERNATIVE',summary:'Switch simple tasks to Gemini 2.0 Flash free tier, save $5-15/mo',   recommendation:'RESEARCH' },
+  { id:5, agent:'sentinel', emoji:'🛡️', title:'CARB Quarterly Testing 2027',type:'REGULATORY CHANGE',  summary:'HD I/M moving to quarterly — 2x revenue from fleet customers',        recommendation:'GO' },
+  { id:6, agent:'spark',    emoji:'✨', title:'Free Chat Widget via Squarespace', type:'FREE TOOL',     summary:'Code Injection replaces $20-50/mo Intercom/Drift',                    recommendation:'GO' },
+];
+
+let currentFilter = 'all';
+let currentAgentFilter = null;
 
 // ── Layout helpers ────────────────────────────────────────────
 function positionAgents () {
@@ -369,9 +735,9 @@ function render () {
       renderControls();
     });
 
-    // hover tooltip
-    el.addEventListener('mouseenter', e => showTooltip(e, a));
-    el.addEventListener('mouseleave', hideTooltip);
+    // hover tooltip + feed highlight
+    el.addEventListener('mouseenter', e => { showTooltip(e, a); highlightAgent(a.id); });
+    el.addEventListener('mouseleave', () => { hideTooltip(); highlightAgent(null); });
 
     container.appendChild(el);
   });
@@ -396,6 +762,31 @@ function cycleAgent (id) {
   const el = document.querySelector(`.agent[data-id="${id}"]`);
   if (el) el.dataset.status = a.status;
   renderControls();
+}
+
+function addNewAgent () {
+  const nameEl = document.getElementById('newAgentName');
+  const emojiEl = document.getElementById('newAgentEmoji');
+  const roleEl = document.getElementById('newAgentRole');
+  const name = nameEl.value.trim();
+  const role = roleEl.value.trim() || 'Agent';
+  if (!name) { nameEl.focus(); return; }
+  const id = name.toLowerCase().replace(/\s+/g,'-');
+  if (agents.find(a => a.id === id)) { nameEl.value = ''; nameEl.placeholder = 'Name taken!'; return; }
+  agents.push({ id, name, emoji: emojiEl.value, role, status: 'active' });
+  nameEl.value = ''; roleEl.value = '';
+  render();
+  // animate the new agent entrance
+  const newEl = document.querySelector(`.agent[data-id="${id}"]`);
+  if (newEl) newEl.classList.add('entering');
+  // add an activity entry for the new agent
+  sampleActivity.unshift({
+    time: new Date().toISOString(),
+    agent: id, emoji: emojiEl.value,
+    task: `${name} joined the Round Table`,
+    tokens: 0, cost: 0, status: 'complete'
+  });
+  renderFeed();
 }
 
 function setAllStatus (status) {
@@ -425,8 +816,103 @@ function hideTooltip () {
   document.removeEventListener('mousemove', moveTooltip);
 }
 
+// ── Feed rendering ───────────────────────────────────────────
+function formatTimeAgo (iso) {
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return mins + 'm ago';
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return hrs + 'h ago';
+  const days = Math.floor(hrs / 24);
+  return days + 'd ago';
+}
+
+function renderFeed () {
+  const feed = document.getElementById('feed');
+  let html = '';
+
+  if (currentFilter === 'all' || currentFilter === 'activity') {
+    html += '<div class="section-label">Recent Activity</div>';
+    sampleActivity.forEach(a => {
+      const dim = currentAgentFilter && a.agent !== currentAgentFilter ? ' dimmed' : '';
+      html += `<div class="feed-item type-activity${dim}" data-agent="${a.agent}">
+        <div class="feed-row">
+          <span class="feed-agent">${a.emoji} ${agents.find(x=>x.id===a.agent)?.name||a.agent}</span>
+          <span class="status-badge ${a.status}">${a.status}</span>
+          <span class="feed-time">${formatTimeAgo(a.time)}</span>
+        </div>
+        <div class="feed-body">${a.task}</div>
+        <div class="feed-tags">
+          <span class="feed-tag tokens">${a.tokens.toLocaleString()} tokens</span>
+        </div>
+      </div>`;
+    });
+  }
+
+  if (currentFilter === 'all' || currentFilter === 'tps') {
+    html += '<div class="section-label">TPS Agent Status</div>';
+    sampleTPS.forEach(t => {
+      const dim = currentAgentFilter && t.agent !== currentAgentFilter ? ' dimmed' : '';
+      const statusClass = t.status === 'deployed' ? 'tps-deployed' : t.status === 'blocked' ? 'tps-blocked' : 'tps-config';
+      html += `<div class="feed-item type-${statusClass}${dim}" data-agent="${t.agent}">
+        <div class="feed-row">
+          <span class="feed-agent">${t.emoji} ${t.name}</span>
+          <span class="status-badge ${t.status}">${t.status.replace('-',' ')}</span>
+        </div>
+        <div class="feed-body">${t.summary}</div>
+        ${t.blocked ? `<div class="blocked-note">Blocked: ${t.blocked}</div>` : ''}
+      </div>`;
+    });
+  }
+
+  if (currentFilter === 'all' || currentFilter === 'discoveries') {
+    html += '<div class="section-label">Discoveries Awaiting Approval</div>';
+    sampleDiscoveries.forEach(d => {
+      const dim = currentAgentFilter && d.agent !== currentAgentFilter ? ' dimmed' : '';
+      const recClass = d.recommendation.toLowerCase();
+      html += `<div class="feed-item type-discovery${dim}" data-agent="${d.agent}">
+        <div class="feed-row">
+          <span class="discovery-type">${d.type}</span>
+          <span class="feed-agent">#${d.id} ${d.title}</span>
+          <span class="discovery-rec ${recClass}">${d.recommendation}</span>
+        </div>
+        <div class="feed-body">${d.summary}</div>
+        <div class="feed-tags">
+          <span class="feed-tag tokens">${d.emoji} ${agents.find(x=>x.id===d.agent)?.name||d.agent}</span>
+        </div>
+      </div>`;
+    });
+  }
+
+  feed.innerHTML = html;
+}
+
+// ── Tab filtering ────────────────────────────────────────────
+document.getElementById('panelTabs').addEventListener('click', e => {
+  const tab = e.target.closest('.tab');
+  if (!tab) return;
+  document.querySelectorAll('.panel-tabs .tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  currentFilter = tab.dataset.filter;
+  renderFeed();
+});
+
+// ── Agent hover → highlight feed items ───────────────────────
+function highlightAgent (agentId) {
+  currentAgentFilter = agentId;
+  const label = document.getElementById('filterLabel');
+  if (agentId) {
+    const a = agents.find(x => x.id === agentId);
+    label.textContent = a ? a.emoji + ' ' + a.name : agentId;
+  } else {
+    label.textContent = 'All agents';
+  }
+  renderFeed();
+}
+
 // ── Init ──────────────────────────────────────────────────────
 render();
+renderFeed();
 window.addEventListener('resize', positionAgents);
 </script>
 </body>

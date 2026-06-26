@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**BelichickGillisMusk** is a local-first multi-agent AI system built on the OpenClaw platform, designed to run on a Mac. It orchestrates a team of specialized AI agents for business operations including legal research, sales, marketing, customer service (CARB compliance), lead generation, and strategic coordination. The system uses Slack as its command center, Make.com for automation, and prioritizes free-tier Gemini for grunt work with Claude reserved for complex tasks.
+**BelichickGillisMusk** is a local-first multi-agent AI system built on the ClawdBot platform, designed to run on a Mac. It orchestrates a team of specialized AI agents for business operations including legal research, sales, marketing, customer service (CARB compliance), lead generation, and strategic coordination. The system uses Slack as its command center, Make.com for automation, and prioritizes free-tier Gemini for grunt work with Claude reserved for complex tasks.
 
 **License:** MIT
 
@@ -28,6 +28,7 @@ belichick-margo-jesus/
 │   ├── index.html           # SEO-optimized with JSON-LD LocalBusiness schema, geo-targeting
 │   ├── robots.txt
 │   └── sitemap.xml
+├── clawdbot-config.json5    # ClawdBot gateway configuration (JSON5 with comments)
 ├── cleantruckcheckroseville/  # Landing page for Clean Truck Check Roseville service
 │   ├── 404.html
 │   ├── _headers
@@ -40,9 +41,14 @@ belichick-margo-jesus/
 │   ├── discoveries-2026-02-13.md  # Queued cost-saving discoveries awaiting approval
 │   └── tps-2026-02-13.md         # Weekly agent status checkpoint
 ├── salesbot.html            # "The Office" - sandboxed sales bot demo (Closer agent prototype)
+├── skills/                  # ClawdBot skill definitions (agent prompts and knowledge bases)
 ├── skills/                  # OpenClaw skill definitions (agent prompts and knowledge bases)
 │   ├── belichick-strategy/
-│   │   └── SKILL.md         # Strategy & orchestration agent
+│   │   └── SKILL.md         # Strategy & orchestration agent (legacy)
+│   ├── datasync/
+│   │   └── SKILL.md         # Data pipeline: CARB portal sync, VIN decoding, fleet DB ingestion
+│   ├── finbot/
+│   │   └── SKILL.md         # Financial reconciliation: QuickBooks, Stripe, PayPal, invoices
 │   ├── gemini-lead-scraper/
 │   │   └── SKILL.md         # Google Maps/Places API lead scraper
 │   ├── jonjones-sales/
@@ -58,6 +64,8 @@ belichick-margo-jesus/
 │   │       └── research-sources.md              # Federal, IL, Chicago legal databases
 │   ├── musk-creative/
 │   │   └── SKILL.md         # YouTube/creative content & competitive analysis agent
+│   ├── samantha-ops/
+│   │   └── SKILL.md         # Samantha command center: route planning, job dispatch, CRM, ops
 │   ├── slack-recon-agent/
 │   │   ├── SKILL.md         # Slack RECON mission command center
 │   │   └── references/
@@ -70,7 +78,7 @@ belichick-margo-jesus/
     ├── mila-chatbot/
     │   └── index.js         # Express server: CARB compliance chatbot with session history & widget
     └── slack-bot/
-        ├── agents.js        # Agent roster config: 11 agents with models, channels, system prompts
+        ├── agents.js        # Agent roster config: 13 agents with models, channels, system prompts
         ├── dispatch.js      # Claude API dispatch engine: single-agent & parallel multi-agent execution
         └── index.js         # Slack bot entry point: commands, mission tracking, token cost reporting
 ```
@@ -79,15 +87,18 @@ belichick-margo-jesus/
 
 | Agent | Role | Primary Model | Skill / Code |
 |-------|------|---------------|--------------|
-| **Belichick** | Strategy & orchestration | Claude Opus (complex) / Gemini (daily) | `skills/belichick-strategy/` |
-| **Mila (CARB CS)** | Customer service for CARB compliance | Gemini / Haiku | `skills/mila-carb-cs/`, `src/mila-chatbot/` |
-| **Mila (Legal)** | Regulatory research & business opportunity hunting | Gemini / Claude Opus | `skills/mila-legal/` |
-| **Musk** | YouTube content, creative, competitive analysis | Gemini / Claude Haiku | `skills/musk-creative/` |
-| **Jon Jones** | Sales conversations, lead qualification (A.C.E.S.) | Gemini / Claude Sonnet | `skills/jonjones-sales/` |
-| **Cipher** | Finance, bookkeeping, token spend tracking | Gemini / Claude Haiku | Defined in `src/slack-bot/agents.js` |
-| **Kesha** | Marketing & content intelligence | Gemini / Claude Haiku | Defined in `src/slack-bot/agents.js` |
-| **Sentinel** | Legal/regulatory deep analysis | Gemini / Claude Sonnet | Defined in `src/slack-bot/agents.js` |
-| **Lead Scraper** | Google Maps business lead generation | Gemini (free) | `skills/gemini-lead-scraper/`, `src/lead-scraper/` |
+| **Samantha** | Chief Operating Intelligence - route planning, job dispatch, CRM, ops execution | Claude Sonnet 4 | `skills/samantha-ops/` |
+| **DataSync** | Data pipeline: CARB portal sync, VIN decoding, fleet DB ingestion, test archival | Claude Sonnet 4 | `skills/datasync/` |
+| **FinBot** | Financial reconciliation: QuickBooks, Stripe, PayPal, invoice matching | Claude Sonnet 4 | `skills/finbot/` |
+| **Mila (CARB CS)** | Customer service for CARB compliance | Claude Haiku | `skills/mila-carb-cs/`, `src/mila-chatbot/` |
+| **Mila (Legal)** | Regulatory research & business opportunity hunting | Claude Sonnet | `skills/mila-legal/` |
+| **Musk** | YouTube content, creative, competitive analysis | Claude Haiku | `skills/musk-creative/` |
+| **Jon Jones** | Sales conversations, lead qualification (A.C.E.S.) | Claude Sonnet | `skills/jonjones-sales/` |
+| **Cipher** | Finance, bookkeeping, token spend tracking | Claude Haiku | Defined in `src/slack-bot/agents.js` |
+| **Kesha** | Marketing & content intelligence | Claude Haiku | Defined in `src/slack-bot/agents.js` |
+| **Sentinel** | Legal/regulatory deep analysis | Claude Sonnet | Defined in `src/slack-bot/agents.js` |
+| **Website Helper** | GitHub-to-Cloudflare/Vercel deployment assistance | Claude Sonnet | Defined in `src/slack-bot/agents.js` |
+| **Lead Scraper** | Google Maps business lead generation | Claude Haiku | `skills/gemini-lead-scraper/`, `src/lead-scraper/` |
 | **Slack RECON** | Mission dispatch & coordination via Slack | All agents | `skills/slack-recon-agent/`, `src/slack-bot/` |
 | **TPS Report** | Agent reporting & discoveries governance | N/A (framework) | `skills/tps-report/` |
 
@@ -137,7 +148,7 @@ npm start        # Alias for npm run slack
 
 ## Key Configuration
 
-### OpenClaw Gateway (`openclaw-config.json5`)
+### ClawdBot Gateway (`clawdbot-config.json5`)
 
 - **Bind:** `loopback` (127.0.0.1 only - not internet-accessible)
 - **Port:** 18789
@@ -232,7 +243,7 @@ description: Detailed description with trigger words
 [System prompt, workflows, output formats, guardrails]
 ```
 
-The `description` field includes trigger words that OpenClaw uses to route requests to the correct agent. Reference files go in a `references/` subdirectory within the skill folder.
+The `description` field includes trigger words that ClawdBot uses to route requests to the correct agent. Reference files go in a `references/` subdirectory within the skill folder.
 
 ## HTML Prototypes
 
@@ -261,6 +272,7 @@ Sandboxed sales bot demo for the Closer agent. Features:
 - Agent definitions go in `skills/<agent-name>/SKILL.md`
 - Reference/knowledge base data goes in `skills/<agent-name>/references/`
 - Application code goes in `src/<component>/index.js`
+- Configuration is JSON5 format (comments allowed) in `clawdbot-config.json5`
 - Configuration is JSON5 format (comments allowed) in `openclaw-config.json5`
 - UI prototypes are standalone HTML files at the repo root (no build system)
 - Landing pages go in their own directories at repo root (e.g., `carbteststockton/`)
@@ -292,10 +304,43 @@ The primary business domain is **California Air Resources Board (CARB) Clean Tru
 - Key opportunity: mobile credentialed testing services (free training, no brick-and-mortar needed)
 - The `clean-truck-check-complete.md` file is the authoritative knowledge base
 
+### Cloudflare City Sites — Master Reference
+
+Each city has a one-page landing site on Cloudflare Workers + KV. **Do not duplicate content between cities.** Each site targets a unique service area. Full spec in `sites-config.json` and `CLOUDFLARE-SITES-MASTER.md`.
+
+**Global:**
+- Company: NorCal CARB Mobile LLC
+- CARB Tester ID: IF530523 (Valid Jun 2027)
+- Hours: Mon-Fri 6am-5pm, Sat 8am-4pm
+- Rating: 4.9 stars, 47+ reviews
+- Free retest: 1 free if fail
+- Always link to cleantruckcheckvin.app
+- Template source: `cloudflare/sites/hayward/index.html` (44K leather/copper rustic design)
+
+| City | Phone | OBD | OVI | Fleet OBD/OVI | Colors (Team) | Coverage | Domain | KV Namespace ID |
+|------|-------|-----|-----|---------------|---------------|----------|--------|-----------------|
+| **Stockton** | (209) 818-1371 | $69 | $179 | $49/$149 | Red/Gold (Stockton Heat) | Stockton, Lodi, Tracy, Manteca, Modesto, Turlock, Ripon, Escalon + Fresno by appt | carbteststockton.com | `ed51efc25c9c442bbb984a8fce905ee5` |
+| **Roseville** | (916) 890-4427 | $79 | $209 | $69/$169 | Orange/Black/Cream (SF Giants) | Roseville, Rocklin, Lincoln, Citrus Heights, Folsom, Auburn, Elk Grove, Sacramento | cleantruckcheckroseville.com | `a7499c3416a74d37a828e6e29f0b727f` |
+| **Fairfield** | (916) 890-4427 | $79 | $209 | $69/$169 | Blue/Silver (Air Force Academy, LIGHT bg) | Fairfield, Vacaville, Vallejo, Napa, Dixon, Davis, Woodland, Suisun City | cleantruckcheckfairfield.com | `18c13f0d18cd49519e1f3688484fc9dc` |
+| **Lodi** | (209) 818-1371 | $75 | $209 | $69/$169 | Garnet/Gold (Florida State, LIGHT bg) | Lodi, Woodbridge, Acampo, Galt, Lockeford, Stockton, Tracy + Fresno by appt | cleantruckchecklodi.com | TBD |
+| **Hayward** | (415) 900-8563 | $85 | $179 | $69/$169 | Silver/Black (Raiders) | Hayward, Union City, Fremont, Castro Valley, San Leandro, Alameda, Pleasanton, Livermore | cleantruckcheckhayward.com | `f55313eabf3b415d83fb7036e4873834` |
+| **Bay Area** | (415) 900-8563 | $79 | $219 | $75/$199 | Orange/Black/Cream (SF Giants) | San Jose to Novato — full Bay Area corridor | carb-clean-truck-check.com | — |
+| **San Diego** | (619) 786-4328 | $119 | $219 | $69/$169 | Brown/Gold (Padres) | San Diego, Chula Vista, Oceanside, Escondido, Carlsbad, El Cajon | mobilecarbsmoketest.com | — |
+
+**NEVER brand a one-page landing site to norcalcarbmobile.com** — that is the main business site (built separately, not a one-pager). One-pagers are city-specific satellite sites only.
+
+**Rules:**
+- Each city's service areas must NOT overlap with another city's
+- Pricing varies per city — see table above (NOT universal)
+- Motorhome pricing: OBD $99, OVI $250 (all cities)
+- All sites use the same worker code pattern (HTML from KV, /api/book endpoint, robots.txt, sitemap.xml)
+- Template source: `cloudflare/sites/hayward/index.html` (Hayward rustic design — adapt colors per city)
+- Hours: Mon-Fri 6am-5pm, Sat 8am-4pm
+
 ## What Not to Change
 
 - Do not remove guardrails from any SKILL.md file
-- Do not change `openclaw-config.json5` bind from `loopback` to anything public-facing
+- Do not change `clawdbot-config.json5` bind from `loopback` to anything public-facing
 - Do not add external network calls to `salesbot.html` (it is intentionally sandboxed)
 - Do not change the Content Security Policy on `salesbot.html`
 - Do not add cloud service dependencies - the system is local-first by design

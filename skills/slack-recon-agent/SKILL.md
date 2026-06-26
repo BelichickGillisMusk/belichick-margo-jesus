@@ -346,22 +346,22 @@ The pattern is always: `[AGENT NAME] what happened`. No exceptions.
 
 ## Make.com Integration (Webhook Bridge)
 
-If running OpenClaw locally, use Make.com as the webhook bridge between Slack and your Mac:
+If running ClawdBot locally, use Make.com as the webhook bridge between Slack and your Mac:
 
 ```
 Slack Slash Command
   → Make.com Webhook (receives the command)
-    → HTTP Request to OpenClaw Gateway (localhost via Cloudflare Tunnel or ngrok)
+    → HTTP Request to ClawdBot Gateway (localhost via Cloudflare Tunnel or ngrok)
       → Belichick dispatches agent
         → Agent completes task
-          → OpenClaw → Make.com → Slack Incoming Webhook
+          → ClawdBot → Make.com → Slack Incoming Webhook
             → Results posted to correct channel
 ```
 
 ### Make.com Scenario Setup:
 1. **Trigger:** Slack - Watch for slash command
 2. **Router:** Route based on command type (leads/legal/market/compliance/prospect)
-3. **HTTP Module:** POST to OpenClaw gateway with task payload
+3. **HTTP Module:** POST to ClawdBot gateway with task payload
 4. **Wait Module:** Wait for agent response (up to 5 min)
 5. **Slack Module:** Post formatted results to target channel
 6. **Error Handler:** Post failure to #alerts if agent times out or errors
@@ -398,7 +398,7 @@ TODAY: 3 missions completed | 4,800 tokens used | $0.07 spent
 THIS WEEK: 14 missions | 32,000 tokens | $0.48 spent
 ```
 
-**Cron config for OpenClaw** (add to cron jobs):
+**Cron config for ClawdBot** (add to cron jobs):
 ```json5
 {
   "name": "agent-status-pulse",
