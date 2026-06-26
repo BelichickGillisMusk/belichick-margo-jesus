@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gillis Institute of AI — Unit Office</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root{
+    --bg:#0a0a0f;
+    --surface:#111118;
+    --surface-2:#16161f;
+    --border:rgba(255,255,255,.06);
+    --border-hover:rgba(255,255,255,.12);
+    --text:#e8e8ed;
+    --text-dim:#6b6b7b;
+    --text-muted:#3d3d4d;
+    --accent:#4f8eff;
+    --accent-glow:rgba(79,142,255,.25);
+    --accent-subtle:rgba(79,142,255,.08);
+    --green:#34d399;
+    --green-glow:rgba(52,211,153,.2);
+    --red:#f87171;
+    --gold:#fbbf24;
+    --purple:#a78bfa;
+    --pink:#f472b6;
+    --cyan:#22d3ee;
+    --orange:#fb923c;
+    --radius:16px;
+    --radius-sm:10px;
+  }
+
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  /* ── HERO SECTION ── */
+  .hero{
+    position:relative;
+    padding:80px 40px 60px;
+    text-align:center;
+    overflow:hidden;
+  }
+
+  .hero::before{
+    content:'';
+    position:absolute;
+    top:-50%;left:50%;
+    width:800px;height:800px;
+    transform:translateX(-50%);
+    background:radial-gradient(circle,rgba(79,142,255,.08) 0%,transparent 70%);
+    pointer-events:none;
+  }
+
+  .hero-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:6px 16px;
+    border-radius:20px;
+    background:var(--accent-subtle);
+    border:1px solid rgba(79,142,255,.2);
+    font-size:.72rem;
+    font-weight:500;
+    letter-spacing:.04em;
+    color:var(--accent);
+    margin-bottom:24px;
+  }
+
+  .hero-badge::before{
+    content:'';
+    width:6px;height:6px;
+    border-radius:50%;
+    background:var(--green);
+    box-shadow:0 0 8px var(--green-glow);
+    animation:pulse-dot 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot{
+    0%,100%{opacity:1;transform:scale(1)}
+    50%{opacity:.5;transform:scale(.8)}
+  }
+
+  .hero h1{
+    font-size:clamp(2.2rem,5vw,3.6rem);
+    font-weight:700;
+    letter-spacing:-.02em;
+    line-height:1.1;
+    margin-bottom:12px;
+    background:linear-gradient(135deg,#fff 0%,#a0a0b0 100%);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+  }
+
+  .hero .subtitle{
+    font-size:clamp(.9rem,2vw,1.15rem);
+    color:var(--text-dim);
+    max-width:600px;
+    margin:0 auto 8px;
+    line-height:1.5;
+  }
+
+  .hero .tagline{
+    font-size:.78rem;
+    color:var(--text-muted);
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+
+  /* ── CAMPUS GRID ── */
+  .campus{
+    max-width:1200px;
+    margin:0 auto;
+    padding:0 24px 80px;
+  }
+
+  .floor-label{
+    font-size:.68rem;
+    text-transform:uppercase;
+    letter-spacing:.15em;
+    color:var(--text-muted);
+    margin:48px 0 16px;
+    padding-left:4px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+
+  .floor-label::after{
+    content:'';
+    flex:1;
+    height:1px;
+    background:var(--border);
+  }
+
+  .offices{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+    gap:16px;
+  }
+
+  /* ── OFFICE CARD ── */
+  .office{
+    position:relative;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:24px;
+    cursor:pointer;
+    transition:all .3s cubic-bezier(.4,0,.2,1);
+    overflow:hidden;
+  }
+
+  .office::before{
+    content:'';
+    position:absolute;
+    top:0;left:0;right:0;
+    height:3px;
+    background:var(--office-accent,var(--accent));
+    opacity:0;
+    transition:opacity .3s;
+  }
+
+  .office:hover{
+    border-color:var(--border-hover);
+    transform:translateY(-2px);
+    box-shadow:0 8px 32px rgba(0,0,0,.4),0 0 0 1px var(--border-hover);
+  }
+
+  .office:hover::before{opacity:1}
+
+  .office-header{
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+    margin-bottom:14px;
+  }
+
+  .office-icon{
+    width:44px;height:44px;
+    border-radius:12px;
+    background:var(--surface-2);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.4rem;
+    flex-shrink:0;
+    border:1px solid var(--border);
+  }
+
+  .office-title{
+    font-size:.92rem;
+    font-weight:600;
+    color:var(--text);
+    margin-bottom:2px;
+  }
+
+  .office-role{
+    font-size:.72rem;
+    color:var(--text-dim);
+  }
+
+  .office-desc{
+    font-size:.78rem;
+    color:var(--text-dim);
+    line-height:1.6;
+    margin-bottom:14px;
+  }
+
+  .office-meta{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+
+  .office-tag{
+    font-size:.62rem;
+    padding:3px 9px;
+    border-radius:6px;
+    font-weight:500;
+    letter-spacing:.02em;
+  }
+
+  .tag-model{background:var(--accent-subtle);color:var(--accent)}
+  .tag-status-online{background:rgba(52,211,153,.1);color:var(--green)}
+  .tag-status-config{background:rgba(107,107,123,.1);color:var(--text-dim)}
+  .tag-channel{background:rgba(167,139,250,.1);color:var(--purple)}
+  .tag-port{background:rgba(251,191,36,.08);color:var(--gold)}
+
+  /* ── EXPANDED OFFICE DETAIL ── */
+  .office-detail{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .4s cubic-bezier(.4,0,.2,1),margin .3s;
+    margin-top:0;
+  }
+
+  .office.expanded .office-detail{
+    max-height:300px;
+    margin-top:16px;
+  }
+
+  .office-detail-inner{
+    padding-top:14px;
+    border-top:1px solid var(--border);
+    font-size:.75rem;
+    color:var(--text-dim);
+    line-height:1.7;
+  }
+
+  .office-detail-inner code{
+    background:var(--surface-2);
+    padding:2px 6px;
+    border-radius:4px;
+    font-family:'SF Mono','Fira Code',monospace;
+    font-size:.68rem;
+    color:var(--text);
+  }
+
+  /* ── BUILDING STATS ── */
+  .building-stats{
+    display:flex;
+    justify-content:center;
+    gap:40px;
+    flex-wrap:wrap;
+    padding:40px 24px;
+    margin-bottom:20px;
+  }
+
+  .stat{
+    text-align:center;
+  }
+
+  .stat-number{
+    font-size:2rem;
+    font-weight:700;
+    background:linear-gradient(135deg,var(--accent),var(--purple));
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+  }
+
+  .stat-label{
+    font-size:.7rem;
+    color:var(--text-dim);
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    margin-top:4px;
+  }
+
+  /* ── FOOTER ── */
+  .campus-footer{
+    text-align:center;
+    padding:40px 24px;
+    border-top:1px solid var(--border);
+    margin-top:40px;
+  }
+
+  .campus-footer p{
+    font-size:.75rem;
+    color:var(--text-muted);
+    line-height:1.6;
+  }
+
+  .campus-footer a{
+    color:var(--accent);
+    text-decoration:none;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:640px){
+    .hero{padding:48px 20px 40px}
+    .campus{padding:0 16px 60px}
+    .offices{grid-template-columns:1fr}
+    .building-stats{gap:24px}
+    .stat-number{font-size:1.6rem}
+  }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-badge">SYSTEMS ONLINE</div>
+  <h1>Gillis Institute of AI</h1>
+  <p class="subtitle">The Unit Office. Every agent has a desk. Every project has a room. One building runs it all.</p>
+  <p class="tagline">bryanoneillgillis.com &middot; Local-First AI Campus</p>
+</section>
+
+<div class="building-stats">
+  <div class="stat">
+    <div class="stat-number">13</div>
+    <div class="stat-label">Agents Built</div>
+  </div>
+  <div class="stat">
+    <div class="stat-number">3</div>
+    <div class="stat-label">Live Services</div>
+  </div>
+  <div class="stat">
+    <div class="stat-number">7</div>
+    <div class="stat-label">City Sites</div>
+  </div>
+  <div class="stat">
+    <div class="stat-number">$70</div>
+    <div class="stat-label">Monthly Budget</div>
+  </div>
+</div>
+
+<main class="campus">
+
+  <!-- EXECUTIVE FLOOR -->
+  <div class="floor-label">Executive Floor</div>
+  <div class="offices">
+
+    <div class="office" style="--office-accent:var(--cyan)" onclick="toggleOffice(this)">
+      <div class="office-header">
+        <div class="office-icon">👩‍💼</div>
+        <div>
+          <div class="office-title">Samantha</div>
+          <div class="office-role">Chief Operating Intelligence</div>
+        </div>
+      </div>
+      <div class="office-desc">The boss. Route planning, job dispatch, CRM ops, Google Workspace approvals. All roads lead through Samantha.</div>
+      <div class="office-meta">
+        <span class="office-tag tag-model">Claude Sonnet 4</span>
+        <span class="office-tag tag-status-online">Online</span>
+        <span class="office-tag tag-channel">#recon-command</span>
+      </div>
+      <div class="office-detail"><div class="office-detail-inner">
+        Entry: <code>/dispatch samantha [task]</code><br>
+        Quick actions: Samantha pulse, Lead pulse, Deploy pulse, Compliance pulse<br>
+        Skill: <code>skills/samantha-ops/SKILL.md</code><br>
+        Phone-first workflow — designed for kicking off ops from the truck.
+      </div></div>
+    </div>
+
+    <div class="office" style="--office-accent:var(--gold)" onclick="toggleOffice(this)">
+      <div class="office-header">
+        <div class="office-icon">🏈</div>
+        <div>
+          <div class="office-title">Belichick</div>
+          <div class="office-role">Strategy & Orchestration</div>
+        </div>
+      </div>
+      <div class="office-desc">Gameplan architect. Designs multi-agent plays, delegates with precision. The coordinator nobody argues with.</div>
+      <div class="office-meta">
+        <span class="office-tag tag-model">Claude Sonnet</span>
+        <span class="office-tag tag-status-config">Config Ready</span>
+      </div>
+      <div class="office-detail"><div class="office-detail-inner">
+        Skill: <code>skills/belichick-strategy/SKILL.md</code><br>
+        Delegation format: TO / TASK / CONTEXT / DEADLINE / OUTPUT / CONSTRAINTS<br>
+        Blocked: Needs OpenClaw running on Mac.
+      </div></div>
+    </div>
+
+  </div>
+
+  <!-- OPERATIONS WING -->
+  <div class="floor-label">Operations Wing</div>
+  <div class="offices">
+
+    <div class="office" style="--office-accent:var(--green)" onclick="toggleOffice(this)">
+      <div class="office-header">
+        <div class="office-icon">🔄</div>
+        <div>
+          <div class="office-title">DataSync</div>
+          <div class="office-role">Data Pipeline Engineer</div>
+        </div>
+      </div>
+      <div class="office-desc">CARB portal sync, VIN decoding, fleet database ingestion, test result archival. The plumbing that keeps data flowing.</div>
+      <div class="office-meta">
+        <span class="office-tag tag-model">Claude Sonnet 4</span>
+        <span class="office-tag tag-status-config">Config Ready</span>
+      </div>
+      <div class="office-detail"><div class="office-detail-inner">
+        Skill: <code>skills/datasync/SKILL.md</code><br>
+        Handles: CARB portal scraping, VIN decoding, fleet DB writes, archival jobs.
+      </div></div>
+    </div>
+
+    <div class="office" style="--office-accent:var(--gold)" onclick="toggleOffice(this)">
+      <div class="office-header">
+        <div class="office-icon">💰</div>
+        <div>
+          <div class="office-title">FinBot</div>
+          <div class="office-role">Financial Reconciliation</div>
+        </div>
+      </div>
+      <div class="office-desc">QuickBooks, Stripe, PayPal — reconciles every dollar. Invoice matching, expense tracking, revenue reporting.</div>
+      <div class="office-meta">
+        <span class="office-tag tag-model">Claude Sonnet 4</span>
+        <span class="office-tag tag-status-config">Config Ready</span>
+      </div>
+      <div class="office-detail"><div class="office-detail-inner">
+        Skill: <code>skills/finbot/SKILL.md</code><br>
+        Integrations: QuickBooks, Stripe, PayPal<br>
+        Monthly reconciliation + anomaly detection.
+      </div></div>
+    </div>
+
+    <div class="office" style="--office-accent:var(--purple)" onclick="toggleOffice(this)">
+      <div class="office-header">
+        <div class="office-icon">🔐</div>
+        <div>
+          <div class="office-title">Cipher</div>
+          <div class="office-role">Finance & Token Tracking</div>
+        </div>
+      </div>
+      <div class="office-desc">Bookkeeping brain. Tracks token spend across all agents, daily budgets, cost-per-mission reporting.</div>
+      <div class="office-meta">
+        <span class="office-tag tag-model">Claude Haiku</span>
+        <span class="office-tag tag-status-online">Online</span>
+        <span class="office-tag tag-channel">#recon-command</span>
+      </div>
+      <div class="office-detail"><div class="office-detail-inner">
+        Command: <code>/budget</code><br>
+        Tracks: daily token usage, cost per agent, monthly burn rate<br>
+        Budget cap: $70/month across all agents.
+      </div></div>
+    </div>
+
+  </div>
+
+  <!-- CUSTOMER & COMPLIANCE FLOOR -->
+  <div class="floor-label">Customer & Compliance Floor</div>
+  <div class="offices">
+
+    <div class="office" style="--office-accent:var(--pink)" onclick="toggleOffice(this)">
+      <div class="office-header">
+        <div class="office-icon">🤖</div>
+        <div>
+          <div class="office-title">Mila (CARB CS)</div>
+          <div class="office-role">Customer Service — Clean Truck Check</div>
+        </div>
+      </div>
+      <div class="office-desc">Answers compliance questions 24/7. Testing requirements, deadlines, fees, HD I/M regulations. The front desk of the institute.</div>
+      <div class="office-meta">
+        <span class="office-tag tag-model">Claude Haiku</span>
+        <span class="office-tag tag-status-online">Online</span>
+        <span class="office-tag tag-port">:3001</span>
+      </div>
+      <div class="office-detail"><div class="office-detail-inner">
+        Run: <code>npm run mila</code><br>
+        Chat: <code>POST localhost:3001/chat</code><br>
+        Widget: <code>localhost:3001/widget</code><br>
+        Knowledge base: 8,803 chars of HD I/M regulation data.
+      </div></div>
+    </div>
+
+    <div class="office" style="--office-accent:var(--orange)" onclick="toggleOffice(this)">
+      <div class="office-header">
+        <div class="office-icon">⚖️</div>
+        <div>
+          <div class="office-title">Mila (Legal)</div>
+          <div class="office-role">Regulatory Research & Opportunities</div>
+        </div>
+      </div>
+      <div class="office-desc">Hunts regulatory changes, business opportunities, compliance shifts. Federal, state, and local legal database crawler.</div>
+      <div class="office-meta">
+        <span class="office-tag tag-model">Claude Sonnet</span>
+        <span class="office-tag tag-status-config">Config Ready</span>
+        <span class="office-tag tag-channel">#recon-legal</span>
+      </div>
+      <div class="office-detail"><div class="office-detail-inner">
+        Skill: <code>skills/mila-legal/SKILL.md</code><br>
+        Sources: Federal Register, IL JCAR, Chicago Municipal Code<br>
+        Command: <code>/recon-legal [query]</code>
+      </div></div>
+    </div>
+
+    <div class="office" style="--office-accent:var(--red)" onclick="toggleOffice(this)">
+      <div class="office-header">
+        <div class="office-icon">🛡️</div>
+        <div>
+          <div class="office-title">Sentinel</div>
+          <div class="office-role">Legal & Regulatory Deep Analysis</div>
+        </div>
+      </div>
+      <div class="office-desc">Deep-dive legal analysis. When Mila flags something interesting, Sentinel tears it apart for actionable intel.</div>
+      <div class="office-meta">
+        <span class="office-tag tag-model">Claude Sonnet</span>
+        <span class="office-tag tag-status-config">Config Ready</span>
+        <span class="office-tag tag-channel">#recon-compliance</span>
+      </div>
+      <div class="office-detail"><div class="office-detail-inner">
+        Command: <code>/recon-compliance [topic]</code><br>
+        Key finding: CARB quarterly testing coming Oct 2027 = 2x revenue opportunity.
+      </div></div>
+    </div>
+
+  </div>
+
+  <!-- REVENUE FLOOR -->
+  <div class="floor-label">Revenue Floor</div>
+  <div class="offices">
+
+    <div class="office" style="--office-accent:var(--green)" onclick="toggleOffice(this)">
+      <div class="office-header">
+        <div class="office-icon">🥊</div>
+        <div>
+          <div class="office-title">Jon Jones</div>
+          <div class="office-role">Sales — A.C.E.S. Framework</div>
+        </div>
+      </div>
+      <div class="office-desc">Aggressive closer. Qualifies leads, handles objections, drives conversions. A.C.E.S. = Approach, Connect, Engage, Sell.</div>
+      <div class="office-meta">
+        <span class="office-tag tag-model">Claude Sonnet</span>
+        <span class="office-tag tag-status-online">Online</span>
+        <span class="office-tag tag-channel">#recon-sales</span>
+      </div>
+      <div class="office-detail"><div class="office-detail-inner">
+        Skill: <code>skills/jonjones-sales/SKILL.md</code><br>
+        Demo: <code>salesbot.html</code> (sandboxed, no network)<br>
+        Command: <code>/recon-prospect [company]</code>
+      </div></div>
+    </div>
+
+    <div class="office" style="--office-accent:var(--cyan)" onclick="toggleOffice(this)">
+      <div class="office-header">
+        <div class="office-icon">🔍</div>
+        <div>
+          <div class="office-title">Lead Scraper</div>
+          <div class="office-role">Google Places Lead Generation</div>
+        </div>
+      </div>
+      <div class="office-desc">Hits Google Places API, pulls business contacts, builds prospect lists. CSV + optional Sheets export.</div>
+      <div class="office-meta">
+        <span class="office-tag tag-model">Claude Haiku</span>
+        <span class="office-tag tag-status-online">Online</span>
+        <span class="office-tag tag-channel">#recon-leads</span>
+      </div>
+      <div class="office-detail"><div class="office-detail-inner">
+        Run: <code>npm run scrape -- "trucking companies" "Los Angeles CA"</code><br>
+        Rate-limited: 200ms between API calls.<br>
+        Supports company-list research mode with email verification.
+      </div></div>
+    </div>
+
+    <div class="office" style="--office-accent:var(--pink)" onclick="toggleOffice(this)">
+      <div class="office-header">
+        <div class="office-icon">🎤</div>
+        <div>
+          <div class="office-title">Kesha</div>
+          <div class="office-role">Marketing & Content Intelligence</div>
+        </div>
+      </div>
+      <div class="office-desc">Content strategy, SEO gap analysis, trend spotting. Drives organic traffic and brand positioning.</div>
+      <div class="office-meta">
+        <span class="office-tag tag-model">Claude Haiku</span>
+        <span class="office-tag tag-status-online">Online</span>
+        <span class="office-tag tag-channel">#recon-market</span>
+      </div>
+      <div class="office-detail"><div class="office-detail-inner">
+        Command: <code>/recon-market [topic]</code><br>
+        Key project: MILA SEO Master Playbook for NorCal CARB Mobile.
+      </div></div>
+    </div>
+
+  </div>
+
+  <!-- CREATIVE & TECH LAB -->
+  <div class="floor-label">Creative & Tech Lab</div>
+  <div class="offices">
+
+    <div class="office" style="--office-accent:var(--orange)" onclick="toggleOffice(this)">
+      <div class="office-header">
+        <div class="office-icon">🚀</div>
+        <div>
+          <div class="office-title">Musk</div>
+          <div class="office-role">YouTube & Competitive Analysis</div>
+        </div>
+      </div>
+      <div class="office-desc">Creative content, YouTube strategy, competitor teardowns. Finds what's working in the market and adapts it.</div>
+      <div class="office-meta">
+        <span class="office-tag tag-model">Claude Haiku</span>
+        <span class="office-tag tag-status-config">Config Ready</span>
+      </div>
+      <div class="office-detail"><div class="office-detail-inner">
+        Skill: <code>skills/musk-creative/SKILL.md</code><br>
+        Focus: YouTube content strategy + competitive intelligence.
+      </div></div>
+    </div>
+
+    <div class="office" style="--office-accent:var(--accent)" onclick="toggleOffice(this)">
+      <div class="office-header">
+        <div class="office-icon">🌐</div>
+        <div>
+          <div class="office-title">Website Helper</div>
+          <div class="office-role">Deployment & Shipping</div>
+        </div>
+      </div>
+      <div class="office-desc">GitHub to Cloudflare Workers/Vercel pipeline. Ships landing pages, manages DNS, handles deployments.</div>
+      <div class="office-meta">
+        <span class="office-tag tag-model">Claude Sonnet</span>
+        <span class="office-tag tag-status-online">Online</span>
+      </div>
+      <div class="office-detail"><div class="office-detail-inner">
+        Command: <code>/dispatch website-helper [task]</code><br>
+        Manages: 7 city landing sites on Cloudflare Workers + KV<br>
+        Pattern: HTML from KV, /api/book endpoint, robots.txt, sitemap.xml
+      </div></div>
+    </div>
+
+    <div class="office" style="--office-accent:var(--purple)" onclick="toggleOffice(this)">
+      <div class="office-header">
+        <div class="office-icon">📡</div>
+        <div>
+          <div class="office-title">Slack RECON</div>
+          <div class="office-role">Mission Command Center</div>
+        </div>
+      </div>
+      <div class="office-desc">The nervous system. Dispatches missions, coordinates agents, enforces budgets. Slack is the war room.</div>
+      <div class="office-meta">
+        <span class="office-tag tag-model">All Agents</span>
+        <span class="office-tag tag-status-online">Online</span>
+        <span class="office-tag tag-port">Socket Mode</span>
+      </div>
+      <div class="office-detail"><div class="office-detail-inner">
+        Run: <code>npm run slack</code><br>
+        Commands: /roster, /dispatch, /swarm, /kill, /budget<br>
+        Swarm presets: full, intel, ops, revenue, compliance<br>
+        Max concurrent: 2 missions, daily budget: 60K tokens.
+      </div></div>
+    </div>
+
+  </div>
+
+  <!-- CITY SITES (SATELLITE OFFICES) -->
+  <div class="floor-label">Satellite Offices — City Landing Sites</div>
+  <div class="offices">
+
+    <div class="office" style="--office-accent:#ef4444" onclick="toggleOffice(this)">
+      <div class="office-header">
+        <div class="office-icon">🏙️</div>
+        <div>
+          <div class="office-title">Stockton</div>
+          <div class="office-role">carbteststockton.com</div>
+        </div>
+      </div>
+      <div class="office-desc">OBD $69 / OVI $179. Red & Gold. Covers Stockton, Lodi, Tracy, Manteca, Modesto + Fresno by appointment.</div>
+      <div class="office-meta">
+        <span class="office-tag tag-status-online">Live</span>
+        <span class="office-tag tag-channel">(209) 818-1371</span>
+      </div>
+    </div>
+
+    <div class="office" style="--office-accent:var(--orange)" onclick="toggleOffice(this)">
+      <div class="office-header">
+        <div class="office-icon">🌲</div>
+        <div>
+          <div class="office-title">Roseville</div>
+          <div class="office-role">cleantruckcheckroseville.com</div>
+        </div>
+      </div>
+      <div class="office-desc">OBD $79 / OVI $209. Orange & Black. Covers Roseville, Rocklin, Lincoln, Folsom, Sacramento.</div>
+      <div class="office-meta">
+        <span class="office-tag tag-status-online">Live</span>
+        <span class="office-tag tag-channel">(916) 890-4427</span>
+      </div>
+    </div>
+
+    <div class="office" style="--office-accent:var(--accent)" onclick="toggleOffice(this)">
+      <div class="office-header">
+        <div class="office-icon">✈️</div>
+        <div>
+          <div class="office-title">Fairfield</div>
+          <div class="office-role">cleantruckcheckfairfield.com</div>
+        </div>
+      </div>
+      <div class="office-desc">OBD $79 / OVI $209. Blue & Silver. Covers Fairfield, Vacaville, Vallejo, Napa, Dixon, Davis.</div>
+      <div class="office-meta">
+        <span class="office-tag tag-status-online">Live</span>
+        <span class="office-tag tag-channel">(916) 890-4427</span>
+      </div>
+    </div>
+
+    <div class="office" style="--office-accent:#991b1b" onclick="toggleOffice(this)">
+      <div class="office-header">
+        <div class="office-icon">🍇</div>
+        <div>
+          <div class="office-title">Lodi</div>
+          <div class="office-role">cleantruckchecklodi.com</div>
+        </div>
+      </div>
+      <div class="office-desc">OBD $75 / OVI $209. Garnet & Gold. Covers Lodi, Woodbridge, Acampo, Galt, Lockeford.</div>
+      <div class="office-meta">
+        <span class="office-tag tag-status-config">Pending</span>
+        <span class="office-tag tag-channel">(209) 818-1371</span>
+      </div>
+    </div>
+
+    <div class="office" style="--office-accent:#374151" onclick="toggleOffice(this)">
+      <div class="office-header">
+        <div class="office-icon">🏟️</div>
+        <div>
+          <div class="office-title">Hayward</div>
+          <div class="office-role">cleantruckcheckhayward.com</div>
+        </div>
+      </div>
+      <div class="office-desc">OBD $85 / OVI $179. Silver & Black. Covers Hayward, Fremont, Union City, San Leandro, Pleasanton.</div>
+      <div class="office-meta">
+        <span class="office-tag tag-status-online">Live</span>
+        <span class="office-tag tag-channel">(415) 900-8563</span>
+      </div>
+    </div>
+
+    <div class="office" style="--office-accent:var(--orange)" onclick="toggleOffice(this)">
+      <div class="office-header">
+        <div class="office-icon">🌉</div>
+        <div>
+          <div class="office-title">Bay Area</div>
+          <div class="office-role">carb-clean-truck-check.com</div>
+        </div>
+      </div>
+      <div class="office-desc">OBD $79 / OVI $219. Orange & Black. Full Bay Area corridor — San Jose to Novato.</div>
+      <div class="office-meta">
+        <span class="office-tag tag-status-online">Live</span>
+        <span class="office-tag tag-channel">(415) 900-8563</span>
+      </div>
+    </div>
+
+    <div class="office" style="--office-accent:var(--gold)" onclick="toggleOffice(this)">
+      <div class="office-header">
+        <div class="office-icon">☀️</div>
+        <div>
+          <div class="office-title">San Diego</div>
+          <div class="office-role">mobilecarbsmoketest.com</div>
+        </div>
+      </div>
+      <div class="office-desc">OBD $119 / OVI $219. Brown & Gold. Covers San Diego, Chula Vista, Oceanside, Escondido, Carlsbad.</div>
+      <div class="office-meta">
+        <span class="office-tag tag-status-online">Live</span>
+        <span class="office-tag tag-channel">(619) 786-4328</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="campus-footer">
+    <p>Gillis Institute of AI &middot; NorCal CARB Mobile LLC &middot; CARB Tester ID: IF530523<br>
+    Local-first. Budget-conscious. Agents that work while you drive.<br><br>
+    <a href="index.html">Agent Round Table</a> &middot; <a href="salesbot.html">The Office Demo</a></p>
+  </footer>
+
+</main>
+
+<script>
+function toggleOffice(el) {
+  const wasExpanded = el.classList.contains('expanded');
+  document.querySelectorAll('.office.expanded').forEach(o => o.classList.remove('expanded'));
+  if (!wasExpanded) el.classList.add('expanded');
+}
+</script>
+</body>
+</html>

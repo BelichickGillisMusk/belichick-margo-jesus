@@ -45,6 +45,8 @@ The scraper throws at startup if `GOOGLE_PLACES_API_KEY` is not set. Google Shee
 
 Copy `.env.example` to `.env` and fill in real keys. See `README.md` "Runtime contract" for the full variable list.
 
+**dotenv override gotcha:** `dotenv/config` is imported at the top of server entry points, so `.env` is read on process start. Inline env overrides (e.g. `ANTHROPIC_API_KEY=xxx npm run mila`) do NOT override `.env` values — the `dotenv` package loads the file unconditionally. Always edit `.env` directly and restart the server.
+
 ### Deprecation warning
 
 Node 22 emits `[DEP0040] DeprecationWarning: The punycode module is deprecated` from the `googleapis` dependency. This is harmless and does not affect functionality.
