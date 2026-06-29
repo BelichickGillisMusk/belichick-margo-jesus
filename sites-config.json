@@ -251,6 +251,47 @@
       "postalCode": "95240",
       "localFlavor": "Wine country trucking, Lodi AVA vineyards, I-5/99 corridor truck stops, agricultural transport hub",
       "mentionFresno": true
+    },
+    {
+      "id": "mobileovitest",
+      "domain": "mobileovitest.com",
+      "brand": "Mobile OVI Test",
+      "nickname": "Statewide California",
+      "worker": "mobileovitest",
+      "phone": "(916) 890-4427",
+      "phoneFull": "+19168904427",
+      "phoneE164": "+19168904427",
+      "email": "info@mobileovitest.com",
+      "carbId": "IF530523",
+      "primaryColor": "#003087",
+      "accentColor": "#FFB81C",
+      "theme": "light",
+      "logoInitials": "OT",
+      "coverage": "Statewide California",
+      "coverageAreas": ["Greater Sacramento", "Bay Area", "Central Valley", "Northern California", "Inland Empire", "Southern California"],
+      "obdPrice": 95,
+      "oviPrice": 195,
+      "motorhomePrice": 195,
+      "motorhomeOBD": null,
+      "motorhomeOVI": 195,
+      "fleetOBD": null,
+      "fleetOVI": null,
+      "postalCode": "95814",
+      "lat": 38.5816,
+      "lng": -121.4944,
+      "county": "California",
+      "geo": { "lat": 38.5816, "lng": -121.4944 },
+      "sport": "Statewide",
+      "teamColors": "Navy/Gold",
+      "colors": {
+        "primary": "#003087",
+        "accent": "#FFB81C",
+        "bg": "#FFFFFF",
+        "bgMode": "light",
+        "teamName": "Statewide"
+      },
+      "localFlavor": "Statewide California mobile OVI and OBD service",
+      "mentionFresno": false
     }
   ]
 }

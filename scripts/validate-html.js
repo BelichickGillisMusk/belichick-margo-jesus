@@ -14,6 +14,7 @@ const htmlFiles = [
   'cloudflare/sites/lodi/index.html',
   'cloudflare/sites/silverbackai/index.html',
   'braintrust-hq/index.html',
+  'mobileovitest/index.html',
 ];
 
 for (const relativePath of htmlFiles) {
