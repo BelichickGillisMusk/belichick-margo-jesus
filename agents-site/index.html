@@ -21,6 +21,10 @@ button:hover { background: #2563eb; }
 .skills { background: #1e2937; padding: 16px; border-radius: 8px; margin-top: 20px; }
 .skill { background: #334155; padding: 6px 10px; border-radius: 4px; display: inline-block; margin: 4px; font-size: 13px; }
 .identity { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+.shortcuts { background: #1e2937; padding: 16px; border-radius: 8px; margin-bottom: 20px; }
+.shortcut-btn { background: #334155; color: #e2e8f0; border: 1px solid #475569; padding: 6px 10px; border-radius: 4px; margin: 4px; cursor: pointer; font-size: 12px; }
+.shortcut-btn:hover { background: #475569; }
+.reminders { font-size: 12px; color: #94a3b8; margin-top: 8px; }
 </style>
 </head>
 <body>
@@ -29,8 +33,31 @@ button:hover { background: #2563eb; }
   <p>Combine agents (Samantha, Condoleeza, Mila, Sloane, Elon, Hermes agents, etc.). Isolated agents with own workspaces (per OpenClaw multi-agent.md: agentDir, sessions, bindings for routing). Full skills/plugins: deploy, SMS, email, calendar, drive, content, cloud ops, workspace automations. Follows OpenClaw agent identity (IDENTITY.md) + config (per-agent skills, models, bootstrap, sandbox).</p>
 </div>
 
+<div class="shortcuts">
+  <h3>Shortcuts &amp; Reminders (valuable commands &amp; how to get agents to respond)</h3>
+  <div>
+    <button class="shortcut-btn" onclick="fillTask('Condoleeza, parse the latest Gmail invoices for VINs and update the master Sheet with next due dates and create Calendar reminders.')">Condoleeza: Parse Gmail + Update Tracker</button>
+    <button class="shortcut-btn" onclick="fillTask('Hermes + Condoleeza for local Drive sync script + 6-month retest automation.')">Hermes + Condoleeza: Local Workspace Exec</button>
+    <button class="shortcut-btn" onclick="fillTask('Elon + builder-deploy: deploy the new landing page to Vercel free tier, generate share link, and notify via SMS.')">Elon + Deploy: Ship Update + Notify</button>
+    <button class="shortcut-btn" onclick="fillTask('Sloane: draft satirical CARB content for A+ campaign with accurate facts and CTA to 916-890-4427.')">Sloane: Generate Content</button>
+    <button class="shortcut-btn" onclick="fillTask('Nora/Hermes Nora: send SMS to overdue customers with test scheduling link.')">Nora: Send SMS Reminders</button>
+    <button class="shortcut-btn" onclick="fillTask('Team: Samantha + Condoleeza + Hermes + Elon for full task: parse emails, update workspace, deploy, and SMS confirmations.')">Full Team Combine for End-to-End</button>
+  </div>
+  <div class="reminders">
+    <strong>How to get agents to respond:</strong><br>
+    - Use agent names to delegate (e.g., "Condoleeza, ..." or select in team).<br>
+    - For Hermes: explicitly say "use Hermes for local tools/terminal" to activate full plugins.<br>
+    - Be specific: request concrete outputs like "generate the Apps Script", "draft the SMS text", "run builder-deploy".<br>
+    - Combine in prompt: "Samantha orchestrate, Condoleeza for workspace, Hermes for local exec, Elon for deploy".<br>
+    - Follow AGENTS.dev.md style: use daily memory, safety preflight, read first for writes.<br>
+    - For config/identity: reference per OpenClaw (e.g., "use Condoleeza's isolated workspace").<br>
+    <strong>Implementation:</strong> Add new agents/skills in GitHub repo under <code>skills/</code> (copy condoleeza or samantha template). Update this UI roster. For real exec: tie to OpenClaw gateway (config agents.list + bindings), Hermes for local, or claude-service backend. See ARCHITECTURE.md and skills/builder-deploy for deploys.<br>
+    <strong>Reminders:</strong> Always attribute to agents. Use TPS for tracking. Sandbox for untrusted. Bind channels for routing (e.g., SMS to Nora agent).
+  </div>
+</div>
+
 <div class="team-panel">
-  <h3>Active Agent Team (click to toggle / combine — supports multi-agent routing & bindings)</h3>
+  <h3>Active Agent Team (click to toggle / combine — supports multi-agent routing &amp; bindings)</h3>
   <div class="agent-list" id="agentList"></div>
   <p style="font-size:12px; color:#94a3b8; margin-top:8px;">Hermes agents bring full local plugins, skills, terminal, browser, memory for autonomous execution. Condoleeza handles Workspace (Gmail/Drive/Calendar/Sheets/Apps Script per condoleeza-workspace-guru.md). Identity from parseIdentityMarkdown style (name, vibe, emoji, avatar, creature). Use bindings like WhatsApp/Telegram to specific agents.</p>
 </div>
@@ -102,6 +129,21 @@ function renderAgents() {
     };
     el.appendChild(div);
   });
+}
+
+function fillTask(text) {
+  document.getElementById('taskInput').value = text;
+  // Auto-select relevant agents based on keywords (simple heuristic)
+  if (text.toLowerCase().includes('condoleeza') || text.toLowerCase().includes('workspace') || text.toLowerCase().includes('gmail') || text.toLowerCase().includes('vin')) {
+    if (!activeTeam.includes('condoleeza')) activeTeam.push('condoleeza');
+  }
+  if (text.toLowerCase().includes('hermes') || text.toLowerCase().includes('local')) {
+    if (!activeTeam.includes('hermes_mila')) activeTeam.push('hermes_mila');
+  }
+  if (text.toLowerCase().includes('deploy') || text.toLowerCase().includes('elon')) {
+    if (!activeTeam.includes('elon')) activeTeam.push('elon');
+  }
+  renderAgents();
 }
 
 async function dispatchTask() {
