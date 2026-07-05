@@ -46,4 +46,8 @@ name = "boardroom"
 vars = { SITE_ID = "boardroom" }
 routes = [{ pattern = "boardroom.bryanoneillgillis.com/*", zone_name = "bryanoneillgillis.com" }]
 kv_namespaces = [{ binding = "SITE_KV", id = "REPLACE_ME" }]
+# Boardroom: Hermes-powered multi-agent office UI (static HTML from cloudflare/sites/boardroom/index.html).
+# Deploy the static site via Cloudflare Pages (recommended) or this worker for /boardroom/ path on main domain.
+# Hermes agents + full skills for task dispatch, execution (deploys, SMS, workspace). Private via Cloudflare Access.
+# See CLOUDFLARE-SITES.md and cloudflare/sites/boardroom/
 
