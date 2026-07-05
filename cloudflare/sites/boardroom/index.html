@@ -36,6 +36,15 @@ button:hover { background: #16a34a; }
 .comms select, .comms textarea, .comms button { width: 100%; margin: 4px 0; }
 .comms-log { font-size: 11px; background: #0f172a; padding: 8px; margin-top: 8px; border-radius: 4px; max-height: 100px; overflow: auto; font-family: monospace; }
 .solo-btn { font-size:9px; margin-left:4px; color:#64748b; cursor:pointer; border:1px solid #475569; padding:1px 3px; border-radius:2px; }
+.dashboard { background: #1e2937; padding: 16px; border-radius: 8px; margin-bottom: 20px; }
+.dashboard h3 { margin-top: 0; }
+.agent-row { display: flex; align-items: center; gap: 12px; margin: 8px 0; padding: 8px; background: #0f172a; border-radius: 6px; }
+.agent-row .name { min-width: 140px; font-weight: 600; }
+.progress-bar { flex: 1; height: 10px; background: #334155; border-radius: 5px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #22c55e, #86efac); transition: width 0.3s; }
+.task-desc { font-size: 12px; color: #cbd5e1; margin-top: 4px; }
+.quick-assign { margin-top: 12px; display: flex; gap: 8px; }
+.quick-assign select, .quick-assign input { padding: 6px; border-radius: 4px; border: 1px solid #475569; background: #0f172a; color: #e2e8f0; }
 </style>
 </head>
 <body>
@@ -54,6 +63,7 @@ button:hover { background: #16a34a; }
     <button class="shortcut-btn" onclick="fillTask('Condoleeza, parse the latest Gmail invoices for VINs and update the master Sheet with next due dates and create Calendar reminders.')">Condoleeza: Parse Gmail + Update Tracker</button>
     <button class="shortcut-btn hermes" onclick="fillTask('Hermes + Condoleeza: local Drive sync + Apps Script for retests. Use Hermes terminal, browser, computer-use, mcp to validate and execute.')">Hermes + Condoleeza: Local Exec + Workspace</button>
     <button class="shortcut-btn hermes" onclick="fillTask('Full Team + Solid Core (Mila + Sloane + Elon) + Hermes: parse (Condoleeza), creative (Mila), content (Sloane), bold plan (Elon), execute/deploy (Hermes).')">Full Solid Team + Hermes for End-to-End</button>
+    <button class="shortcut-btn solid" onclick="soloMilaAndDashboard()">Mila: Make Task Dashboard (all agents + progress)</button>
   </div>
   <div class="reminders">
     <strong>How to use solid agents Mila, Sloane, Elon:</strong><br>
@@ -96,6 +106,25 @@ button:hover { background: #16a34a; }
 </div>
 
 <div class="results" id="results" style="display:none;"></div>
+
+<div class="dashboard" id="taskDashboard">
+  <h3>📋 Task Dashboard — Mila's Creation (all agents + progress)</h3>
+  <div id="dashboardContent"></div>
+  <div class="quick-assign">
+    <select id="assignAgent">
+      <option value="samantha">Samantha</option>
+      <option value="mila">Mila</option>
+      <option value="sloane">Sloane</option>
+      <option value="elon">Elon</option>
+      <option value="condoleeza">Condoleeza</option>
+      <option value="nora">Nora</option>
+      <option value="hermes">Hermes (Core)</option>
+    </select>
+    <input id="assignTask" placeholder="Task description..." style="flex:1" />
+    <button onclick="addQuickTask()" style="background:#3b82f6">+ Assign Task</button>
+  </div>
+  <p style="font-size:10px; color:#64748b; margin-top:8px;">Tasks auto-added when you dispatch to a single agent (use [solo]). Click progress or buttons to update. Persisted in this browser.</p>
+</div>
 
 <div class="skills">
   <h3>Available Skills &amp; Plugins (full access via OpenClaw + Hermes runtime)</h3>
@@ -255,7 +284,109 @@ function sendComms() {
   document.getElementById('commsMessage').value = '';
 }
 
+function soloMilaAndDashboard() {
+  activeTeam = ['mila'];
+  renderAgents();
+  document.getElementById('taskInput').value = 'make a task dashboard with all agents on there and progress';
+  dispatchTask();
+  // The dispatch hook will also add it
+}
+
+// === Task Dashboard (Mila-powered) ===
+let tasks = [];
+try {
+  tasks = JSON.parse(localStorage.getItem('boardroomTasks') || '[]');
+} catch(e) { tasks = []; }
+
+function saveTasks() {
+  localStorage.setItem('boardroomTasks', JSON.stringify(tasks));
+}
+
+function renderDashboard() {
+  const container = document.getElementById('dashboardContent');
+  if (!container) return;
+  if (tasks.length === 0) {
+    container.innerHTML = '<p style="color:#64748b">No tasks yet. Dispatch a single-agent command (use [solo]) or use Quick Assign above. Mila is building this live.</p>';
+    return;
+  }
+  const agents = ['samantha','condoleeza','mila','sloane','elon','nora','hermes'];
+  let html = '<div style="display:grid; gap:8px;">';
+  agents.forEach(agent => {
+    const agentTasks = tasks.filter(t => t.agent === agent);
+    if (agentTasks.length === 0) return;
+    const avgProgress = Math.round(agentTasks.reduce((s,t)=>s + (t.progress||0), 0) / agentTasks.length);
+    const active = agentTasks.filter(t => t.status !== 'done').length;
+    html += `<div class="agent-row">
+      <div class="name">${agent.charAt(0).toUpperCase() + agent.slice(1)}</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${avgProgress}%"></div></div>
+      <div style="min-width:60px; font-size:12px;">${avgProgress}% (${active} open)</div>
+    </div>`;
+    agentTasks.forEach(t => {
+      html += `<div style="margin-left:150px; font-size:12px;">
+        ${t.desc} 
+        <input type="range" min="0" max="100" value="${t.progress||0}" style="width:120px;vertical-align:middle" onchange="updateTaskProgress(${t.id}, this.value)">
+        <button onclick="markTaskDone(${t.id})" style="font-size:10px;padding:1px 4px;">${t.status==='done'?'✓':'Done'}</button>
+      </div>`;
+    });
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function addTask(agent, desc) {
+  const task = { id: Date.now(), agent, desc, progress: 5, status: 'todo' };
+  tasks.push(task);
+  saveTasks();
+  renderDashboard();
+}
+
+function updateTaskProgress(id, progress) {
+  const t = tasks.find(x => x.id == id);
+  if (t) {
+    t.progress = parseInt(progress);
+    if (t.progress >= 100) t.status = 'done';
+    saveTasks();
+    renderDashboard();
+  }
+}
+
+function markTaskDone(id) {
+  const t = tasks.find(x => x.id == id);
+  if (t) {
+    t.progress = 100;
+    t.status = 'done';
+    saveTasks();
+    renderDashboard();
+  }
+}
+
+function addQuickTask() {
+  const agent = document.getElementById('assignAgent').value;
+  const desc = document.getElementById('assignTask').value.trim();
+  if (!desc) return alert('Enter a task description');
+  addTask(agent, desc);
+  document.getElementById('assignTask').value = '';
+}
+
+// Hook single-agent dispatches into the dashboard
+const originalDispatch = dispatchTask;
+dispatchTask = async function() {
+  const input = document.getElementById('taskInput').value.trim();
+  await originalDispatch.call(this);
+  // If currently solo / single agent, auto-log the task
+  if (activeTeam.length === 1) {
+    const agent = activeTeam[0];
+    // avoid duplicates if already in plan
+    if (!tasks.some(t => t.desc.includes(input.substring(0,30)))) {
+      addTask(agent, input);
+    }
+  }
+};
+
+renderDashboard();
 renderAgents();
 </script>
+</body>
+</html>
 </body>
 </html>
