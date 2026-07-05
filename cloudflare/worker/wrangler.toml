@@ -41,3 +41,9 @@ routes = [{ pattern = "silverbackai.agency/*", zone_name = "silverbackai.agency"
 # when CLOUDFLARE_API_TOKEN is set; see cloudflare/worker/scripts/ensure-kv.mjs.
 kv_namespaces = [{ binding = "SITE_KV", id = "REPLACE_ME" }]
 
+[env.boardroom]
+name = "boardroom"
+vars = { SITE_ID = "boardroom" }
+routes = [{ pattern = "boardroom.bryanoneillgillis.com/*", zone_name = "bryanoneillgillis.com" }]
+kv_namespaces = [{ binding = "SITE_KV", id = "REPLACE_ME" }]
+
