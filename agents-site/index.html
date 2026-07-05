@@ -26,13 +26,13 @@ button:hover { background: #2563eb; }
 <body>
 <div class="header">
   <h1>Samantha's Office — Multi-Agent Task Execution</h1>
-  <p>Combine agents (Samantha, Condoleeza, Mila, Sloane, Elon, Hermes agents, etc.). They have access to all skills &amp; plugins for real work: deploy, SMS, email, calendar, drive, content, cloud ops, workspace automations. Follows OpenClaw agent identity (IDENTITY.md) + config (per-agent skills, models, bootstrap).</p>
+  <p>Combine agents (Samantha, Condoleeza, Mila, Sloane, Elon, Hermes agents, etc.). Isolated agents with own workspaces (per OpenClaw multi-agent.md: agentDir, sessions, bindings for routing). Full skills/plugins: deploy, SMS, email, calendar, drive, content, cloud ops, workspace automations. Follows OpenClaw agent identity (IDENTITY.md) + config (per-agent skills, models, bootstrap, sandbox).</p>
 </div>
 
 <div class="team-panel">
-  <h3>Active Agent Team (click to toggle / combine)</h3>
+  <h3>Active Agent Team (click to toggle / combine — supports multi-agent routing & bindings)</h3>
   <div class="agent-list" id="agentList"></div>
-  <p style="font-size:12px; color:#94a3b8; margin-top:8px;">Hermes agents bring full local plugins, skills, terminal, browser, memory for autonomous execution. Condoleeza handles Workspace (Gmail/Drive/Calendar/Sheets/Apps Script per condoleeza-workspace-guru.md). Identity from parseIdentityMarkdown style (name, vibe, emoji, avatar, creature).</p>
+  <p style="font-size:12px; color:#94a3b8; margin-top:8px;">Hermes agents bring full local plugins, skills, terminal, browser, memory for autonomous execution. Condoleeza handles Workspace (Gmail/Drive/Calendar/Sheets/Apps Script per condoleeza-workspace-guru.md). Identity from parseIdentityMarkdown style (name, vibe, emoji, avatar, creature). Use bindings like WhatsApp/Telegram to specific agents.</p>
 </div>
 
 <div class="task-input">
@@ -44,7 +44,7 @@ button:hover { background: #2563eb; }
 <div class="results" id="results" style="display:none;"></div>
 
 <div class="skills">
-  <h3>Available Skills &amp; Plugins (team has access via OpenClaw config-agents.md + skills/)</h3>
+  <h3>Available Skills &amp; Plugins (team has access via OpenClaw config-agents.md + skills/ + multi-agent)</h3>
   <div>
     <span class="skill">builder-deploy (Cloud Run, Vercel, Cloudflare, cost opt, free tier)</span>
     <span class="skill">SMS / Twilio / notifications (Nora + Hermes plugins)</span>
@@ -61,8 +61,9 @@ button:hover { background: #2563eb; }
     <span class="skill">Data pipelines / VIN / CRM sync (datasync)</span>
     <span class="skill">Hermes full runtime (browser, terminal, cron, memory, google, slack, etc.)</span>
     <span class="skill">+ all in skills/ (tps-report, sloan-legal, etc.)</span>
+    <span class="skill">Integrations: CSV/Excel, Stripe, Webhook, REST (gumption style)</span>
   </div>
-  <p style="font-size:12px; margin-top:8px;">Per-agent skills from OpenClaw config-agents.md (agents.list[].skills or defaults). Identity parsed like identity-file.test.ts (name, creature, vibe, emoji, avatar from IDENTITY.md). Bootstrap files: AGENTS.md, SOUL.md, IDENTITY.md, TOOLS.md.</p>
+  <p style="font-size:12px; margin-top:8px;">Per-agent skills from OpenClaw config-agents.md (agents.list[].skills or defaults). Identity parsed like identity-file.test.ts (name, creature, vibe, emoji, avatar from IDENTITY.md). Bootstrap files: AGENTS.md (per AGENTS.dev.md template), SOUL.md, IDENTITY.md, TOOLS.md. Multi-agent: isolated workspaces, bindings for channels, cross-agent memory, per-agent sandbox.</p>
 </div>
 
 <script>
@@ -109,22 +110,22 @@ async function dispatchTask() {
 
   const resEl = document.getElementById('results');
   resEl.style.display = 'block';
-  resEl.innerHTML = 'Team working on: ' + input + '\n\nActive team: ' + activeTeam.join(' + ') + '\n\nUsing OpenClaw agent identity + config + skills...';
+  resEl.innerHTML = 'Team working on: ' + input + '\n\nActive team: ' + activeTeam.join(' + ') + '\n\nUsing OpenClaw multi-agent (isolated workspaces, bindings, cross-memory) + identity + config + skills...';
 
   setTimeout(() => {
-    let plan = `**Team Plan (OpenClaw identity from IDENTITY.md + config-agents.md + skills) for: ${input}**\n\n`;
+    let plan = `**Team Plan (OpenClaw multi-agent from multi-agent.md + identity + config-agents + skills + gumption agents) for: ${input}**\n\n`;
     activeTeam.forEach(id => {
       const ag = AGENTS.find(x => x.id === id);
       if (ag) {
         plan += `- ${ag.emoji} ${ag.name} (${ag.identity.creature || 'agent'} / ${ag.identity.vibe || 'specialist'}) : ${ag.desc}\n`;
       }
     });
-    plan += `\n**Assigned Actions (skills/plugins):**\n`;
-    if (activeTeam.some(id => id.includes('condoleeza'))) plan += `- Condoleeza: Parse Gmail for VINs/invoices (per condoleeza-workspace-guru.md), update Sheets tracker, create Calendar 6-mo alerts, generate Apps Script. Safety: read-first, confirm writes.\n`;
-    if (activeTeam.some(id => id.includes('sloane') || id.includes('hermes_sloane'))) plan += `- Sloane/Hermes Sloane: Draft content using sloan-carb-cs skill.\n`;
+    plan += `\n**Assigned Actions (skills/plugins, per-agent config, multi-agent routing):**\n`;
+    if (activeTeam.some(id => id.includes('condoleeza'))) plan += `- Condoleeza: Parse Gmail for VINs/invoices (per condoleeza-workspace-guru.md), update Sheets tracker, create Calendar 6-mo alerts, generate Apps Script. Safety: read-first, confirm writes. (Isolated workspace, skills allowlist)\n`;
+    if (activeTeam.some(id => id.includes('sloane') || id.includes('hermes_sloane'))) plan += `- Sloane/Hermes Sloane: Draft content using sloan-carb-cs skill. (Own AGENTS.md per template)\n`;
     if (activeTeam.some(id => id.includes('mila') || id.includes('hermes_mila'))) plan += `- Mila/Hermes Mila: Creative direction + visuals.\n`;
     if (activeTeam.some(id => id.includes('elon') || id.includes('hermes_elon'))) plan += `- Elon/Hermes Elon: Bold plan + builder-deploy execution (gcloud / vercel / cloudflare).\n`;
-    if (activeTeam.some(id => id.includes('nora') || id.includes('hermes_nora'))) plan += `- Nora/Hermes Nora: SMS texts via Twilio/Hermes plugin, customer dispatch.\n    if (activeTeam.includes('samantha')) plan += `- Samantha: Orchestrate using combined identity, verify safety (from OpenClaw config), report execution.\n\n**Config notes:** Per-agent skills (agents.list[].skills or defaults), bootstrap files (IDENTITY.md parsed for name/vibe/emoji/avatar like identity-file.test.ts), contextLimits, models with fallbacks, sandbox if enabled.\n**Real actions:** Produces SMS body, email draft, deploy command, sheet update, calendar event. Execute via Hermes plugins, Gmail integration, builder-deploy, or local tools.\n`;
+    if (activeTeam.some(id => id.includes('nora') || id.includes('hermes_nora'))) plan += `- Nora/Hermes Nora: SMS texts via Twilio/Hermes plugin, customer dispatch.\n    if (activeTeam.includes('samantha')) plan += `- Samantha: Orchestrate using combined identity (parsed), verify safety (from OpenClaw config), report execution. Bindings for routing if channel-specific.\n\n**Config notes:** Per-agent skills (agents.list[].skills or defaults), bootstrap files (IDENTITY.md parsed for name/vibe/emoji/avatar like identity-file.test.ts, AGENTS.md per AGENTS.dev.md), contextLimits, models with fallbacks, sandbox if enabled, multi-agent isolation (own agentDir/sessions), cross-agent memory search.\n**Real actions:** Produces SMS body, email draft, deploy command, sheet update, calendar event. Execute via Hermes plugins, Gmail integration, builder-deploy, or local tools. For channels: use bindings (e.g. WhatsApp account to specific agent).\n**Integrations (gumption style):** CSV/Excel, Stripe, Webhook, REST for data; agents like lead-enrichment, outreach-drafter, fleet-compliance.\n`;
     resEl.innerHTML = plan;
   }, 900);
 }
