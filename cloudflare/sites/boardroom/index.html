@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Samantha's Boardroom — Multi-Agent Office | Solid Agents Mila, Sloane, Elon + Hermes on Cloudflare</title>
+<style>
+body { font-family: system-ui, sans-serif; background: #0f172a; color: #e2e8f0; margin: 0; padding: 20px; }
+.header { background: #1e2937; padding: 16px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #22c55e; }
+.header h1 { margin: 0; font-size: 24px; }
+.header .cloudflare { color: #f97316; font-weight: 600; }
+.team-panel { background: #1e2937; padding: 16px; border-radius: 8px; margin-bottom: 20px; }
+.agent-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.agent { background: #334155; padding: 8px 12px; border-radius: 6px; cursor: pointer; border: 2px solid transparent; display: flex; align-items: center; gap: 8px; }
+.agent.active { border-color: #22c55e; background: #14532d; }
+.agent.hermes { border-color: #eab308; background: #422006; }
+.agent.solid { border-color: #3b82f6; background: #1e3a8a; }
+.agent-emoji { font-size: 20px; }
+.task-input { background: #1e2937; padding: 16px; border-radius: 8px; margin-bottom: 20px; }
+textarea, button { width: 100%; padding: 12px; border-radius: 6px; border: none; margin: 4px 0; font-size: 16px; }
+button { background: #22c55e; color: #0f172a; cursor: pointer; font-weight: 600; }
+button:hover { background: #16a34a; }
+.results { background: #1e2937; padding: 16px; border-radius: 8px; white-space: pre-wrap; font-family: monospace; border-left: 4px solid #eab308; }
+.skills { background: #1e2937; padding: 16px; border-radius: 8px; margin-top: 20px; }
+.skill { background: #334155; padding: 6px 10px; border-radius: 4px; display: inline-block; margin: 4px; font-size: 13px; }
+.hermes-power { background: #422006; border: 1px solid #eab308; padding: 8px; border-radius: 6px; margin-top: 12px; }
+.solid-power { background: #1e3a8a; border: 1px solid #3b82f6; padding: 8px; border-radius: 6px; margin-top: 12px; }
+.identity { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+.shortcuts { background: #1e2937; padding: 16px; border-radius: 8px; margin-bottom: 20px; }
+.shortcut-btn { background: #334155; color: #e2e8f0; border: 1px solid #475569; padding: 6px 10px; border-radius: 4px; margin: 4px; cursor: pointer; font-size: 12px; }
+.shortcut-btn.hermes { border-color: #eab308; background: #422006; }
+.shortcut-btn.solid { border-color: #3b82f6; background: #1e3a8a; }
+.shortcut-btn:hover { background: #475569; }
+.reminders { font-size: 12px; color: #94a3b8; margin-top: 8px; line-height: 1.4; }
+.comms { background: #1e2937; padding: 16px; border-radius: 8px; margin-bottom: 20px; }
+.comms select, .comms textarea, .comms button { width: 100%; margin: 4px 0; }
+.comms-log { font-size: 11px; background: #0f172a; padding: 8px; margin-top: 8px; border-radius: 4px; max-height: 100px; overflow: auto; font-family: monospace; }
+.solo-btn { font-size:9px; margin-left:4px; color:#64748b; cursor:pointer; border:1px solid #475569; padding:1px 3px; border-radius:2px; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Samantha's Boardroom — Multi-Agent Office</h1>
+  <p><strong>Cloudflare Hosted</strong> (boardroom.bryanoneillgillis.com) • Private internal command center. Combine solid agents Mila (Creative & CX), Sloane (Content & SEO), Elon (Bold Execution) with Hermes superpowers for real execution. All skills + OpenClaw patterns.</p>
+</div>
+
+<div class="shortcuts">
+  <h3>Shortcuts &amp; Reminders — Solid Agents Mila, Sloane, Elon + Hermes Rock</h3>
+  <div>
+    <button class="shortcut-btn solid" onclick="fillTask('Mila: lead creative direction, visuals, CX for new campaign assets and landing pages.')">Mila: Creative Direction &amp; Visuals</button>
+    <button class="shortcut-btn solid" onclick="fillTask('Sloane: draft satirical yet accurate CARB content and SEO optimized blog for A+ campaign.')">Sloane: Content &amp; SEO</button>
+    <button class="shortcut-btn solid" onclick="fillTask('Elon: first-principles bold execution plan, ship updates, deploys to Cloudflare.')">Elon: Bold Execution &amp; Ship</button>
+    <button class="shortcut-btn hermes" onclick="fillTask('Hermes: use full superpowers (skills bundles plugins mcp computer-use) to scan Drive for VIN trackers, generate 6-mo retest automation, commit, then builder-deploy to Cloudflare Pages + notify.')">Hermes: Full Skills + Deploy (Superpower)</button>
+    <button class="shortcut-btn" onclick="fillTask('Condoleeza, parse the latest Gmail invoices for VINs and update the master Sheet with next due dates and create Calendar reminders.')">Condoleeza: Parse Gmail + Update Tracker</button>
+    <button class="shortcut-btn hermes" onclick="fillTask('Hermes + Condoleeza: local Drive sync + Apps Script for retests. Use Hermes terminal, browser, computer-use, mcp to validate and execute.')">Hermes + Condoleeza: Local Exec + Workspace</button>
+    <button class="shortcut-btn hermes" onclick="fillTask('Full Team + Solid Core (Mila + Sloane + Elon) + Hermes: parse (Condoleeza), creative (Mila), content (Sloane), bold plan (Elon), execute/deploy (Hermes).')">Full Solid Team + Hermes for End-to-End</button>
+  </div>
+  <div class="reminders">
+    <strong>How to use solid agents Mila, Sloane, Elon:</strong><br>
+    - Mila: "Mila, creative direction and visuals..." (design, CX, assets)<br>
+    - Sloane: "Sloane, draft content and SEO..." (writing, satire, optimization)<br>
+    - Elon: "Elon, bold first-principles execution and ship..." (planning, deploys)<br>
+    - Combine with Hermes for execution muscle: "Mila creative, Sloane content, Elon bold plan, Hermes deploy"<br>
+    - Be concrete: request specific outputs like "generate thumbnails", "write blog post", "create deploy plan".<br>
+    - Follow OpenClaw: per-agent IDENTITY.md / AGENTS.md / config-agents, read-first for safety, bindings for channels.<br>
+    <strong>Hosted:</strong> Pure Cloudflare (Pages/Worker). No Vercel. Access control via Cloudflare Zero Trust recommended for privacy.<br>
+  </div>
+</div>
+
+<div class="comms">
+  <h3>Communication Webapp (SMS / GChat / Slack / WhatsApp via Hermes)</h3>
+  <div>
+    <select id="commsChannel">
+      <option value="SMS/Twilio">SMS / Twilio (Nora + Hermes)</option>
+      <option value="Google Chat">Google Chat (GChat)</option>
+      <option value="Slack">Slack</option>
+      <option value="WhatsApp">WhatsApp</option>
+    </select>
+    <textarea id="commsMessage" rows="2" placeholder="Message or update to send (e.g. New boardroom deployed at https://boardroom.bryanoneillgillis.com - test it!)" style="width:100%; margin:4px 0;"></textarea>
+    <button onclick="sendComms()" style="background:#3b82f6;">Send via Hermes Comms Gateway</button>
+  </div>
+  <div id="commsLog" class="comms-log"></div>
+  <p style="font-size:10px; color:#94a3b8; margin-top:4px;">This mini webapp fills a Hermes task for real execution (local Hermes required for actual sends). Cool tasks: client reminders, team digests, alerts.</p>
+</div>
+
+<div class="team-panel">
+  <h3>Active Agent Team (click to toggle • click [solo] for single-agent command — defaults to one)</h3>
+  <div class="agent-list" id="agentList"></div>
+  <p style="font-size:12px; color:#94a3b8; margin-top:8px;"><strong>Defaults to single agent (Samantha)</strong> — perfect for "just give one agent a command". Click any agent to toggle (builds a team). Click [solo] next to an agent for instant single-agent mode. Mila/Sloane/Elon = solid core specialists. Hermes = execution powerhouse.</p>
+</div>
+
+<div class="task-input">
+  <h3>Task / Request (Solid agents Mila, Sloane, Elon + Hermes execute)</h3>
+  <textarea id="taskInput" rows="3" placeholder="e.g. Mila creative visuals + Sloane content + Elon bold plan + Hermes: design campaign assets, write SEO post, plan first-principles rollout, deploy to Cloudflare and notify"></textarea>
+  <button onclick="dispatchTask()">Dispatch to Solid Team + Hermes — Plan + Execute</button>
+</div>
+
+<div class="results" id="results" style="display:none;"></div>
+
+<div class="skills">
+  <h3>Available Skills &amp; Plugins (full access via OpenClaw + Hermes runtime)</h3>
+  <div>
+    <span class="skill">builder-deploy (Cloudflare wrangler/Pages/Workers, custom domains)</span>
+    <span class="skill">SMS/Twilio, gateway, send, whatsapp, slack</span>
+    <span class="skill">Email, Gmail, calendar, Drive/Sheets/Docs (Condoleeza + Hermes file)</span>
+    <span class="skill">Content/SEO (Sloane + Hermes)</span>
+    <span class="skill">Creative/visuals + browser (Mila + computer-use)</span>
+    <span class="skill">Bold exec + deploys (Elon + Hermes)</span>
+  </div>
+
+  <div class="solid-power">
+    <strong style="color:#3b82f6">SOLID AGENTS — Mila, Sloane, Elon (reliable core specialists that rock):</strong>
+    <ul style="margin:8px 0 0 16px; font-size:13px; line-height:1.5">
+      <li><strong>Mila (🎨):</strong> Creative &amp; CX lead — visuals, design direction, thumbnails, user experience, vibe curation, campaign assets</li>
+      <li><strong>Sloane (✍️):</strong> Content &amp; SEO specialist — satirical accurate writing, CARB compliance content, SEO optimization, blog posts, strategy</li>
+      <li><strong>Elon (🚀):</strong> Bold Execution — first-principles thinking, aggressive shipping mindset, deployment plans, infrastructure decisions</li>
+    </ul>
+    <span style="font-size:11px; opacity:0.8">Invoke directly: "Mila, create the visuals...", "Sloane, draft the content...", "Elon, bold plan the rollout...". Pair with Hermes for full execution (deploys, terminal, automation).</span>
+  </div>
+
+  <div class="hermes-power">
+    <strong style="color:#eab308">HERMES SUPERPOWERS (v0.18+ Agent CLI — the execution engine):</strong>
+    <ul style="margin:8px 0 0 16px; font-size:13px; line-height:1.5">
+      <li><strong>Core:</strong> chat, skills, bundles, plugins, tools, mcp, computer-use, claw</li>
+      <li><strong>Execution:</strong> terminal, browser automation (headless + computer-use), file ops, scripts, git</li>
+      <li><strong>Integrations:</strong> Google full, Slack, Twilio, Drive, Gmail, webhooks, cron, gateway, proxy, send</li>
+      <li><strong>Orchestration:</strong> moa, fallback, sessions, memory-graph, memory, insights, checkpoints</li>
+      <li><strong>Deploy &amp; Infra:</strong> builder-deploy to Cloudflare (wrangler/Pages/Workers/KV), serve, dashboard, gui, desktop</li>
+      <li><strong>Collab:</strong> kanban, project (multi-folder workspaces), hooks, pairing</li>
+      <li><strong>Ops:</strong> doctor, security, status, backup, debug, logs, prompt-size, auth, secrets, migrate</li>
+      <li><strong>Channels:</strong> whatsapp, whatsapp-cloud, slack, portal, webhook, cron, send</li>
+    </ul>
+    <span style="font-size:11px; opacity:0.8">Local: ~/.local/bin/hermes or `hermes skills list`, `hermes mcp`, `hermes computer-use`, `hermes claw`, `hermes serve --tui` etc. Invoke with "Hermes, use skills + mcp + computer-use + claw...". Ties to OpenClaw via claw subcommand. Isolated but powerful when authorized.</span>
+  </div>
+
+  <p style="font-size:12px; margin-top:8px;">Per OpenClaw config-agents + Hermes runtime. Identity from IDENTITY.md. Mila, Sloane, Elon = solid reliable specialists. Hermes executes for real. Boardroom on Cloudflare. Private via Cloudflare Access.</p>
+</div>
+
+<script>
+const AGENTS = [
+  { id: 'samantha', name: 'Samantha', emoji: '👩‍💼', desc: 'Lead Orchestrator • multi-model', identity: { creature: 'Grok woman agent', vibe: 'flirty witty orchestrator', avatar: '' } },
+  { id: 'condoleeza', name: 'Condoleeza', emoji: '📁', desc: 'Workspace Guru (Gmail/Drive/Calendar/Sheets/Apps Script)', identity: { creature: 'Ops veteran', vibe: 'calm methodical', avatar: '' } },
+  { id: 'sloane', name: 'Sloane', emoji: '✍️', desc: 'Content & SEO', identity: { creature: 'Creative writer', vibe: 'satirical accurate', avatar: '' }, solid: true },
+  { id: 'mila', name: 'Mila', emoji: '🎨', desc: 'Creative & CX', identity: { creature: 'Design lead', vibe: 'vibe curator', avatar: '' }, solid: true },
+  { id: 'elon', name: 'Elon', emoji: '🚀', desc: 'Bold Execution', identity: { creature: 'First-principles innovator', vibe: 'aggressive shipper', avatar: '' }, solid: true },
+  { id: 'nora', name: 'Nora', emoji: '📱', desc: 'Mobile Ops & Customers', identity: { creature: 'Field ops specialist', vibe: 'practical direct', avatar: '' } },
+  // Hermes variants — real Hermes Agent superpowers
+  { id: 'hermes', name: 'Hermes (Core)', emoji: '⚙️', desc: 'Hermes Full: skills/bundles/plugins/mcp/computer-use/claw/gateway/serve', identity: { creature: 'Execution deity', vibe: 'local god-mode autonomous', avatar: '' }, hermes: true },
+  { id: 'hermes_mila', name: 'Hermes Mila', emoji: '🛠️🎨', desc: 'Hermes Creative + browser + computer-use + plugins', identity: { creature: 'Hermes creative', vibe: 'tool-rich autonomous', avatar: '' }, hermes: true },
+  { id: 'hermes_sloane', name: 'Hermes Sloane', emoji: '🛠️✍️', desc: 'Hermes Content + tools + memory-graph + skills', identity: { creature: 'Hermes content', vibe: 'autonomous viral', avatar: '' }, hermes: true },
+  { id: 'hermes_elon', name: 'Hermes Elon', emoji: '🛠️🚀', desc: 'Hermes Bold + terminal + Cloudflare deploy + wrangler', identity: { creature: 'Hermes executor', vibe: 'local power', avatar: '' }, hermes: true },
+  { id: 'hermes_nora', name: 'Hermes Nora', emoji: '🛠️📱', desc: 'Hermes Mobile + SMS/gateway + webhook/cron + send', identity: { creature: 'Hermes ops', vibe: 'tool-augmented', avatar: '' }, hermes: true },
+  { id: 'hermes_condo', name: 'Hermes Condoleeza', emoji: '🛠️📁', desc: 'Hermes Workspace + file/Drive + skills + mcp', identity: { creature: 'Hermes workspace', vibe: 'methodical + powerful', avatar: '' }, hermes: true }
+];
+
+let activeTeam = ['samantha'];
+
+function renderAgents() {
+  const el = document.getElementById('agentList');
+  el.innerHTML = '';
+  AGENTS.forEach(a => {
+    const isActive = activeTeam.includes(a.id);
+    const div = document.createElement('div');
+    div.className = 'agent' + (a.hermes ? ' hermes' : '') + (a.solid ? ' solid' : '');
+    if (isActive) div.classList.add('active');
+    div.innerHTML = `<span class="agent-emoji">${a.emoji}</span> ${a.name} <span style="font-size:10px;opacity:0.7;">${a.identity.vibe || ''}</span> <span class="solo-btn" style="font-size:9px; margin-left:4px; color:#64748b; cursor:pointer; border:1px solid #475569; padding:1px 3px; border-radius:2px;" onclick="event.stopImmediatePropagation(); soloAgent('${a.id}');">[solo]</span>`;
+    div.onclick = () => {
+      if (activeTeam.includes(a.id)) {
+        activeTeam = activeTeam.filter(x => x !== a.id);
+        if (activeTeam.length === 0) activeTeam = ['samantha'];
+      } else {
+        activeTeam.push(a.id);
+      }
+      renderAgents();
+    };
+    el.appendChild(div);
+  });
+}
+
+function soloAgent(id) {
+  activeTeam = [id];
+  renderAgents();
+}
+
+function fillTask(text) {
+  document.getElementById('taskInput').value = text;
+  const lower = text.toLowerCase();
+  if (lower.includes('condoleeza') || lower.includes('workspace') || lower.includes('gmail') || lower.includes('vin')) {
+    if (!activeTeam.includes('condoleeza')) activeTeam.push('condoleeza');
+  }
+  if (lower.includes('mila') || lower.includes('creative') || lower.includes('visual') || lower.includes('design') || lower.includes('cx')) {
+    if (!activeTeam.includes('mila')) activeTeam.push('mila');
+  }
+  if (lower.includes('sloane') || lower.includes('content') || lower.includes('seo') || lower.includes('draft') || lower.includes('satirical')) {
+    if (!activeTeam.includes('sloane')) activeTeam.push('sloane');
+  }
+  if (lower.includes('elon') || lower.includes('bold') || lower.includes('execution') || lower.includes('ship') || lower.includes('first-principles')) {
+    if (!activeTeam.includes('elon')) activeTeam.push('elon');
+  }
+  if (lower.includes('hermes')) {
+    if (!activeTeam.includes('hermes')) activeTeam.push('hermes');
+    if (lower.includes('elon') || lower.includes('deploy')) if (!activeTeam.includes('hermes_elon')) activeTeam.push('hermes_elon');
+  }
+  if (lower.includes('deploy') || lower.includes('elon')) {
+    if (!activeTeam.includes('elon') && !activeTeam.includes('hermes_elon')) activeTeam.push('hermes_elon');
+  }
+  renderAgents();
+}
+
+async function dispatchTask() {
+  const input = document.getElementById('taskInput').value.trim();
+  if (!input) return alert('Enter a task');
+
+  const resEl = document.getElementById('results');
+  resEl.style.display = 'block';
+  const isSingle = activeTeam.length === 1;
+  const activeStr = isSingle ? 'Single agent: ' + activeTeam[0] : 'Active team: ' + activeTeam.join(' + ');
+  resEl.innerHTML = (isSingle ? 'Single agent command' : 'Team working') + ' on: ' + input + '\n\n' + activeStr + '\n\nUsing OpenClaw + Solid Agents (Mila, Sloane, Elon) + Hermes on Cloudflare...';
+
+  setTimeout(() => {
+    const isSingle = activeTeam.length === 1;
+    let plan = (isSingle ? `**Single Agent Plan` : `**Team Plan`) + ` (OpenClaw + Solid Agents Mila/Sloane/Elon + Hermes v0.18+) for: ${input}**\n\n`;
+    activeTeam.forEach(id => {
+      const ag = AGENTS.find(x => x.id === id);
+      if (ag) {
+        plan += `- ${ag.emoji} ${ag.name} (${ag.identity.creature || 'agent'} / ${ag.identity.vibe || 'specialist'}) : ${ag.desc}\n`;
+      }
+    });
+    plan += `\n**Assigned Actions (skills + Hermes execution layer):\n`;
+    const hasHermes = activeTeam.some(id => id.includes('hermes'));
+    if (activeTeam.includes('mila')) plan += `- Mila: Creative direction, visuals, CX. Design assets, thumbnails, user flows, campaign creative. Use computer-use/browser for validation if needed.\n`;
+    if (activeTeam.includes('sloane')) plan += `- Sloane: Content & SEO. Draft accurate/satirical writing, SEO posts, CARB content, titles, descriptions, strategy.\n`;
+    if (activeTeam.includes('elon')) plan += `- Elon: Bold execution. First-principles planning, aggressive ship mindset, deployment strategy, infra decisions.\n`;
+    if (activeTeam.some(id => id.includes('condoleeza') || id.includes('hermes_condo'))) plan += `- Condoleeza/Hermes Condo: Parse Gmail/Drive/Sheets, Calendar, Apps Script. Hermes augments with skills + mcp + file ops + terminal validation + computer-use checks.\n`;
+    if (activeTeam.some(id => id.includes('sloane') || id.includes('hermes_sloane'))) plan += `- Sloane/Hermes Sloane: Content. Hermes skills + memory-graph for research + browser verify live pages.\n`;
+    if (activeTeam.some(id => id.includes('mila') || id.includes('hermes_mila'))) plan += `- Mila/Hermes Mila: Creative. Hermes computer-use + browser for visuals/automation.\n`;
+    if (activeTeam.some(id => id.includes('elon') || id.includes('hermes_elon') || id === 'hermes')) plan += `- Elon/Hermes Elon/Hermes: **builder-deploy to Cloudflare** (wrangler/Pages/Workers). Hermes runs full deploy, KV, routes, domains, notifications via gateway/send.\n`;
+    if (activeTeam.some(id => id.includes('nora') || id.includes('hermes_nora'))) plan += `- Nora/Hermes Nora: SMS/Twilio via gateway + webhook/cron + computer-use verification + send + kanban update.\n`;
+    if (activeTeam.includes('samantha') || hasHermes) plan += `- Samantha + Hermes Core: Orchestrate. Hermes performs: skills/bundles/plugins load, mcp servers, computer-use, claw (OpenClaw), gateway, serve, dashboard, cron, project/kanban tracking, terminal, browser steps, deploys, external actions.\n\n**Solid Agents (Mila, Sloane, Elon) + Hermes Superpowers in action:** Solid trio deliver reliable specialist work (creative, content, bold plans). Hermes (skills, bundles, plugins, mcp, computer-use, claw, gateway, serve --tui/gui/dashboard/desktop, cron, webhook, kanban, project, tools, memory-graph...) handles execution muscle. Local exec + tool calling. Ties directly to OpenClaw via claw subcommand.\n**Config:** OpenClaw agents.list + IDENTITY/AGENTS.md + Hermes runtime (local ~/.hermes, --skills, --yolo, etc.). Real outputs ship, send, update, deploy.\n**Integrations:** Full Hermes + gumption + OpenClaw. Hosted on Cloudflare (no Vercel).\n`;
+    resEl.innerHTML = plan;
+  }, 800);
+}
+
+function sendComms() {
+  const channel = document.getElementById('commsChannel').value;
+  const msg = document.getElementById('commsMessage').value.trim();
+  if (!msg) return alert('Enter a message to send');
+  const taskText = `Hermes Nora: Send the following message via ${channel} using gateway/send. Message: "${msg}". Log confirmation and any replies.`;
+  document.getElementById('taskInput').value = taskText;
+  const logEl = document.getElementById('commsLog');
+  const time = new Date().toLocaleTimeString();
+  logEl.innerHTML += `<div>[${time}] Queued to ${channel}: ${msg.substring(0,60)}${msg.length>60?'...':''}</div>`;
+  logEl.scrollTop = logEl.scrollHeight;
+  dispatchTask();
+  document.getElementById('commsMessage').value = '';
+}
+
+renderAgents();
+</script>
+</body>
+</html>
