@@ -26,7 +26,7 @@ You can add/combine agents like:
 - Mila (creative, CX, design)
 - Sloane (content/SEO, satirical CARB content)
 - Elon (bold, first-principles, execution, deploys)
-- Hermes agents (full Hermes runtime with plugins, skills, browser, terminal, memory, cron - local execution power)
+- Hermes agents (full Hermes runtime with plugins, skills, browser, terminal, memory, cron - local execution power; they rock)
 - Nora (mobile ops, customers, SMS, compliance)
 - Others from skills/ (finbot, datasync, aplus-hunter, jonjones-sales, builder-deploy, sloan-*, tps-report, etc.)
 
@@ -36,7 +36,7 @@ Each agent can have:
 - Per-agent skills, models, sandbox, tools allow/deny, context limits, bootstrap files (per config-agents.md)
 - Bindings for routing (channels like WhatsApp, Telegram, Discord, SMS, email to specific agent)
 
-The office UI (agents-site) allows adding agents, combining for tasks, dispatching with full skills/plugins.
+The office UI (boardroom on Cloudflare) allows adding agents, combining for tasks, dispatching with full skills/plugins. Hermes agents bring the real execution superpowers.
 
 Cross-agent memory search supported via extraCollections in config.
 
@@ -47,7 +47,7 @@ Integrations like gumption: CSV/Excel, Stripe, Webhook, REST; agents for lead-en
 ## TASK EXECUTION WITH SKILLS & PLUGINS
 
 For any task, break down, assign to agents based on skills, use plugins for real actions:
-- Deploy: builder-deploy skill (Cloudflare Pages, Vercel, GitHub Pages, Railway; free tier first, cost tracking, share links, security headers)
+- Deploy: builder-deploy skill (Cloudflare Pages, Workers, wrangler, free tier first, cost tracking, share links, security headers)
 - SMS: Twilio or Hermes plugins, Nora/Hermes Nora
 - Email: Gmail integration, transactional (Resend or similar)
 - Calendar: create events, reminders
@@ -56,7 +56,7 @@ For any task, break down, assign to agents based on skills, use plugins for real
 - Workspace: Condoleeza for full Gmail/Drive/Calendar/Sheets/Apps Script automations (parse invoices, match VINs, 6-mo retests, generate scripts)
 - Data: datasync, finbot
 - Sales: jonjones-sales, aplus-hunter
-- Hermes: full local tools when Hermes agent in team
+- Hermes: full local tools (terminal, browser, autonomous execution, deploys, plugins) when Hermes agent in team — Hermes agents rock
 
 Always: read first for writes, confirm bulk/destructive, chunk large, cite VIN/customer, use TPS reports (from tps-report skill), safety (Jon Jones like).
 
@@ -71,6 +71,6 @@ Daily memory, heartbeats optional per agent.
 - Per-agent tool allow/deny, sandbox
 - No exfil secrets
 - Execute via real skills when possible (the office dispatches actions)
-- Combine agents for complex tasks (e.g. Condoleeza + Hermes for workspace + local exec, Elon for deploy)
+- Combine agents for complex tasks (e.g. Condoleeza + Hermes for workspace + local exec, Elon + Hermes for Cloudflare deploy)
 
-The office at the URL is the real multi-agent command center for getting shit done with all skills/plugins + deploy/SMS/email.
+The office at https://boardroom.bryanoneillgillis.com is the real multi-agent command center for getting shit done with all skills/plugins + deploy/SMS/email on Cloudflare (no Vercel).
