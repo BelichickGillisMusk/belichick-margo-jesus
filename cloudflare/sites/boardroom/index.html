@@ -71,7 +71,7 @@ button:hover { background: #16a34a; }
     - Sloane: "Sloane, draft content and SEO..." (writing, satire, optimization)<br>
     - Elon: "Elon, bold first-principles execution and ship..." (planning, deploys)<br>
     - Combine with Hermes for execution muscle: "Mila creative, Sloane content, Elon bold plan, Hermes deploy"<br>
-    - Be concrete: request specific outputs like "generate thumbnails", "write blog post", "create deploy plan".<br>
+    - Be concrete: request specific outputs like "generate thumbnails", "write blog post", "create deploy plan". Attach .md or .pdf files in Quick Assign or main task input (text extracted for MD, downloadable for PDF).<br>
     - Follow OpenClaw: per-agent IDENTITY.md / AGENTS.md / config-agents, read-first for safety, bindings for channels.<br>
     <strong>Hosted:</strong> Pure Cloudflare (Pages/Worker). No Vercel. Access control via Cloudflare Zero Trust recommended for privacy.<br>
   </div>
@@ -102,7 +102,10 @@ button:hover { background: #16a34a; }
 <div class="task-input">
   <h3>Task / Request (Solid agents Mila, Sloane, Elon + Hermes execute)</h3>
   <textarea id="taskInput" rows="3" placeholder="e.g. Mila creative visuals + Sloane content + Elon bold plan + Hermes: design campaign assets, write SEO post, plan first-principles rollout, deploy to Cloudflare and notify"></textarea>
-  <button onclick="dispatchTask()">Dispatch to Solid Team + Hermes — Plan + Execute</button>
+  <div style="display:flex; gap:8px; align-items:center; margin-top:4px;">
+    <input type="file" id="mainFile" accept=".md,.pdf,text/markdown,application/pdf" style="flex:1; max-width:220px;" title="Attach .md or .pdf (added to task if single agent selected)" />
+    <button onclick="dispatchTask()">Dispatch to Solid Team + Hermes — Plan + Execute</button>
+  </div>
 </div>
 
 <div class="results" id="results" style="display:none;"></div>
@@ -121,9 +124,10 @@ button:hover { background: #16a34a; }
       <option value="hermes">Hermes (Core)</option>
     </select>
     <input id="assignTask" placeholder="Task description..." style="flex:1" />
+    <input type="file" id="assignFile" accept=".md,.pdf,text/markdown,application/pdf" style="flex:0 0 auto; max-width: 180px;" title="Attach .md or .pdf to task" />
     <button onclick="addQuickTask()" style="background:#3b82f6">+ Assign Task</button>
   </div>
-  <p style="font-size:10px; color:#64748b; margin-top:8px;">Tasks auto-added when you dispatch to a single agent (use [solo]). Click progress or buttons to update. Persisted in this browser.</p>
+  <p style="font-size:10px; color:#64748b; margin-top:8px;">Tasks auto-added when you dispatch to a single agent (use [solo]). Attach .md/.pdf in the form above (MD text included, PDF downloadable). Click progress or buttons to update. Persisted in this browser.</p>
 </div>
 
 <div class="skills">
@@ -237,12 +241,45 @@ function fillTask(text) {
 }
 
 async function dispatchTask() {
-  const input = document.getElementById('taskInput').value.trim();
+  let input = document.getElementById('taskInput').value.trim();
+  const fileInput = document.getElementById('mainFile');
+  const file = fileInput ? fileInput.files[0] : null;
+  const isSingle = activeTeam.length === 1;
+
+  if (file && isSingle) {
+    const reader = new FileReader();
+    await new Promise((resolve) => {
+      reader.onload = function(e) {
+        let attachDesc = '';
+        if (file.type === 'text/markdown' || file.name.toLowerCase().endsWith('.md')) {
+          attachDesc = `\n\n[Attached MD: ${file.name}]\n${e.target.result}`;
+          // also auto add to dashboard with attachment
+          const att = { name: file.name, type: file.type || 'text/markdown', content: e.target.result };
+          if (!tasks.some(t => t.desc.includes(input.substring(0,30)))) {
+            addTask(activeTeam[0], input, att);
+          }
+        } else if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+          attachDesc = `\n\n[Attached PDF: ${file.name} - download from dashboard]`;
+          const att = { name: file.name, type: 'application/pdf', content: e.target.result };
+          if (!tasks.some(t => t.desc.includes(input.substring(0,30)))) {
+            addTask(activeTeam[0], input, att);
+          }
+        }
+        input += attachDesc;
+        resolve();
+      };
+      if (file.type === 'text/markdown' || file.name.toLowerCase().endsWith('.md')) {
+        reader.readAsText(file);
+      } else {
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
   if (!input) return alert('Enter a task');
 
   const resEl = document.getElementById('results');
   resEl.style.display = 'block';
-  const isSingle = activeTeam.length === 1;
   const activeStr = isSingle ? 'Single agent: ' + activeTeam[0] : 'Active team: ' + activeTeam.join(' + ');
   resEl.innerHTML = (isSingle ? 'Single agent command' : 'Team working') + ' on: ' + input + '\n\n' + activeStr + '\n\nUsing OpenClaw + Solid Agents (Mila, Sloane, Elon) + Hermes on Cloudflare...';
 
@@ -268,6 +305,9 @@ async function dispatchTask() {
     if (activeTeam.includes('samantha') || hasHermes) plan += `- Samantha + Hermes Core: Orchestrate. Hermes performs: skills/bundles/plugins load, mcp servers, computer-use, claw (OpenClaw), gateway, serve, dashboard, cron, project/kanban tracking, terminal, browser steps, deploys, external actions.\n\n**Solid Agents (Mila, Sloane, Elon) + Hermes Superpowers in action:** Solid trio deliver reliable specialist work (creative, content, bold plans). Hermes (skills, bundles, plugins, mcp, computer-use, claw, gateway, serve --tui/gui/dashboard/desktop, cron, webhook, kanban, project, tools, memory-graph...) handles execution muscle. Local exec + tool calling. Ties directly to OpenClaw via claw subcommand.\n**Config:** OpenClaw agents.list + IDENTITY/AGENTS.md + Hermes runtime (local ~/.hermes, --skills, --yolo, etc.). Real outputs ship, send, update, deploy.\n**Integrations:** Full Hermes + gumption + OpenClaw. Hosted on Cloudflare (no Vercel).\n`;
     resEl.innerHTML = plan;
   }, 800);
+
+  // clear main file input after dispatch
+  if (fileInput) fileInput.value = '';
 }
 
 function sendComms() {
@@ -306,7 +346,7 @@ function renderDashboard() {
   const container = document.getElementById('dashboardContent');
   if (!container) return;
   if (tasks.length === 0) {
-    container.innerHTML = '<p style="color:#64748b">No tasks yet. Dispatch a single-agent command (use [solo]) or use Quick Assign above. Mila is building this live.</p>';
+    container.innerHTML = '<p style="color:#64748b">No tasks yet. Dispatch a single-agent command (use [solo]) or use Quick Assign above. Attach .md or .pdf files to tasks. Mila is building this live.</p>';
     return;
   }
   const agents = ['samantha','condoleeza','mila','sloane','elon','nora','hermes'];
@@ -322,10 +362,21 @@ function renderDashboard() {
       <div style="min-width:60px; font-size:12px;">${avgProgress}% (${active} open)</div>
     </div>`;
     agentTasks.forEach(t => {
+      let attachHtml = '';
+      if (t.attachment) {
+        const att = t.attachment;
+        if (att.type === 'text/markdown' || att.name.toLowerCase().endsWith('.md')) {
+          const preview = att.content.length > 300 ? att.content.substring(0,300) + '...' : att.content;
+          attachHtml = `<div style="margin-left:150px; font-size:11px; color:#86efac; white-space:pre-wrap; background:#0f172a; padding:4px; border-radius:3px;">📄 ${att.name} <a href="#" onclick="downloadAttachment(${t.id}); return false;">[download]</a><br><small>${preview.replace(/</g,'&lt;')}</small></div>`;
+        } else {
+          attachHtml = `<div style="margin-left:150px; font-size:11px; color:#86efac;">📄 ${att.name} <a href="${att.content}" download="${att.name}">[download PDF]</a> <small>(open locally for full view)</small></div>`;
+        }
+      }
       html += `<div style="margin-left:150px; font-size:12px;">
         ${t.desc} 
         <input type="range" min="0" max="100" value="${t.progress||0}" style="width:120px;vertical-align:middle" onchange="updateTaskProgress(${t.id}, this.value)">
         <button onclick="markTaskDone(${t.id})" style="font-size:10px;padding:1px 4px;">${t.status==='done'?'✓':'Done'}</button>
+        ${attachHtml}
       </div>`;
     });
   });
@@ -333,11 +384,27 @@ function renderDashboard() {
   container.innerHTML = html;
 }
 
-function addTask(agent, desc) {
+function addTask(agent, desc, attachment) {
   const task = { id: Date.now(), agent, desc, progress: 5, status: 'todo' };
+  if (attachment) task.attachment = attachment;
   tasks.push(task);
   saveTasks();
   renderDashboard();
+}
+
+function downloadAttachment(taskId) {
+  const t = tasks.find(x => x.id == taskId);
+  if (!t || !t.attachment) return;
+  const att = t.attachment;
+  if (att.type === 'text/markdown' || att.name.endsWith('.md')) {
+    const blob = new Blob([att.content], {type: 'text/markdown'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = att.name;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 }
 
 function updateTaskProgress(id, progress) {
@@ -363,9 +430,39 @@ function markTaskDone(id) {
 function addQuickTask() {
   const agent = document.getElementById('assignAgent').value;
   const desc = document.getElementById('assignTask').value.trim();
-  if (!desc) return alert('Enter a task description');
-  addTask(agent, desc);
-  document.getElementById('assignTask').value = '';
+  const fileInput = document.getElementById('assignFile');
+  const file = fileInput.files[0];
+
+  if (!desc && !file) return alert('Enter a task description or attach a file');
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      let attachment;
+      if (file.type === 'text/markdown' || file.name.toLowerCase().endsWith('.md')) {
+        attachment = { name: file.name, type: file.type || 'text/markdown', content: e.target.result };
+        const finalDesc = desc || `Process attached MD: ${file.name}`;
+        addTask(agent, finalDesc, attachment);
+      } else if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+        attachment = { name: file.name, type: 'application/pdf', content: e.target.result }; // data URL for download
+        const finalDesc = desc || `Review attached PDF: ${file.name}`;
+        addTask(agent, finalDesc, attachment);
+      } else {
+        alert('Only .md and .pdf files supported.');
+        return;
+      }
+      fileInput.value = ''; // clear
+      document.getElementById('assignTask').value = '';
+    };
+    if (file.type === 'text/markdown' || file.name.toLowerCase().endsWith('.md')) {
+      reader.readAsText(file);
+    } else {
+      reader.readAsDataURL(file);
+    }
+  } else {
+    addTask(agent, desc);
+    document.getElementById('assignTask').value = '';
+  }
 }
 
 // Hook single-agent dispatches into the dashboard
