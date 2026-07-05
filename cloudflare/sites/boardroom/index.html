@@ -34,74 +34,72 @@ button:hover { background: #16a34a; }
 <body>
 <div class="header">
   <h1>Samantha's Boardroom — Multi-Agent Office</h1>
-  <p><strong>Cloudflare Hosted</strong> (boardroom.bryanoneillgillis.com) • Private internal command center. Combine agents with <span style="color:#eab308;font-weight:600">Hermes superpowers</span> for real execution: terminal, browser, deploys, automations, SMS, email, Drive, Calendar, Sheets and more. All skills + OpenClaw patterns (isolated workspaces, bindings, identities).</p>
+  <p><strong>Cloudflare Hosted</strong> (boardroom.bryanoneillgillis.com) • Private internal command center. Combine agents with <span style="color:#eab308;font-weight:600">Hermes superpowers</span> for real execution. Hermes Agent (v0.18+) brings skills, bundles, plugins, MCP, computer-use, claw, gateway, serve/gui/dashboard, cron, webhooks, kanban, projects + full tool-calling. All + OpenClaw patterns.</p>
 </div>
 
 <div class="shortcuts">
   <h3>Shortcuts &amp; Reminders — Hermes Agents Rock</h3>
   <div>
-    <button class="shortcut-btn hermes" onclick="fillTask('Hermes: use full local superpowers to scan Drive for all VIN trackers, generate 6-month retest script, commit updates, and run builder-deploy to Cloudflare.')">Hermes: Drive + Script + Deploy (Superpower)</button>
+    <button class="shortcut-btn hermes" onclick="fillTask('Hermes: use full superpowers (skills bundles plugins mcp computer-use) to scan Drive for VIN trackers, generate 6-mo retest automation, commit, then builder-deploy to Cloudflare Pages + notify.')">Hermes: Full Skills + Deploy (Superpower)</button>
     <button class="shortcut-btn" onclick="fillTask('Condoleeza, parse the latest Gmail invoices for VINs and update the master Sheet with next due dates and create Calendar reminders.')">Condoleeza: Parse Gmail + Update Tracker</button>
-    <button class="shortcut-btn hermes" onclick="fillTask('Hermes + Condoleeza: local Drive sync + Apps Script for 6-month retest automation. Use Hermes terminal & browser to validate.')">Hermes + Condoleeza: Local Exec + Workspace</button>
-    <button class="shortcut-btn hermes" onclick="fillTask('Hermes Elon: deploy the new landing page to Cloudflare Pages free tier, set custom domain, generate share link, and notify team via SMS + Slack.')">Hermes Elon: Cloudflare Deploy + Notify</button>
+    <button class="shortcut-btn hermes" onclick="fillTask('Hermes + Condoleeza: local Drive sync + Apps Script for retests. Use Hermes terminal, browser, computer-use, mcp to validate and execute.')">Hermes + Condoleeza: Local Exec + Workspace</button>
+    <button class="shortcut-btn hermes" onclick="fillTask('Hermes: run builder-deploy to Cloudflare, set custom domain boardroom.bryanoneillgillis.com, generate share link, post to Slack and SMS team via gateway.')">Hermes: Cloudflare Deploy + Notify via Gateway</button>
     <button class="shortcut-btn" onclick="fillTask('Sloane: draft satirical CARB content for A+ campaign with accurate facts and CTA to 916-890-4427.')">Sloane: Generate Content</button>
-    <button class="shortcut-btn hermes" onclick="fillTask('Hermes Nora: send SMS to overdue customers with test scheduling link using Twilio plugin + browser verification of delivery.')">Hermes Nora: SMS Blast with Proof</button>
-    <button class="shortcut-btn hermes" onclick="fillTask('Full Team + Hermes Core: parse emails (Condoleeza), update workspace, autonomous terminal validation (Hermes), deploy to Cloudflare (Hermes Elon), SMS + email confirmations.')">Full Team + Hermes Superpowers for End-to-End</button>
+    <button class="shortcut-btn hermes" onclick="fillTask('Hermes: use skills + computer-use + Twilio to send SMS to overdue customers, verify delivery in browser, log to kanban/project.')">Hermes: SMS + Computer-Use Proof + Kanban</button>
+    <button class="shortcut-btn hermes" onclick="fillTask('Full Team + Hermes Core: parse (Condoleeza), update workspace, autonomous terminal/browser/mcp (Hermes skills/plugins), deploy to Cloudflare, SMS confirm via gateway, track in kanban.')">Full Team + Hermes (skills, mcp, claw, gateway) for End-to-End</button>
   </div>
   <div class="reminders">
-    <strong>How to unlock Hermes superpowers:</strong><br>
-    - Explicitly invoke: "Hermes, use your full runtime: terminal, browser, file ops, cron, plugins..."<br>
-    - Hermes brings: local execution, autonomous multi-step workflows, Google/Slack/Drive/Twilio direct, memory across sessions, browser automation, builder-deploy on Cloudflare, script generation + run.<br>
-    - Combine: "Samantha orchestrate, Condoleeza workspace, Hermes execute locally &amp; deploy"<br>
-    - Be concrete for super results: "run the script", "verify in browser", "deploy this to Cloudflare now", "send the SMS and confirm receipt".<br>
-    - Follow OpenClaw: per-agent IDENTITY.md / AGENTS.md / config-agents, read-first for safety, sandbox where needed, bindings for channels.<br>
-    <strong>Hosted:</strong> Pure Cloudflare (Pages/Worker). No Vercel. Access control via Cloudflare Zero Trust recommended for privacy.<br>
+    <strong>How to unlock Hermes superpowers (local Hermes Agent v0.18+):</strong><br>
+    - Run: hermes chat --skills ... or hermes [subcommand]<br>
+    - Key: skills, bundles, plugins, mcp, computer-use, claw, gateway, serve, dashboard, gui, desktop, cron, webhook, kanban, project, tools<br>
+    - Explicit: "Hermes, use skills + mcp + computer-use to ..."<br>
+    - Combine with team in boardroom dispatch, then execute for real with local hermes.<br>
+    - Follow OpenClaw + Hermes: per-agent workspaces, read-first, bindings for channels (whatsapp, slack, send).<br>
+    <strong>Hosted:</strong> Pure Cloudflare Pages/Workers. No Vercel. Make private with Cloudflare Access / Zero Trust.<br>
   </div>
 </div>
 
 <div class="team-panel">
-  <h3>Active Agent Team (click to toggle/combine — Hermes variants bring execution superpowers)</h3>
+  <h3>Active Agent Team (toggle — Hermes = execution god-mode with real CLI superpowers)</h3>
   <div class="agent-list" id="agentList"></div>
-  <p style="font-size:12px; color:#94a3b8; margin-top:8px;"><strong>Hermes agents = the rockstars of execution.</strong> Full local plugins + terminal + browser + memory + autonomous actions. Condoleeza = Workspace guru (Gmail/Drive/Calendar/Sheets/Apps Script). Select Hermes variants for real power. Bindings route SMS/WhatsApp/etc to the right agent.</p>
+  <p style="font-size:12px; color:#94a3b8; margin-top:8px;"><strong>Hermes agents rock.</strong> Real Hermes Agent runtime: skills/bundles/plugins, MCP servers, computer-use, claw (OpenClaw tie-in), gateway, serve/dashboard/gui, cron/webhooks, kanban/projects, full tool-calling + memory. Pair with Condoleeza for workspace guru. Use local `hermes` for execution.</p>
 </div>
 
 <div class="task-input">
-  <h3>Task / Request (Hermes makes it happen)</h3>
-  <textarea id="taskInput" rows="3" placeholder="e.g. Hermes: use superpowers to pull latest Drive VIN data, write a Node script to auto-update 6-mo trackers, test it locally, then builder-deploy the boardroom updates to Cloudflare and SMS the team the new link"></textarea>
-  <button onclick="dispatchTask()">Dispatch to Team + Unleash Hermes Superpowers — Plan + Execute</button>
+  <h3>Task / Request (dispatch to Hermes superpowers)</h3>
+  <textarea id="taskInput" rows="3" placeholder="e.g. Hermes skills + mcp + computer-use: pull latest Drive VINs, write + test retest script locally, deploy boardroom to Cloudflare Pages, update kanban, notify via gateway/SMS"></textarea>
+  <button onclick="dispatchTask()">Dispatch + Unleash Hermes (skills, mcp, claw, computer-use, gateway...)</button>
 </div>
 
 <div class="results" id="results" style="display:none;"></div>
 
 <div class="skills">
-  <h3>Available Skills &amp; Plugins (full access via OpenClaw + Hermes runtime)</h3>
+  <h3>Available Skills &amp; Plugins (Hermes runtime + OpenClaw + team)</h3>
   <div>
-    <span class="skill">builder-deploy (Cloudflare Pages/Workers, cost-free tier, custom domains, wrangler)</span>
-    <span class="skill">SMS / Twilio / notifications (Hermes Nora plugins)</span>
-    <span class="skill">Email (Gmail + transactional via Hermes/Condoleeza)</span>
-    <span class="skill">Calendar / scheduling (Condoleeza + Hermes)</span>
-    <span class="skill">Google Drive / Docs / Sheets / Apps Script (Condoleeza workspace + Hermes file ops)</span>
-    <span class="skill">Content &amp; SEO (Sloane + Hermes content tools)</span>
-    <span class="skill">Creative / visuals (Mila + Hermes browser)</span>
-    <span class="skill">Bold execution (Elon + Hermes terminal/deploys)</span>
+    <span class="skill">builder-deploy (Cloudflare wrangler/Pages/Workers, custom domains)</span>
+    <span class="skill">SMS/Twilio, gateway, send, whatsapp, slack</span>
+    <span class="skill">Email, Gmail, calendar, Drive/Sheets/Docs (Condoleeza + Hermes file)</span>
+    <span class="skill">Content/SEO (Sloane + Hermes)</span>
+    <span class="skill">Creative/visuals + browser (Mila + computer-use)</span>
+    <span class="skill">Bold exec + deploys (Elon + Hermes)</span>
   </div>
 
   <div class="hermes-power">
-    <strong style="color:#eab308">HERMES SUPERPOWERS (the execution engine that rocks):</strong>
+    <strong style="color:#eab308">HERMES SUPERPOWERS (v0.18+ Agent CLI — the execution engine):</strong>
     <ul style="margin:8px 0 0 16px; font-size:13px; line-height:1.5">
-      <li><strong>Terminal &amp; Local Exec:</strong> Run shell, Node, scripts, file I/O, git ops directly</li>
-      <li><strong>Browser Automation:</strong> Headless control, scraping, form filling, verification, screenshots</li>
-      <li><strong>Integrations:</strong> Google Workspace (full), Slack, Twilio, Drive, Calendar, Sheets, Gmail, webhooks</li>
-      <li><strong>Autonomous Workflows:</strong> Multi-step plans with memory, cron/scheduling, retries, state</li>
-      <li><strong>Deploy Superpower:</strong> builder-deploy to Cloudflare (wrangler, Pages, KV, Workers), GCP, cost optimization</li>
-      <li><strong>Memory &amp; Context:</strong> Persistent across sessions, cross-agent search, daily memory per OpenClaw</li>
-      <li><strong>Plugins &amp; Tools:</strong> Full plugin surface (browser, terminal, cron, google, slack, etc.) + custom scripts</li>
-      <li><strong>Combined:</strong> Pair with Condoleeza for workspace + Hermes for execution muscle. Samantha for orchestration.</li>
+      <li><strong>Core:</strong> chat, skills, bundles, plugins, tools, mcp, computer-use, claw</li>
+      <li><strong>Execution:</strong> terminal, browser automation (headless + computer-use), file ops, scripts, git</li>
+      <li><strong>Integrations:</strong> Google full, Slack, Twilio, Drive, Gmail, webhooks, cron, gateway, proxy, send</li>
+      <li><strong>Orchestration:</strong> moa, fallback, sessions, memory-graph, memory, insights, checkpoints</li>
+      <li><strong>Deploy &amp; Infra:</strong> builder-deploy to Cloudflare (wrangler/Pages/Workers/KV), serve, dashboard, gui, desktop</li>
+      <li><strong>Collab:</strong> kanban, project (multi-folder workspaces), hooks, pairing</li>
+      <li><strong>Ops:</strong> doctor, security, status, backup, debug, logs, prompt-size, auth, secrets, migrate</li>
+      <li><strong>Channels:</strong> whatsapp, whatsapp-cloud, slack, portal, webhook, cron, send</li>
     </ul>
-    <span style="font-size:11px; opacity:0.8">Invoke with "Hermes, [action] using full superpowers...". Isolated per OpenClaw agent workspace but with god-mode tools when authorized.</span>
+    <span style="font-size:11px; opacity:0.8">Local: ~/.local/bin/hermes or `hermes skills list`, `hermes mcp`, `hermes computer-use`, `hermes claw`, `hermes serve --tui` etc. Invoke with "Hermes, use skills + mcp + computer-use + claw...". Ties to OpenClaw via claw subcommand. Isolated but powerful when authorized.</span>
   </div>
 
-  <p style="font-size:12px; margin-top:8px;">Per-agent skills from OpenClaw config-agents.md. Identity from IDENTITY.md (name, creature, vibe, emoji). Hermes = the one that actually runs the commands and touches the world. Hosted on Cloudflare. Private via Cloudflare Access / Zero Trust.</p>
+  <p style="font-size:12px; margin-top:8px;">Per OpenClaw config-agents + Hermes runtime. Identity from IDENTITY.md. Hermes executes for real (local or via its gateway/serve). Boardroom on Cloudflare. Private via Cloudflare Access.</p>
 </div>
 
 <script>
@@ -112,13 +110,13 @@ const AGENTS = [
   { id: 'mila', name: 'Mila', emoji: '🎨', desc: 'Creative & CX', identity: { creature: 'Design lead', vibe: 'vibe curator', avatar: '' } },
   { id: 'elon', name: 'Elon', emoji: '🚀', desc: 'Bold Execution', identity: { creature: 'First-principles innovator', vibe: 'aggressive shipper', avatar: '' } },
   { id: 'nora', name: 'Nora', emoji: '📱', desc: 'Mobile Ops & Customers', identity: { creature: 'Field ops specialist', vibe: 'practical direct', avatar: '' } },
-  // Hermes variants - the rockstars
-  { id: 'hermes', name: 'Hermes (Core)', emoji: '⚙️', desc: 'Hermes Full Superpowers — terminal, browser, deploys, everything', identity: { creature: 'Execution deity', vibe: 'local god-mode autonomous', avatar: '' }, hermes: true },
-  { id: 'hermes_mila', name: 'Hermes Mila', emoji: '🛠️🎨', desc: 'Hermes Creative + browser + plugins', identity: { creature: 'Hermes creative', vibe: 'tool-rich autonomous', avatar: '' }, hermes: true },
-  { id: 'hermes_sloane', name: 'Hermes Sloane', emoji: '🛠️✍️', desc: 'Hermes Content + tools + memory', identity: { creature: 'Hermes content', vibe: 'autonomous viral', avatar: '' }, hermes: true },
-  { id: 'hermes_elon', name: 'Hermes Elon', emoji: '🛠️🚀', desc: 'Hermes Bold + terminal + Cloudflare deploy', identity: { creature: 'Hermes executor', vibe: 'local power', avatar: '' }, hermes: true },
-  { id: 'hermes_nora', name: 'Hermes Nora', emoji: '🛠️📱', desc: 'Hermes Mobile + SMS/Twilio + automation', identity: { creature: 'Hermes ops', vibe: 'tool-augmented', avatar: '' }, hermes: true },
-  { id: 'hermes_condo', name: 'Hermes Condoleeza', emoji: '🛠️📁', desc: 'Hermes Workspace + file ops + scripts', identity: { creature: 'Hermes workspace', vibe: 'methodical + powerful', avatar: '' }, hermes: true }
+  // Hermes variants — real Hermes Agent superpowers
+  { id: 'hermes', name: 'Hermes (Core)', emoji: '⚙️', desc: 'Hermes Full: skills/bundles/plugins/mcp/computer-use/claw/gateway/serve', identity: { creature: 'Execution deity', vibe: 'local god-mode autonomous', avatar: '' }, hermes: true },
+  { id: 'hermes_mila', name: 'Hermes Mila', emoji: '🛠️🎨', desc: 'Hermes Creative + browser + computer-use + plugins', identity: { creature: 'Hermes creative', vibe: 'tool-rich autonomous', avatar: '' }, hermes: true },
+  { id: 'hermes_sloane', name: 'Hermes Sloane', emoji: '🛠️✍️', desc: 'Hermes Content + tools + memory-graph + skills', identity: { creature: 'Hermes content', vibe: 'autonomous viral', avatar: '' }, hermes: true },
+  { id: 'hermes_elon', name: 'Hermes Elon', emoji: '🛠️🚀', desc: 'Hermes Bold + terminal + Cloudflare deploy + wrangler', identity: { creature: 'Hermes executor', vibe: 'local power', avatar: '' }, hermes: true },
+  { id: 'hermes_nora', name: 'Hermes Nora', emoji: '🛠️📱', desc: 'Hermes Mobile + SMS/gateway + webhook/cron + send', identity: { creature: 'Hermes ops', vibe: 'tool-augmented', avatar: '' }, hermes: true },
+  { id: 'hermes_condo', name: 'Hermes Condoleeza', emoji: '🛠️📁', desc: 'Hermes Workspace + file/Drive + skills + mcp', identity: { creature: 'Hermes workspace', vibe: 'methodical + powerful', avatar: '' }, hermes: true }
 ];
 
 let activeTeam = ['samantha', 'condoleeza', 'hermes', 'hermes_elon'];
@@ -167,10 +165,10 @@ async function dispatchTask() {
 
   const resEl = document.getElementById('results');
   resEl.style.display = 'block';
-  resEl.innerHTML = 'Team working on: ' + input + '\n\nActive team: ' + activeTeam.join(' + ') + '\n\nUsing OpenClaw multi-agent + Hermes superpowers (terminal, browser, deploys, plugins) on Cloudflare...';
+  resEl.innerHTML = 'Team working on: ' + input + '\n\nActive team: ' + activeTeam.join(' + ') + '\n\nUsing OpenClaw + Hermes Agent superpowers (skills, mcp, computer-use, claw, gateway...) on Cloudflare...';
 
   setTimeout(() => {
-    let plan = `**Team Plan (OpenClaw + Hermes Superpowers) for: ${input}**\n\n`;
+    let plan = `**Team Plan (OpenClaw + Hermes Agent v0.18+ Superpowers) for: ${input}**\n\n`;
     activeTeam.forEach(id => {
       const ag = AGENTS.find(x => x.id === id);
       if (ag) {
@@ -179,12 +177,12 @@ async function dispatchTask() {
     });
     plan += `\n**Assigned Actions (skills + Hermes execution layer):\n`;
     const hasHermes = activeTeam.some(id => id.includes('hermes'));
-    if (activeTeam.some(id => id.includes('condoleeza') || id.includes('hermes_condo'))) plan += `- Condoleeza/Hermes Condo: Parse Gmail/Drive, update Sheets trackers, Calendar events, generate Apps Script. Hermes augments with local file validation + terminal test runs.\n`;
-    if (activeTeam.some(id => id.includes('sloane') || id.includes('hermes_sloane'))) plan += `- Sloane/Hermes Sloane: Draft accurate content. Hermes can browser-verify live pages or auto-post drafts.\n`;
-    if (activeTeam.some(id => id.includes('mila') || id.includes('hermes_mila'))) plan += `- Mila/Hermes Mila: Creative + visuals. Hermes browser automation for asset checks/generation support.\n`;
-    if (activeTeam.some(id => id.includes('elon') || id.includes('hermes_elon') || id === 'hermes')) plan += `- Elon/Hermes Elon/Hermes: Bold execution + **builder-deploy to Cloudflare**. Hermes runs wrangler, handles KV/routes, custom domains, free tier, notifications.\n`;
-    if (activeTeam.some(id => id.includes('nora') || id.includes('hermes_nora'))) plan += `- Nora/Hermes Nora: SMS via Twilio plugin (Hermes executes send + receipt confirmation via browser/terminal).\n`;
-    if (activeTeam.includes('samantha') || hasHermes) plan += `- Samantha (orchestrate) + Hermes Core: Full plan verification, safety, cross-memory. Hermes performs the actual terminal runs, browser steps, deploys, file writes, and external actions (SMS/email/deploy).\n\n**Hermes Superpowers in action:** terminal commands, browser control, autonomous loops, persistent memory, direct plugin calls (google, slack, twilio, drive), builder-deploy on Cloudflare, cron setup. Isolated workspace per agent but Hermes has the keys to execute.\n**Config:** OpenClaw agents.list + per-agent IDENTITY.md/AGENTS.md/config-agents.md. Real outputs: scripts that run, deploys that ship, messages that send, sheets that update.\n**Integrations:** All gumption-style + Hermes plugins. Hosted purely on Cloudflare (no Vercel).\n`;
+    if (activeTeam.some(id => id.includes('condoleeza') || id.includes('hermes_condo'))) plan += `- Condoleeza/Hermes Condo: Parse Gmail/Drive/Sheets, Calendar, Apps Script. Hermes augments with skills + mcp + file ops + terminal validation + computer-use checks.\n`;
+    if (activeTeam.some(id => id.includes('sloane') || id.includes('hermes_sloane'))) plan += `- Sloane/Hermes Sloane: Content. Hermes skills + memory-graph for research + browser verify live pages.\n`;
+    if (activeTeam.some(id => id.includes('mila') || id.includes('hermes_mila'))) plan += `- Mila/Hermes Mila: Creative. Hermes computer-use + browser for visuals/automation.\n`;
+    if (activeTeam.some(id => id.includes('elon') || id.includes('hermes_elon') || id === 'hermes')) plan += `- Elon/Hermes Elon/Hermes: **builder-deploy to Cloudflare** (wrangler/Pages/Workers). Hermes runs full deploy, KV, routes, domains, notifications via gateway/send.\n`;
+    if (activeTeam.some(id => id.includes('nora') || id.includes('hermes_nora'))) plan += `- Nora/Hermes Nora: SMS/Twilio via gateway + webhook/cron + computer-use verification + send + kanban update.\n`;
+    if (activeTeam.includes('samantha') || hasHermes) plan += `- Samantha + Hermes Core: Orchestrate. Hermes performs: skills/bundles/plugins load, mcp servers, computer-use, claw (OpenClaw), gateway, serve, dashboard, cron, project/kanban tracking, terminal, browser steps, deploys, external actions.\n\n**Hermes Superpowers in action (real CLI):** hermes skills, bundles, plugins, mcp, computer-use, claw, gateway, serve --tui/gui/dashboard/desktop, cron, webhook, kanban, project, tools, memory-graph, sessions, auth, doctor, security. Local exec + tool calling powerhouse. Ties directly to OpenClaw via claw subcommand.\n**Config:** OpenClaw agents.list + IDENTITY/AGENTS.md + Hermes runtime (local ~/.hermes, --skills, --yolo, etc.). Real outputs ship, send, update, deploy.\n**Integrations:** Full Hermes + gumption + OpenClaw. Hosted on Cloudflare (no Vercel).\n`;
     resEl.innerHTML = plan;
   }, 800);
 }
