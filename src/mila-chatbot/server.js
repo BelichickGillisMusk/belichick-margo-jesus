@@ -1,6 +1,8 @@
 import 'dotenv/config';
+import { timingSafeEqual } from 'node:crypto';
 import express from 'express';
 import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 import { AnthropicVertex } from '@anthropic-ai/vertex-sdk';
 import { MILA_CONFIG } from './config.js';
 import { loadKnowledgeBase, buildSystemPrompt } from './knowledge-base.js';
@@ -26,6 +28,14 @@ function createCorsOptions(allowedOrigins) {
       callback(new Error('Origin not allowed by Mila CORS policy.'));
     },
   };
+}
+
+function tokensMatch(provided, expected) {
+  if (typeof provided !== 'string' || typeof expected !== 'string') return false;
+  const a = Buffer.from(provided);
+  const b = Buffer.from(expected);
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(a, b);
 }
 
 function isValidEmail(email) {
@@ -100,6 +110,14 @@ export function createMilaApp({
   app.use(cors(createCorsOptions(config.allowedOrigins)));
   app.use(express.json({ limit: '200kb' }));
 
+  const chatLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 20,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many requests. Please try again later.' },
+  });
+
   app.get('/health', (_req, res) => {
     res.json({
       status: 'ok',
@@ -111,7 +129,19 @@ export function createMilaApp({
     });
   });
 
-  app.get('/tps', (_req, res) => {
+  app.get('/tps', (req, res) => {
+    const expected = process.env.MILA_STATUS_TOKEN;
+    const provided = req.get('x-mila-token');
+    const authorized = Boolean(expected) && tokensMatch(provided, expected);
+
+    if (!authorized) {
+      return res.json({
+        status: 'ONLINE',
+        agent: 'Mila-CARB',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
     res.json({
       status: 'ONLINE',
       agent: 'Mila-CARB',
@@ -121,7 +151,7 @@ export function createMilaApp({
     });
   });
 
-  app.post('/chat', async (req, res) => {
+  app.post('/chat', chatLimiter, async (req, res) => {
     const { message, sessionId = 'default', lead } = req.body || {};
 
     if (!validateSessionId(sessionId)) {

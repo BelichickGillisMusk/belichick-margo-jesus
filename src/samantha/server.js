@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import express from 'express';
 import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 import { AnthropicVertex } from '@anthropic-ai/vertex-sdk';
 import { SAMANTHA_CONFIG, SAMANTHA_SYSTEM_PROMPT, PERSONAS } from './config.js';
 
@@ -66,6 +67,23 @@ function buildVertexClient(config) {
   });
 }
 
+const VALID_ROLES = new Set(['user', 'assistant']);
+
+function sanitizeHistory(history, maxChars) {
+  if (!Array.isArray(history)) return [];
+  return history
+    .filter(entry =>
+      entry != null &&
+      typeof entry === 'object' &&
+      typeof entry.role === 'string' &&
+      VALID_ROLES.has(entry.role) &&
+      typeof entry.content === 'string' &&
+      entry.content.trim().length > 0 &&
+      entry.content.length <= maxChars,
+    )
+    .map(entry => ({ role: entry.role, content: entry.content }));
+}
+
 export function createSamanthaApp({
   config = SAMANTHA_CONFIG,
   vertexClient = null,
@@ -73,6 +91,14 @@ export function createSamanthaApp({
   const app = express();
   app.use(createCorsMiddleware(config.allowedOrigins));
   app.use(express.json({ limit: '200kb' }));
+
+  const chatLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 20,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many requests. Please try again later.' },
+  });
 
   app.get('/health', (_req, res) => {
     res.json({ status: 'ok', agent: 'Samantha', backend: 'vertex-ai' });
@@ -136,7 +162,7 @@ export function createSamanthaApp({
     });
   });
 
-  app.post('/api/samantha/chat', async (req, res) => {
+  app.post('/api/samantha/chat', chatLimiter, async (req, res) => {
     const { message, history = [], persona = 'samantha' } = req.body || {};
     if (typeof message !== 'string' || !message.trim()) {
       return res.status(400).json({ error: 'Message is required.' });
@@ -144,16 +170,15 @@ export function createSamanthaApp({
     if (message.length > config.maxMessageChars) {
       return res.status(400).json({ error: `Message must be ${config.maxMessageChars} characters or fewer.` });
     }
-    if (!Array.isArray(history)) {
-      return res.status(400).json({ error: 'history must be an array.' });
-    }
+
+    const sanitized = sanitizeHistory(history, config.maxMessageChars);
 
     const systemPrompt = (typeof persona === 'string' && PERSONAS[persona])
       ? PERSONAS[persona]
       : SAMANTHA_SYSTEM_PROMPT;
 
     const messages = [
-      ...history.slice(-config.historyLimit),
+      ...sanitized.slice(-config.historyLimit),
       { role: 'user', content: message.trim() },
     ];
 
