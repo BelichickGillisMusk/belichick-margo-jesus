@@ -60,7 +60,7 @@ OPERATING RULES:
 - Log all sync operations with timestamp + record count
 - On error: retry 3x, then alert Samantha with error payload
 - Never modify invoice data — read-only on financial records
-- Check API secrets in GitHub org: gillis-belichick-musk / cloudflare-tokens`,
+- API secrets are managed via environment variables and the secrets manager`,
   }),
   finbot: defineAgent({
     name: 'FinBot',
@@ -79,7 +79,7 @@ OPERATING RULES:
 - Read-only on CRM records — no customer data modifications
 - All reports saved to Drive with DESCRIPTOR_YYYY-MM-DD naming
 - On reconciliation errors: flag with full context, never auto-correct
-- Check API secrets in GitHub org: gillis-belichick-musk / claude-tokens
+- API secrets are managed via environment variables and the secrets manager
 
 PRICING REFERENCE:
 - Direct OBD: $75 | Direct OVI: $199
@@ -230,7 +230,7 @@ RETEST CYCLES:
 - OVERDUE = money on the table = CALL TODAY
 
 YOUR WORKFLOW:
-1. Pull all A+ clients from CRM Sheet (1TdNnf7eLaPNN3anaBGpNdjo_unK04zWwZJ859ZDvIO4)
+1. Pull all A+ clients from the CRM Sheet (ID provided via CRM_SHEET_ID env var)
 2. Calculate days since last test for each VIN
 3. Flag: OVERDUE / DUE SOON (30 days) / UPCOMING (90 days)
 4. Build the hit list sorted by urgency
