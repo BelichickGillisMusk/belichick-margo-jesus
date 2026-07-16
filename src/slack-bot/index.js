@@ -161,8 +161,14 @@ function getDispatchBlocker(missionStore, { maxConcurrentMissions, dailyTokenBud
 
 function createGuard(allowedUserIds, getUserId) {
   return async function guard(payload, next) {
+    if (allowedUserIds.length === 0) {
+      const responder = payload.respond || (async () => {});
+      await responder({ text: ':no_entry: ALLOWED_USER_IDS is not configured — all commands are disabled. Set it in the bot environment to enable access.' });
+      return;
+    }
+
     const userId = getUserId(payload);
-    if (allowedUserIds.length > 0 && !allowedUserIds.includes(userId)) {
+    if (!allowedUserIds.includes(userId)) {
       const responder = payload.respond || (async () => {});
       await responder({ text: ':no_entry: Unauthorized. Contact the workspace admin to be added to the allowlist.' });
       return;
@@ -267,7 +273,7 @@ export function createSlackApp({
   const guardAction = createGuard(allowedUserIds, payload => payload.body.user.id);
 
   function isUserAllowed(userId) {
-    return allowedUserIds.length === 0 || allowedUserIds.includes(userId);
+    return allowedUserIds.length > 0 && allowedUserIds.includes(userId);
   }
 
   function stripMention(text) {
@@ -635,8 +641,8 @@ export function createSlackApp({
 export async function startSlackBot() {
   const allowedUserIds = parseCsvEnv('ALLOWED_USER_IDS');
   if (allowedUserIds.length === 0) {
-    console.warn('⚠️  ALLOWED_USER_IDS is empty — ALL workspace members can use slash commands.');
-    console.warn('   Set ALLOWED_USER_IDS to a comma-separated list of Slack user IDs to restrict access.');
+    console.warn('⚠️  ALLOWED_USER_IDS is empty — all slash commands and DMs are DISABLED.');
+    console.warn('   Set ALLOWED_USER_IDS to a comma-separated list of Slack user IDs to enable access.');
   }
   const { app } = createSlackApp({ allowedUserIds });
   await app.start();
