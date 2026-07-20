@@ -1,16 +1,16 @@
 # AGENT COMMAND CENTER — ClawdBot Roster
 
-**Last Updated:** 2026-03-22
-**Status:** Post-purge. All agents local-only. No cloud, no autonomous ops.
+**Last Updated:** 2026-07-20
+**Status:** Three local surfaces (Slack, Mila, Scraper) + one Cloud Run service (Samantha).
 
 ---
 
-## Quick Start (After Key Rotation)
+## Quick Start
 
 ```bash
-# 1. Fill in your new rotated keys
+# 1. Fill in your keys
 cp .env.example .env
-# Edit .env with your new keys
+# Edit .env with your keys
 
 # 2. Install dependencies
 npm install
@@ -19,13 +19,16 @@ npm install
 npm run slack     # Slack bot — dispatches agents via slash commands
 npm run mila      # Mila CARB chatbot — localhost:3001
 npm run scrape    # Lead scraper — one-shot CLI tool
+
+# Samantha runs on Cloud Run (not locally). See the Samantha section below.
+# For local dev of Samantha: npm run samantha (requires gcloud ADC)
 ```
 
 ---
 
 ## THE ROSTER — Every Agent, Where It Lives, What It Can't Do
 
-### RUNNING AGENTS (local Mac only)
+### RUNNING AGENTS
 
 ---
 
@@ -138,11 +141,85 @@ Custom squads work too: `/swarm samantha,jon-jones,musk | should we send a new o
 
 ---
 
+#### 4. SAMANTHA — Cloud Run Executive Assistant
+| | |
+|---|---|
+| **Home** | `src/samantha/index.js` |
+| **Config** | `src/samantha/config.js` |
+| **Start (local)** | `npm run samantha` (requires `gcloud auth application-default login`) |
+| **Deployed** | Google Cloud Run (`samantha` GCP project) |
+| **Backend** | Anthropic Claude via Vertex AI (Google ADC — no API key needed on Cloud Run) |
+| **Model** | `claude-haiku-4-5@20251001` (override via `SAMANTHA_MODEL`) |
+| **Port** | 8080 (Cloud Run) or `PORT` env var for local dev |
+
+**What she does:**
+- Executive assistant for Bryan's operation: sales outreach, email drafting, customer follow-up, scheduling
+- Phone-friendly Progressive Web App widget (installable on iOS/Android home screen)
+- Voice-memo-style conversation in Slack: when `SAMANTHA_URL` is set in the Slack bot env, DMs and @mentions route to her
+- Supports multiple personas via `persona` field in the POST body (`samantha` default, `condoleezza` variant)
+- Hands off CARB compliance questions to Mila
+
+**Personas:**
+| Persona | Description |
+|---------|-------------|
+| `samantha` | Executive assistant — brief, direct, friendly. Good for quick outreach and status questions. |
+| `condoleezza` | Senior ops advisor — authoritative and precise. Better for email drafting, ops planning, and multi-step tasks. |
+
+**API endpoints:**
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| `GET` | `/health` | None | `{ status, agent, backend }` — always returns 200 |
+| `GET` | `/` or `/widget` | None | Phone-friendly PWA chat widget (HTML) |
+| `GET` | `/api/samantha/status` | Optional token | Config check. Anonymous: `{ ready, timestamp }`. With token: includes missing vars. |
+| `POST` | `/api/samantha/chat` | None | Chat request (rate-limited) |
+
+**Chat request body:**
+```json
+{
+  "message": "Draft a follow-up email for the Hayward fleet contact",
+  "history": [{ "role": "user", "content": "..." }, { "role": "assistant", "content": "..." }],
+  "persona": "condoleezza"
+}
+```
+
+**Chat response:**
+```json
+{
+  "reply": "Here's a follow-up draft...",
+  "persona": "condoleezza"
+}
+```
+
+**Local dev setup:**
+```bash
+# 1. Authenticate with Google (needed for Vertex AI)
+gcloud auth application-default login
+
+# 2. Set project
+export ANTHROPIC_VERTEX_PROJECT_ID=samantha
+export CLOUD_ML_REGION=us-east5
+
+# 3. Run
+npm run samantha
+# → http://localhost:8080
+```
+
+**What she CAN'T do:**
+- Process payments or collect credit cards / SSNs
+- Push to calendars or send emails autonomously (drafts only)
+- Run without Google ADC or Vertex AI access (Cloud Run uses service account automatically)
+- Run autonomously (human-triggered only)
+
+**Guardrails:**
+> Never collect or persist sensitive PII. Disclose AI identity when asked. Hand off CARB compliance questions to Mila. Financial data in session only — never persist.
+
+---
+
 ### BROWSER-ONLY DEMOS (zero network, zero risk)
 
 ---
 
-#### 4. SALESBOT DEMO — The Office
+#### 5. SALESBOT DEMO — The Office
 | | |
 |---|---|
 | **Home** | `salesbot.html` |
@@ -153,7 +230,7 @@ Custom squads work too: `/swarm samantha,jon-jones,musk | should we send a new o
 
 ---
 
-#### 5. AGENT DASHBOARD — Round Table
+#### 6. AGENT DASHBOARD — Round Table
 | | |
 |---|---|
 | **Home** | `index.html` |
@@ -196,8 +273,8 @@ Manage at: https://app.netlify.com/
 
 | Service | What Was There | Status |
 |---------|---------------|--------|
-| **GCP Cloud Run** | Mila chatbot (`mila-claude-2426-487008`) | KILLED |
-| **GCP Pub/Sub** | Auto-enabled with Cloud Run | KILLED |
+| **GCP Cloud Run (old)** | Old Mila chatbot (`mila-claude-2426-487008`) | KILLED — replaced by Samantha on Cloud Run |
+| **GCP Pub/Sub** | Auto-enabled with old Cloud Run | KILLED |
 | **GCP Artifact Registry** | Docker image storage | KILLED |
 | **GCP Container Registry** | Deprecated, still active | KILLED |
 | **GitHub Actions** (demo-repo) | 5 autonomous Mila workflows | DISABLED |
@@ -205,41 +282,67 @@ Manage at: https://app.netlify.com/
 | **Make.com** | Slack webhook bridge | DISABLED |
 | **Cloudflare Tunnel/ngrok** | Localhost exposure | KILLED |
 
+> **Note:** Samantha runs on GCP Cloud Run in the `samantha` project — this is intentional and active. Only the old, deprecated Mila Cloud Run deployment was killed.
+
 ---
 
 ## NETWORK ACCESS SUMMARY
 
 | What | Allowed | Direction |
 |------|---------|-----------|
-| Anthropic API (Claude) | Yes, local only | Mac → api.anthropic.com |
+| Anthropic API (Claude) | Yes, local only (Slack bot) | Mac → api.anthropic.com |
+| Vertex AI / Anthropic on Vertex | Yes, Cloud Run only (Samantha) | Cloud Run → vertexai.googleapis.com |
 | Slack API (bot) | Yes, local only | Mac → slack.com |
 | Google Places API | Yes, manual trigger only | Mac → maps.googleapis.com |
 | Google Sheets API | Yes, manual trigger only | Mac → sheets.googleapis.com |
 | Google Fonts | Yes, static sites only | Browser → fonts.googleapis.com |
 | Everything else | **NO** | — |
 
-No inbound connections. Nothing listens on a public port. ClawdBot binds to 127.0.0.1 only.
+Local services bind to 127.0.0.1 only. Samantha on Cloud Run uses Google's internal network for Vertex AI auth (no key file needed).
 
 ---
 
-## ENV VARIABLES NEEDED (after key rotation)
+## ENV VARIABLES NEEDED
+
+See `.env.example` for the full list. Key vars by surface:
 
 ```bash
-# Required for Slack bot
-SLACK_BOT_TOKEN=xoxb-YOUR-NEW-TOKEN
-SLACK_APP_TOKEN=xapp-YOUR-NEW-TOKEN
-SLACK_SIGNING_SECRET=YOUR-NEW-SECRET
+# ── Shared ──
+ANTHROPIC_API_KEY=sk-ant-your-key      # Used by Slack bot (not Samantha)
+SAMANTHA_GOOGLE_WORKSPACE_EMAIL=samantha@norcalcarbmobile.com
 
-# Required for Mila chatbot
-ANTHROPIC_API_KEY=sk-ant-YOUR-NEW-KEY
+# ── Slack Bot ──
+SLACK_BOT_TOKEN=xoxb-your-bot-token
+SLACK_APP_TOKEN=xapp-your-app-token
+SLACK_SIGNING_SECRET=your-signing-secret
+ALLOWED_USER_IDS=U01ABC123DEF          # Comma-separated Slack member IDs
+SLACK_MAX_CONCURRENT_MISSIONS=2
+SLACK_DAILY_TOKEN_BUDGET=60000
+SLACK_SWARM_MAX_AGENTS=8
+SLACK_SWARM_PARALLELISM=3
+# Connect Slack DMs to Samantha (optional):
+SAMANTHA_URL=https://your-cloud-run-url
 
-# Required for Lead Scraper
-GOOGLE_PLACES_API_KEY=YOUR-NEW-KEY
+# ── Samantha (Cloud Run + Vertex AI) ──
+# Auth: Google Application Default Credentials (ADC)
+# On Cloud Run: automatic via service account. Local dev: `gcloud auth application-default login`
+PORT=8080
+ANTHROPIC_VERTEX_PROJECT_ID=samantha
+CLOUD_ML_REGION=us-east5
+# SAMANTHA_MODEL=claude-haiku-4-5@20251001   # optional override
+# SAMANTHA_MAX_TOKENS=1024                   # optional override
+# SAMANTHA_ALLOWED_ORIGINS=https://your-domain.com   # restrict CORS
+SAMANTHA_STATUS_TOKEN=                       # openssl rand -hex 32 — unlocks full /api/samantha/status payload
 
-# Optional (Google Sheets export)
-GOOGLE_SHEETS_ID=your-spreadsheet-id
-GOOGLE_SERVICE_ACCOUNT_KEY=./google-service-account.json
-
-# Optional (Mila chatbot port, defaults to 3001)
+# ── Mila Chatbot ──
 MILA_PORT=3001
+MILA_ALLOWED_ORIGINS=http://localhost:3001
+MILA_MAX_MESSAGE_CHARS=2000
+MILA_SESSION_TTL_MINUTES=720
+MILA_STATUS_TOKEN=                           # openssl rand -hex 32 — unlocks full /tps payload
+
+# ── Lead Scraper ──
+GOOGLE_PLACES_API_KEY=your-google-places-key
+GOOGLE_SHEETS_ID=your-spreadsheet-id         # optional — CSV-only if absent
+GOOGLE_SERVICE_ACCOUNT_KEY=./google-service-account.json
 ```
