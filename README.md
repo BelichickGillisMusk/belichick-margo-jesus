@@ -4,13 +4,16 @@ AI agent team. Local-first. Ships three real bots plus a road-ready Samantha orc
 
 ## Runtime surfaces
 
-The current runtime is intentionally split into three surfaces:
-
-- **Slack bot** — `src/slack-bot/index.js`
-- **Mila chatbot** — `src/mila-chatbot/index.js`
-- **Lead scraper** — `src/lead-scraper/index.js`
+| Surface | Entry point | Mode | Key dep |
+|---------|-------------|------|---------|
+| **Slack bot** | `src/slack-bot/index.js` | Local, Socket Mode | `ANTHROPIC_API_KEY` |
+| **Mila chatbot** | `src/mila-chatbot/index.js` | Local, Express `:3001` | `ANTHROPIC_API_KEY` |
+| **Lead scraper** | `src/lead-scraper/index.js` | Local, CLI one-shot | `GOOGLE_PLACES_API_KEY` |
+| **Samantha** | `src/samantha/index.js` | Cloud Run (GCP), Express `:8080` | Vertex AI ADC |
 
 `src/slack-bot/agents.js` is the runtime source of truth for agent definitions used by the Slack app. The `skills/*/SKILL.md` files remain the human-facing prompt and operating-reference layer.
+
+`src/shared/runtime-contract.js` exports the canonical list of all four surfaces and their required env vars — use it as the single reference for surface enumeration in tests and docs.
 
 ## Quick start
 
@@ -44,9 +47,41 @@ npm ci && npm run setup:hermes
 
 Run `hermes setup` after startup to configure provider credentials. Hermes config and API keys live under `~/.hermes/` and should not be committed.
 
-## Samantha-first road workflow
+## Samantha — Cloud Run executive assistant
 
-Samantha is now the boss/orchestrator entry point for road-side handoff. The runtime assumes `samantha@norcalcarbmobile.com` is the Google Workspace approval identity unless you override `SAMANTHA_GOOGLE_WORKSPACE_EMAIL`.
+Samantha is a separate Express service deployed to Google Cloud Run. She communicates with Claude through Anthropic on Vertex AI using the Cloud Run service account's Google Application Default Credentials — no `ANTHROPIC_API_KEY` needed for her at runtime.
+
+**API:**
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/health` | GET | `{ status, agent, backend }` — always 200 |
+| `/` or `/widget` | GET | Phone-friendly PWA chat widget |
+| `/api/samantha/status` | GET | Config readiness. Full payload requires `x-samantha-token` header. |
+| `/api/samantha/chat` | POST | Chat (rate-limited). Body: `{ message, history?, persona? }` |
+
+**Personas:** `samantha` (default — brief, friendly) and `condoleezza` (authoritative, better for ops drafting). Pass via `persona` in the POST body.
+
+**Local development:**
+
+```bash
+# One-time: authenticate with Google
+gcloud auth application-default login
+
+# Set required env vars (or add to .env)
+export ANTHROPIC_VERTEX_PROJECT_ID=samantha
+export CLOUD_ML_REGION=us-east5
+
+npm run samantha
+# → http://localhost:8080/widget  (phone PWA)
+# → POST http://localhost:8080/api/samantha/chat
+```
+
+**Slack DM mode:** When `SAMANTHA_URL` is set in the Slack bot's `.env`, Slack DMs and @mentions to the bot are forwarded to Samantha rather than going unhandled. Leave it blank to disable.
+
+**Samantha-first road workflow:**
+
+The runtime assumes `samantha@norcalcarbmobile.com` is the Google Workspace approval identity unless you override `SAMANTHA_GOOGLE_WORKSPACE_EMAIL`.
 
 From Slack you can now:
 
@@ -154,7 +189,7 @@ Operational notes:
 ## Runtime contract
 
 ### Shared
-- `ANTHROPIC_API_KEY`
+- `ANTHROPIC_API_KEY` — used by Slack bot (not Samantha)
 - `SAMANTHA_GOOGLE_WORKSPACE_EMAIL`
 
 ### Slack bot
@@ -165,6 +200,19 @@ Operational notes:
 - `SLACK_MAX_CONCURRENT_MISSIONS`
 - `SLACK_DAILY_TOKEN_BUDGET`
 - `SLACK_MISSION_TOKEN_WARN_THRESHOLD`
+- `SLACK_SWARM_MAX_AGENTS`
+- `SLACK_SWARM_PARALLELISM`
+- `SAMANTHA_URL` — optional; when set, Slack DMs/mentions forward to Samantha
+
+### Samantha (Cloud Run)
+Authentication is via Google Application Default Credentials. No `ANTHROPIC_API_KEY` needed — Samantha calls Claude through Vertex AI.
+- `PORT` (default `8080`)
+- `ANTHROPIC_VERTEX_PROJECT_ID` (default `samantha`)
+- `CLOUD_ML_REGION` (default `us-east5`)
+- `SAMANTHA_MODEL` — optional; defaults to `claude-haiku-4-5@20251001`
+- `SAMANTHA_MAX_TOKENS` — optional; defaults to `1024`
+- `SAMANTHA_ALLOWED_ORIGINS` — comma-separated; restricts CORS (default: same-origin + localhost)
+- `SAMANTHA_STATUS_TOKEN` — optional; generate with `openssl rand -hex 32` to unlock the full `/api/samantha/status` payload
 
 ### Mila chatbot
 - `MILA_PORT`
@@ -174,6 +222,7 @@ Operational notes:
 - `MILA_SESSION_TTL_MINUTES`
 - `MILA_MAX_ACTIVE_SESSIONS`
 - `MILA_LEAD_RETENTION_LIMIT`
+- `MILA_STATUS_TOKEN` — optional; unlocks full `/tps` payload
 
 ### Lead scraper
 - `GOOGLE_PLACES_API_KEY`
@@ -184,9 +233,10 @@ Operational notes:
 
 ## Agent roster
 
-| Agent | Role | Used By |
+| Agent | Role | Surface |
 |-------|------|---------|
-| Samantha | Boss/orchestrator | Slack |
+| Samantha | Cloud Run executive assistant (Vertex AI) | Samantha service + Slack |
+| Condoleezza | Ops advisor persona (same service as Samantha) | Samantha service |
 | Website Helper | Deployment helper | Slack |
 | Mila-CARB | CARB compliance CS | Chatbot + Slack |
 | Mila-Legal | Regulatory research | Slack |
