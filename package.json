@@ -8,6 +8,7 @@
     "mila": "node src/mila-chatbot/index.js",
     "samantha": "node src/samantha/index.js",
     "scrape": "node src/lead-scraper/index.js",
+    "reconcile": "node scripts/reconcile-tests.mjs",
     "start": "node src/slack-bot/index.js",
     "setup:hermes": "bash scripts/setup-hermes-agent.sh",
     "test": "node --test",
@@ -26,7 +27,8 @@
     "dotenv": "^16.4.0",
     "express": "^4.21.0",
     "express-rate-limit": "^8.5.2",
-    "googleapis": "^144.0.0"
+    "googleapis": "^144.0.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "ajv": "^8.18.0",

@@ -10,3 +10,10 @@ google-service-account.json
 .dev.vars
 .dev.vars.*
 .hermes/
+
+# Reconciliation working files — real customer data, never commit.
+# Ignore file CONTENTS but keep the two directories tracked via .gitkeep.
+reports/inputs/*
+reports/outputs/*
+!reports/inputs/.gitkeep
+!reports/outputs/.gitkeep
