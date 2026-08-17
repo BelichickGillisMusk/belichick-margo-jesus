@@ -9,6 +9,7 @@
     "samantha": "node src/samantha/index.js",
     "scrape": "node src/lead-scraper/index.js",
     "reconcile": "node scripts/reconcile-tests.mjs",
+    "contacts": "node scripts/build-contacts.mjs",
     "start": "node src/slack-bot/index.js",
     "setup:hermes": "bash scripts/setup-hermes-agent.sh",
     "test": "node --test",

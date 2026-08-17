@@ -17,3 +17,12 @@ reports/inputs/*
 reports/outputs/*
 !reports/inputs/.gitkeep
 !reports/outputs/.gitkeep
+
+# Generated contact cards contain real customer phones — never commit
+contacts/all.vcf
+contacts/all-google.csv
+contacts/call-sheet-by-week.csv
+contacts/SUMMARY.md
+contacts/weeks/
+contacts/import-ipad/
+contacts/import-android/
