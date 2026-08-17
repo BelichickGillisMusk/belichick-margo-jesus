@@ -83,6 +83,7 @@ npm run scrape    # Lead scraper — one-shot CLI tool
 | `/recon-compliance [vin]` | Mila-CARB | #recon-compliance |
 | `/recon-prospect [company]` | Jon Jones + Lead Scraper | #recon-sales |
 | `/swarm [preset|agent,agent,...] | task` | Configurable squad (default `intel`) | Channel where dispatched |
+| `/gumption [intake|final]` | Gumption swarm (see below) | Channel where dispatched |
 | `/agent-status` | Belichick | #agent-status |
 | `/roster` | — (instant, no API) | Prints roster |
 | `/dispatch [agent] [task]` | Any agent | Varies |
@@ -105,8 +106,28 @@ npm run scrape    # Lead scraper — one-shot CLI tool
 | `ops` | Samantha + DataSync + Website Helper | Day-to-day execution review |
 | `revenue` | Jon Jones + Lead Scraper + FinBot + Cipher | Pipeline + money pass |
 | `compliance` | Mila-CARB + Mila-Legal + Sentinel + DataSync | CARB question deep dive |
+| `gumption` | DataSync + Lead Scraper + Mila-CARB + Samantha + Cipher | Phase 1 — pull everything Gumption is streaming (CSV/Excel/Stripe/webhook/REST), decode VINs, stage the intake plan |
+| `gumption-final` | FinBot + DataSync + Samantha + A+ Hunter + Cipher | Phase 2 — reconcile Stripe/PayPal/QB, zero the orphan queues, produce the closeout report |
 
 Custom squads work too: `/swarm samantha,jon-jones,musk | should we send a new outbound campaign this week?`
+
+### Gumption workflow (once Gumption is up)
+
+Gumption is the intake platform. When it's live, the intake+finalize sequence collapses to two taps from the road:
+
+```
+/gumption intake     # Fans out the Phase 1 swarm. If GUMPTION_BASE_URL is set,
+                     # sources are treated as live. Otherwise everything is
+                     # returned as an ordered STAGE-WAITING plan.
+
+/gumption final      # After intake completes, fires the Phase 2 swarm:
+                     # full reconciliation, orphan queues zeroed, closeout
+                     # report to Drive folder 1BNfRFl3EH4cL61UEDBVCEyXgC6F1-oQO.
+```
+
+Both phases surface in the `/roster` quick-action panel as **Gumption intake** (primary) and **Gumption finalize** buttons.
+
+**Env vars:** `GUMPTION_BASE_URL`, `GUMPTION_API_KEY`, `GUMPTION_INTAKE_SOURCES` (default `csv,excel,stripe,paypal,webhook,rest`).
 
 **Guardrails:**
 > Authorized users only. Max 10 missions/hour, 2 concurrent. No PII in Slack. Kill switch via `/kill`. Channel isolation enforced.

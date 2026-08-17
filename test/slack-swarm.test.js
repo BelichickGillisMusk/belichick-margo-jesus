@@ -43,6 +43,32 @@ test('resolveSwarmAgents rejects unknown custom agents', () => {
   assert.throws(() => resolveSwarmAgents('samantha,not-a-real-agent'), /Unknown swarm agents/);
 });
 
+test('gumption intake preset covers DataSync, FinBot handoff, and orchestration', () => {
+  const intake = SWARM_PRESETS.gumption;
+  assert.ok(intake, 'gumption preset missing');
+  assert.ok(intake.agents.includes('datasync'), 'gumption intake must include datasync');
+  assert.ok(intake.agents.includes('samantha'), 'gumption intake must include samantha for orchestration');
+  assert.ok(intake.agents.includes('cipher'), 'gumption intake must include cipher for budget');
+});
+
+test('gumption finalize preset owns reconciliation and closeout', () => {
+  const final = SWARM_PRESETS['gumption-final'];
+  assert.ok(final, 'gumption-final preset missing');
+  assert.ok(final.agents.includes('finbot'), 'gumption finalize must include finbot');
+  assert.ok(final.agents.includes('datasync'), 'gumption finalize must include datasync for CRM verification');
+  assert.ok(final.agents.includes('samantha'), 'gumption finalize must include samantha for closeout summary');
+});
+
+test('resolveSwarmAgents resolves both gumption phases', () => {
+  const intake = resolveSwarmAgents('gumption');
+  assert.equal(intake.preset, 'gumption');
+  assert.equal(intake.emoji, ':inbox_tray:');
+
+  const finalize = resolveSwarmAgents('gumption-final');
+  assert.equal(finalize.preset, 'gumption-final');
+  assert.equal(finalize.emoji, ':lock:');
+});
+
 test('runSwarm batches agents according to parallelism and aggregates outcomes', async () => {
   const calls = [];
   const inFlight = new Set();

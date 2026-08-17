@@ -67,6 +67,36 @@ const QUICK_ACTIONS = {
     task: 'Take an honest look at NorCal CARB Mobile right now and each weigh in from your specialty: what is the single best next move I can ship today?',
     emoji: ':ant:',
   },
+  gumption_intake: {
+    label: 'Gumption intake',
+    commandName: 'swarm',
+    type: 'Gumption Intake',
+    presetKey: 'gumption',
+    emoji: ':inbox_tray:',
+    task: `PHASE 1 — GUMPTION INTAKE. Assume Gumption is now live and streaming intake sources (CSV/Excel drops, Stripe webhooks, PayPal, REST endpoints, Google Drive RAW_UPLOADS 1lO0xjCn3hnCubFFVnuNPQ8c0Y8lGt_bg).
+For each agent, produce your slice of the intake pass:
+- DataSync: enumerate every source Gumption should be reading, define the exact intake checklist (CTC-VIS pull, VIN decode via NHTSA, dedupe by VIN, write plan for Supabase fleet_vehicles + Master CRM 1TdNnf7eLaPNN3anaBGpNdjo_unK04zWwZJ859ZDvIO4), and list every field that must round-trip.
+- Lead Scraper: identify the new prospects/customers landing in Gumption that need public-source enrichment; return a numbered table with UNKNOWN for anything unverified.
+- Mila-CARB: for each incoming test record, confirm the CARB rule applied (OBD/OVI, test type derivation from engine cert year, next-due date), flag any record that violates CARB requirements.
+- Samantha: orchestrate. Produce a single ordered execution plan the operator can approve from the phone: what runs, in what order, with what dependencies, and where each output lands.
+- Cipher: budget check on the intake pass (token forecast, dollar cost estimate), and flag if this pass would breach the daily budget.
+Output must be action-oriented, no brainstorming. When Gumption is not yet up, mark items with STAGE-WAITING and return the plan anyway so it can fire the moment Gumption goes green.`,
+  },
+  gumption_final: {
+    label: 'Gumption finalize',
+    commandName: 'swarm',
+    type: 'Gumption Finalize',
+    presetKey: 'gumption-final',
+    emoji: ':lock:',
+    task: `PHASE 2 — GUMPTION FINALIZE. Intake is complete. Close the books.
+For each agent, produce your slice of the closeout:
+- FinBot: full reconciliation pass. Match every Stripe/PayPal/QuickBooks transaction to a job/VIN/test/invoice. Flag any discrepancy above $5. Zero out the orphan invoice queue (currently 77) and the orphan test queue (currently 6). Produce a signed RECON_YYYY-MM-DD report ready for Drive folder 1BNfRFl3EH4cL61UEDBVCEyXgC6F1-oQO.
+- DataSync: verify every intake record has a matching CRM row, next_test_due populated (trucks +17w, RVs +42w), and CTC-VIS test data attached; append-only, never rewrite history.
+- A+ Hunter: pull every A+ referral that landed in intake and flag overdue retests with drafted SMS/email.
+- Samantha: produce the operator-facing closeout summary — one screen, top three follow-ups, all $ figures, all VINs, no fluff.
+- Cipher: final cost report for the intake+finalize pass, cumulative tokens, and green/yellow/red on the daily budget.
+Ship the summary as if Bryan is reading it in a truck cab. No warnings without a fix attached.`,
+  },
   budget_pulse: {
     label: 'Budget pulse',
     action: 'budget',
@@ -103,6 +133,8 @@ function buildRosterResponse() {
           { type: 'button', text: { type: 'plain_text', text: 'Deploy pulse' }, action_id: 'deploy_pulse' },
           { type: 'button', text: { type: 'plain_text', text: 'Compliance pulse' }, action_id: 'compliance_pulse' },
           { type: 'button', text: { type: 'plain_text', text: 'Swarm pulse' }, action_id: 'swarm_pulse' },
+          { type: 'button', text: { type: 'plain_text', text: 'Gumption intake' }, action_id: 'gumption_intake', style: 'primary' },
+          { type: 'button', text: { type: 'plain_text', text: 'Gumption finalize' }, action_id: 'gumption_final' },
           { type: 'button', text: { type: 'plain_text', text: 'Budget' }, action_id: 'budget_pulse' },
         ],
       },
@@ -583,6 +615,81 @@ export function createSlackApp({
     }
   });
 
+  const GUMPTION_PHASE_ACTIONS = {
+    intake: QUICK_ACTIONS.gumption_intake,
+    final: QUICK_ACTIONS.gumption_final,
+    finalize: QUICK_ACTIONS.gumption_final,
+  };
+
+  app.command('/gumption', guardCommand, async ({ ack, respond, command, say }) => {
+    await ack();
+
+    const raw = command.text?.trim().toLowerCase() || 'intake';
+    const gumptionAction = GUMPTION_PHASE_ACTIONS[raw];
+
+    if (!gumptionAction) {
+      await respond({
+        text: `Usage: /gumption [intake|final]\n\`intake\` fans out the Phase 1 ingest swarm the moment Gumption is up.\n\`final\` fires the Phase 2 reconciliation + closeout swarm.`,
+      });
+      return;
+    }
+
+    const gumptionReady = Boolean(process.env.GUMPTION_BASE_URL);
+    const blocker = getDispatchBlocker(missionStore, { maxConcurrentMissions, dailyTokenBudget });
+    if (blocker) {
+      await respond({ text: blocker });
+      return;
+    }
+
+    let resolved;
+    try {
+      resolved = resolveSwarmAgents(gumptionAction.presetKey);
+    } catch (error) {
+      await respond({ text: `:x: ${error.message}` });
+      return;
+    }
+
+    resolved.agents = resolved.agents.slice(0, swarmMaxAgents);
+    const agentNames = resolved.agents.map(agentId => AGENTS[agentId]?.name || agentId).join(' + ');
+    const readinessLine = gumptionReady
+      ? `:green_circle: Gumption is UP (GUMPTION_BASE_URL set) — swarm will treat sources as live.`
+      : `:large_yellow_circle: Gumption is not up yet (GUMPTION_BASE_URL unset) — swarm will stage the plan with STAGE-WAITING markers.`;
+
+    await respond({
+      text: `${gumptionAction.emoji} *[GUMPTION ${raw.toUpperCase()}]* ${agentNames}\n${readinessLine}\nFanning out at parallelism ${swarmParallelism}...`,
+    });
+
+    try {
+      const { cancelled, outcome } = await runTrackedMission({
+        missionStore,
+        commandName: 'gumption',
+        task: gumptionAction.task,
+        agents: resolved.agents,
+        type: gumptionAction.type,
+        requestedBy: command.user_id,
+        execute: () => runSwarm(resolved.agents, gumptionAction.task, { parallelism: swarmParallelism }),
+      });
+
+      const text = cancelled
+        ? `:warning: *[CANCELLED]* Gumption ${raw} — swarm was cancelled before posting results.`
+        : formatMissionCompletion({
+            outcome,
+            type: gumptionAction.type,
+            task: gumptionAction.task,
+            emoji: gumptionAction.emoji,
+            agentNames,
+            missionTokenWarnThreshold,
+          });
+
+      await say({ text, channel: command.channel_id });
+    } catch (error) {
+      await say({
+        text: `:x: *[ERROR]* Gumption ${raw} — failed: ${error.message}`,
+        channel: command.channel_id,
+      });
+    }
+  });
+
   app.command('/kill', guardCommand, async ({ ack, respond, command }) => {
     await ack();
     const agentId = command.text?.trim().toLowerCase();
@@ -644,6 +751,7 @@ export async function startSlackBot() {
   console.log(`📋 ${Object.keys(AGENTS).length} agents loaded`);
   console.log(`🎯 ${Object.keys(MISSIONS).length} mission types ready`);
   console.log(`🐜 ${Object.keys(SWARM_PRESETS).length} swarm presets ready (default: ${DEFAULT_SWARM_PRESET})`);
+  console.log(`📥 Gumption intake ${process.env.GUMPTION_BASE_URL ? 'LIVE' : 'staged — waiting on GUMPTION_BASE_URL'}`);
 }
 
 if (isMainModule(import.meta)) {
