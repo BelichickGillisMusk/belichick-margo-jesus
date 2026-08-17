@@ -2,6 +2,10 @@
 
 Drop these files onto a phone and import. One file per test-week so you can knock out a whole week's callbacks in one sitting.
 
+**Gumption:** [https://gumption.co](https://gumption.co) — also `GUMPTION.url` in both import folders. Details in [GUMPTION.md](GUMPTION.md).
+
+If Android glued everyone into one contact with hundreds of numbers, stop and follow [UNDO-ANDROID.md](UNDO-ANDROID.md) before importing again.
+
 ## iPad / iPhone
 
 1. AirDrop `import-ipad/all.vcf` (or a single `YYYY-Www.vcf` if you only want that week).
@@ -10,21 +14,26 @@ Drop these files onto a phone and import. One file per test-week so you can knoc
 
 Or open the Files app → long-press the `.vcf` → Share → Contacts.
 
-## Android
+## Android — do not use the old all.vcf
 
-**Option A (easiest):** open `import-android/all-google.csv` in Google Contacts on the phone or at [contacts.google.com](https://contacts.google.com) → **Import**. Group membership is `NCM ::: 2026-W32` so you can filter by week.
+The previous multi-card `.vcf` / old Google CSV is what created the mega-contact. Use one of these instead:
 
-**Option B:** open any `.vcf` in `import-ipad/` — Android Contacts imports vCard 3.0 natively.
+**Safest:** open `import-android/one-each/` and import each `.vcf` (one person per file).
+
+**Google account:** [contacts.google.com](https://contacts.google.com) → **Import** → `import-android/all-google.csv` (uses current Google headers: First Name, Phone 1 - Label, File As).
+
+Do **not** import `call-sheet-by-week.csv`.
 
 ## What's in here
 
 | File | What it is |
 |------|------------|
-| `all.vcf` | Every contact that has a phone or email |
-| `all-google.csv` | Same list, Google Contacts CSV |
-| `weeks/YYYY-Www.vcf` | Just that week's people (iPad) |
-| `weeks/YYYY-Www.csv` | Just that week's people (Android) |
-| `call-sheet-by-week.csv` | Every test (VIN + plate + date) even when we don't have a name yet |
+| `import-android/one-each/*.vcf` | One person, one file — use this on Android |
+| `import-android/all-google.csv` | Google Contacts CSV (new headers) |
+| `import-ipad/all.vcf` | Every contact, iOS-safe multi-card |
+| `weeks/YYYY-Www.vcf` | Just that week's people |
+| `call-sheet-by-week.csv` | VIN + plate + date only — not for Contacts |
+| `GUMPTION.url` | Shortcut to Gumption |
 | `SUMMARY.md` | Week-by-week counts |
 
 ## Refresh after you export the Drive sheets

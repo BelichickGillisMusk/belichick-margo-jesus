@@ -64,16 +64,37 @@ export function vcardEscape(value) {
     .replace(/;/g, '\\;');
 }
 
+export function contactUid(contact) {
+  const key = contact.phone || contact.email || contact.vin || contact.name || 'unknown';
+  return `ncm-${String(key).toLowerCase().replace(/[^a-z0-9]/g, '')}`;
+}
+
+export function fileSafeName(contact) {
+  const base = (contact.name || contact.org || contact.phone || 'contact')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 40);
+  const tail = (contact.phone || contact.uid || 'x').slice(-4);
+  return `${base}-${tail}`;
+}
+
 export function toVcard(contact) {
   const lines = ['BEGIN:VCARD', 'VERSION:3.0'];
   const name = contact.name || contact.org || 'Unknown';
+  const uid = contact.uid || contactUid(contact);
+  // Structured N is required so Android/Samsung do not collapse every
+  // card onto the first FN they see in a multi-card file.
+  lines.push(`N:${vcardEscape(name)};;;;`);
   lines.push(`FN:${vcardEscape(name)}`);
+  lines.push(`UID:${vcardEscape(uid)}`);
   if (contact.org) lines.push(`ORG:${vcardEscape(contact.org)}`);
+  // One TEL only. Duplicating CELL+WORK with the same number is a
+  // common trigger for OEM contact-mergers.
   if (contact.phone) {
-    lines.push(`TEL;TYPE=CELL,VOICE:${formatPhone(contact.phone)}`);
-    lines.push(`TEL;TYPE=WORK,VOICE:${formatPhone(contact.phone)}`);
+    lines.push(`TEL;TYPE=CELL:${formatPhone(contact.phone)}`);
   }
-  if (contact.email) lines.push(`EMAIL;TYPE=INTERNET,WORK:${vcardEscape(contact.email)}`);
+  if (contact.email) lines.push(`EMAIL;TYPE=INTERNET:${vcardEscape(contact.email)}`);
   if (contact.address) lines.push(`ADR;TYPE=WORK:;;${vcardEscape(contact.address)};;;;`);
   const notes = [];
   if (contact.weekLabel) notes.push(`Tested ${contact.weekLabel}`);
@@ -84,23 +105,42 @@ export function toVcard(contact) {
   if (contact.testResult) notes.push(`Result: ${contact.testResult}`);
   if (contact.source) notes.push(`Source: ${contact.source}`);
   if (notes.length) lines.push(`NOTE:${vcardEscape(notes.join(' · '))}`);
-  const categories = ['NCM'];
-  if (contact.weekKey) categories.push(contact.weekKey);
-  lines.push(`CATEGORIES:${categories.join(',')}`);
   lines.push('END:VCARD');
   return lines.join('\r\n');
 }
 
+// Official Google Contacts export headers (2024+). The older
+// "Name" / "Given Name" / "Phone 1 - Type" columns are ignored by the
+// current importer, which then dumps every phone onto the first row —
+// that is the "one contact with 500 numbers" bug.
+export const GOOGLE_CSV_COLUMNS = [
+  'First Name',
+  'Last Name',
+  'File As',
+  'Organization Name',
+  'Phone 1 - Label',
+  'Phone 1 - Value',
+  'E-mail 1 - Label',
+  'E-mail 1 - Value',
+  'Address 1 - Label',
+  'Address 1 - Formatted',
+  'Notes',
+  'Labels',
+];
+
 export function toGoogleCsvRow(contact) {
+  const name = contact.name || contact.org || '';
+  const fileAs = [name, contact.phone && formatPhone(contact.phone)].filter(Boolean).join(' · ');
   return {
-    Name: contact.name || contact.org || '',
-    'Given Name': contact.name || contact.org || '',
-    Organization: contact.org || contact.name || '',
-    'Phone 1 - Type': contact.phone ? 'Mobile' : '',
+    'First Name': name,
+    'Last Name': '',
+    'File As': fileAs,
+    'Organization Name': contact.org || '',
+    'Phone 1 - Label': contact.phone ? 'Mobile' : '',
     'Phone 1 - Value': contact.phone ? formatPhone(contact.phone) : '',
-    'E-mail 1 - Type': contact.email ? 'Work' : '',
+    'E-mail 1 - Label': contact.email ? 'Work' : '',
     'E-mail 1 - Value': contact.email || '',
-    'Address 1 - Type': contact.address ? 'Work' : '',
+    'Address 1 - Label': contact.address ? 'Work' : '',
     'Address 1 - Formatted': contact.address || '',
     Notes: [
       contact.weekLabel && `Tested ${contact.weekLabel}`,
@@ -110,7 +150,7 @@ export function toGoogleCsvRow(contact) {
       contact.testResult && contact.testResult,
       contact.source && `via ${contact.source}`,
     ].filter(Boolean).join(' · '),
-    'Group Membership': contact.weekKey ? `NCM ::: ${contact.weekKey}` : 'NCM',
+    Labels: contact.weekKey ? `NCM ::: ${contact.weekKey}` : 'NCM',
   };
 }
 

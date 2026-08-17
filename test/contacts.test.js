@@ -7,7 +7,10 @@ import {
   weekKey,
   weekLabel,
   toVcard,
+  toGoogleCsvRow,
   mergeContacts,
+  contactUid,
+  GOOGLE_CSV_COLUMNS,
 } from '../src/contacts/index.js';
 
 test('normalizePhone strips formatting and leading 1', () => {
@@ -56,10 +59,31 @@ test('toVcard emits importable vCard 3.0 with week note', () => {
   assert.match(card, /BEGIN:VCARD/);
   assert.match(card, /VERSION:3\.0/);
   assert.match(card, /FN:Cal Roots LLC/);
-  assert.match(card, /TEL;TYPE=CELL,VOICE:\(209\) 485-3200/);
+  assert.match(card, /N:Cal Roots LLC;;;;/);
+  assert.match(card, /UID:ncm-2094853200/);
+  assert.match(card, /TEL;TYPE=CELL:\(209\) 485-3200/);
+  assert.doesNotMatch(card, /TEL;TYPE=WORK/);
   assert.match(card, /NOTE:.*Tested 2025-W50/);
-  assert.match(card, /CATEGORIES:NCM,2025-W50/);
+  assert.doesNotMatch(card, /CATEGORIES:/);
   assert.match(card, /END:VCARD/);
+});
+
+test('toGoogleCsvRow uses current Google Contacts headers', () => {
+  const row = toGoogleCsvRow({
+    name: 'Cal Roots LLC',
+    org: 'Cal Roots LLC',
+    phone: '2094853200',
+    weekKey: '2025-W50',
+  });
+  assert.equal(row['First Name'], 'Cal Roots LLC');
+  assert.equal(row['Phone 1 - Label'], 'Mobile');
+  assert.equal(row['Phone 1 - Value'], '(209) 485-3200');
+  assert.ok(GOOGLE_CSV_COLUMNS.includes('First Name'));
+  assert.ok(!GOOGLE_CSV_COLUMNS.includes('Given Name'));
+});
+
+test('contactUid is stable per phone', () => {
+  assert.equal(contactUid({ phone: '2094853200' }), 'ncm-2094853200');
 });
 
 test('mergeContacts collapses the same phone from two sources', () => {

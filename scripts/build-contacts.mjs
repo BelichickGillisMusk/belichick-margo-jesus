@@ -30,11 +30,15 @@ import {
   toGoogleCsvRow,
   mergeContacts,
   pickField,
+  contactUid,
+  fileSafeName,
+  GOOGLE_CSV_COLUMNS,
 } from '../src/contacts/index.js';
 import { parseDate, normalizeVin } from '../src/reconcile/matcher.js';
 
 const CWD = process.cwd();
 const OUT_DIR = process.env.CONTACTS_DIR || 'contacts';
+const GUMPTION_URL = process.env.GUMPTION_BASE_URL || process.env.GUMPTION_PUBLIC_URL || 'https://gumption.co';
 const INPUTS = {
   tests: process.env.TESTS_FILE || 'reports/inputs/tests.xlsx',
   sms: process.env.SMS_FILE || 'reports/inputs/sms-leads.csv',
@@ -238,28 +242,28 @@ async function main() {
   }
 
   const merged = mergeContacts(rawContacts.filter(c => c.name || c.phone || c.email));
-  const callable = merged.filter(hasNap);
+  const callable = merged.filter(hasNap).map(contact => ({ ...contact, uid: contactUid(contact) }));
   const nameless = merged.filter(c => !hasNap(c));
 
   await mkdir(join(OUT_DIR, 'weeks'), { recursive: true });
   await mkdir(join(OUT_DIR, 'import-ipad'), { recursive: true });
-  await mkdir(join(OUT_DIR, 'import-android'), { recursive: true });
+  await mkdir(join(OUT_DIR, 'import-android', 'one-each'), { recursive: true });
 
-  const allVcf = callable.map(toVcard).join('\r\n');
+  // Blank line between cards. Some Android OEMs treat a glued multi-card
+  // file as ONE contact (the 500-numbers bug).
+  const allVcf = callable.map(toVcard).join('\r\n\r\n') + '\r\n';
   await writeFile(join(OUT_DIR, 'all.vcf'), allVcf, 'utf8');
   await writeFile(join(OUT_DIR, 'import-ipad', 'all.vcf'), allVcf, 'utf8');
 
-  const googleColumns = [
-    'Name', 'Given Name', 'Organization',
-    'Phone 1 - Type', 'Phone 1 - Value',
-    'E-mail 1 - Type', 'E-mail 1 - Value',
-    'Address 1 - Type', 'Address 1 - Formatted',
-    'Notes', 'Group Membership',
-  ];
   const googleRows = callable.map(toGoogleCsvRow);
-  const googleCsv = toCsv(googleRows, googleColumns);
+  const googleCsv = toCsv(googleRows, GOOGLE_CSV_COLUMNS);
   await writeFile(join(OUT_DIR, 'all-google.csv'), googleCsv, 'utf8');
   await writeFile(join(OUT_DIR, 'import-android', 'all-google.csv'), googleCsv, 'utf8');
+
+  for (const contact of callable) {
+    const safe = fileSafeName(contact);
+    await writeFile(join(OUT_DIR, 'import-android', 'one-each', `${safe}.vcf`), `${toVcard(contact)}\r\n`, 'utf8');
+  }
 
   const byWeek = new Map();
   for (const contact of callable) {
@@ -277,8 +281,8 @@ async function main() {
   for (const key of weekKeys) {
     const people = (byWeek.get(key) || []).filter(hasNap);
     if (!people.length) continue;
-    const vcf = people.map(toVcard).join('\r\n');
-    const csv = toCsv(people.map(toGoogleCsvRow), googleColumns);
+    const vcf = people.map(toVcard).join('\r\n\r\n') + '\r\n';
+    const csv = toCsv(people.map(toGoogleCsvRow), GOOGLE_CSV_COLUMNS);
     const safe = key.replace(/[^\w.-]/g, '_');
     await writeFile(join(OUT_DIR, 'weeks', `${safe}.vcf`), vcf, 'utf8');
     await writeFile(join(OUT_DIR, 'weeks', `${safe}.csv`), csv, 'utf8');
@@ -311,6 +315,7 @@ async function main() {
   const summaryLines = [
     `# Contacts export — ${new Date().toISOString().slice(0, 10)}`,
     ``,
+    `**Gumption:** [${GUMPTION_URL}](${GUMPTION_URL})`,
     `**Callable contacts (phone or email):** ${callable.length}`,
     `**Records with a name but no phone/email:** ${nameless.length}`,
     `**Test rows on the week call-sheet:** ${tests.length}`,
@@ -343,6 +348,9 @@ async function main() {
     `Then re-run \`npm run contacts\`. New rows merge on phone/email; week tags come from the test date.`,
   ];
   await writeFile(join(OUT_DIR, 'SUMMARY.md'), summaryLines.join('\n'), 'utf8');
+  await writeFile(join(OUT_DIR, 'GUMPTION.url'), `[InternetShortcut]\nURL=${GUMPTION_URL}\n`, 'utf8');
+  await writeFile(join(OUT_DIR, 'import-android', 'GUMPTION.url'), `[InternetShortcut]\nURL=${GUMPTION_URL}\n`, 'utf8');
+  await writeFile(join(OUT_DIR, 'import-ipad', 'GUMPTION.url'), `[InternetShortcut]\nURL=${GUMPTION_URL}\n`, 'utf8');
 
   // Keep a copy of the README next to the import folders so it travels with AirDrop.
   if (await exists(join(OUT_DIR, 'README.md'))) {
