@@ -12,3 +12,5 @@ From Slack once Gumption is up:
 /gumption intake
 /gumption final
 ```
+
+**Walkthrough + overnight notes:** open `gumption-gillis-walkthrough/index.html`. Leave an audio note only on major edits; Grok ships the rest from `GROK-OVERNIGHT.md`.

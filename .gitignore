@@ -27,3 +27,8 @@ contacts/weeks/
 contacts/import-ipad/
 contacts/import-android/
 contacts/GUMPTION.url
+
+# Voice notes for overnight Grok — never commit customer audio
+gumption-gillis-walkthrough/notes/*
+!gumption-gillis-walkthrough/notes/.gitkeep
+!gumption-gillis-walkthrough/notes/README.md
