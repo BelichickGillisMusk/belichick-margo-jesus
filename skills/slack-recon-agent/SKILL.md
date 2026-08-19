@@ -41,12 +41,16 @@ Mila-Legal      Statute research, citations     /recon-legal (supports Sentinel)
 Mila-CARB       Clean Truck Check, VIN lookup   /recon-compliance
 Kesha           Trends, SEO, audience research  /recon-market
 Musk            Competitor sites, tech recon    /recon-market (supports Kesha)
+Kimi            Persistent competitor memory    /intel /recon-intel
 Jon Jones       Prospect dossiers, pitch craft  /recon-prospect
 Cipher          Token budget, cost tracking     /budget
 
 MULTI-AGENT MISSIONS (more than one agent deploys):
   /recon-legal    → Sentinel (analysis) + Mila-Legal (source gathering)
   /recon-market   → Kesha (trends/audience) + Musk (competitor sites)
+  /recon-intel    → Kimi (loads intel/memory first; does not redo last week)
+  /intel          → Kimi daily Sales/Marketing/Product brief
+  /intel-voice    → log what fleets keep saying
   /recon-prospect → Lead Scraper (public info) + Jon Jones (pitch strategy)
 ```
 
@@ -59,6 +63,7 @@ Don't remember the command? Just remember what you want:
 | Find trucking companies in a city     | `/recon-leads trucking companies in Dallas TX` | **Lead Scraper**            |
 | Check if a new law creates a business | `/recon-legal CARB 2027 quarterly testing`     | **Sentinel** + **Mila-Legal** |
 | See who's competing with you          | `/recon-market diesel emissions testing CA`    | **Kesha** + **Musk**          |
+| What changed since last week          | `/intel` or `/recon-intel what moved?`         | **Kimi** (memory-backed)      |
 | Check a truck's compliance status     | `/recon-compliance 1HGBH41JXMN109186`         | **Mila-CARB**               |
 | Build a pitch for a prospect          | `/recon-prospect Pacific Fleet LLC`            | **Jon Jones** + **Lead Scraper** |
 | See how much you're spending          | `/budget`                                      | **Cipher**                  |
@@ -98,6 +103,9 @@ Register these slash commands in your Slack app:
 | `/recon-leads [query]` | Scrape business leads | **Lead Scraper** (Gemini) |
 | `/recon-legal [topic]` | Research regulations | **Sentinel** + **Mila-Legal** |
 | `/recon-market [industry]` | Market intelligence | **Kesha** + **Musk** |
+| `/recon-intel [question]` | Competitive intel with memory | **Kimi** |
+| `/intel` | Daily brief from memory | **Kimi** |
+| `/intel-voice [quote]` | Log customer voice | **Kimi** (no model) |
 | `/recon-compliance [vin]` | Check vehicle compliance | **Mila-CARB** |
 | `/recon-prospect [company]` | Deep dive on a prospect | **Jon Jones** + **Lead Scraper** |
 | `/agent-status` | Get all agent statuses | **Belichick** |
@@ -418,7 +426,7 @@ Automated recon that runs on schedule - you wake up and the intel is already in 
 | Agent status pulse | Every 2h (8AM-8PM) | Belichick | #agent-status |
 | New CARB regulation check | Daily 6 AM | Sentinel | #recon-legal |
 | Lead scrape: new trucking companies | Weekly Monday 7 AM | Lead Scraper | #recon-leads |
-| Competitor website changes | Weekly Wednesday 7 AM | Musk | #recon-market |
+| Competitor website changes | Daily 7 AM | Kimi | #recon-market |
 | Fleet compliance deadline alerts | Daily 8 AM | Mila-CARB | #recon-compliance |
 | Token budget report | Weekly Friday 5 PM | Cipher | #alerts |
 
@@ -445,9 +453,9 @@ Automated recon that runs on schedule - you wake up and the intel is already in 
   },
   {
     "name": "competitor-watch",
-    "schedule": "0 7 * * 3",
-    "agent": "musk",
-    "task": "Check competitor websites for pricing, service, or content changes. Post to #recon-market."
+    "schedule": "0 7 * * *",
+    "agent": "kimi",
+    "task": "Write today's competitive brief from intel/memory. Sales / Marketing / Product. Do not invent launches or prices."
   },
   {
     "name": "compliance-deadline-alerts",

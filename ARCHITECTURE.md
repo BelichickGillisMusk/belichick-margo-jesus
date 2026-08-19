@@ -478,7 +478,7 @@ Slack is the mission command center. Agents are dispatched via slash commands an
 | `#recon-command` | Mission dispatch | Belichick (receives) |
 | `#recon-leads` | Prospect/lead intelligence | Lead Scraper |
 | `#recon-legal` | Regulatory intel | Sentinel, Mila-Legal |
-| `#recon-market` | Market research | Kesha, Musk |
+| `#recon-market` | Market research | Kesha, Musk, Kimi |
 | `#recon-sales` | Prospect dossiers | Jon Jones |
 | `#recon-compliance` | Vehicle/fleet compliance | Mila-CARB |
 | `#agent-status` | Agent status dashboard | All agents |
@@ -491,6 +491,9 @@ Slack is the mission command center. Agents are dispatched via slash commands an
 | `/recon-leads [query]` | Scrape business leads from Google Maps |
 | `/recon-legal [topic]` | Research regulations and find opportunities |
 | `/recon-market [industry]` | Competitor and market intelligence |
+| `/recon-intel [question]` | Persistent competitive intel — memory is the prompt |
+| `/intel` | Daily Kimi brief (Sales / Marketing / Product) |
+| `/intel-voice [quote]` | Log what customers keep saying |
 | `/recon-compliance [vin]` | Check vehicle compliance status |
 | `/recon-prospect [company]` | Deep dive dossier on a prospect |
 | `/dispatch [agent] [task]` | Direct dispatch to any agent |

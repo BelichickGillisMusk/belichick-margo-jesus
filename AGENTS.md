@@ -4,13 +4,14 @@
 
 ### Overview
 
-This is a Node.js ES module project (`"type": "module"`) with three runtime surfaces:
+This is a Node.js ES module project (`"type": "module"`) with four runtime surfaces:
 
 | Service | Command | Port/Mode | Required Env Vars |
 |---------|---------|-----------|-------------------|
 | **Mila CARB Chatbot** | `npm run mila` | Express on `:3001` | `ANTHROPIC_API_KEY` (for `/chat`; health/widget work without it) |
 | **Slack Bot** | `npm run slack` | Socket Mode (no port) | `SLACK_BOT_TOKEN`, `SLACK_APP_TOKEN`, `SLACK_SIGNING_SECRET`, `ANTHROPIC_API_KEY` |
 | **Lead Scraper** | `npm run scrape` | CLI (run-and-exit) | `GOOGLE_PLACES_API_KEY` |
+| **Kimi intel** | `npm run intel` | CLI (run-and-exit) | none required; `KIMI_API_KEY` optional, `INTEL_FETCH=1` to hit public pages |
 
 ### Running tests
 
@@ -20,8 +21,8 @@ All tests use Node's built-in test runner with mocked externals — no API keys 
 npm run check   # runs: npm test && npm run smoke && npm run validate:html
 ```
 
-- `npm test` — 28 unit/integration tests (runtime contract, sessions, missions, scraper, Cloudflare worker, swarm)
-- `npm run smoke` — verifies all three entry points import cleanly without booting services
+- `npm test` — unit/integration tests (runtime contract, sessions, missions, scraper, Cloudflare worker, swarm, Kimi intel)
+- `npm run smoke` — verifies entry points (Slack, Mila, Samantha, scraper, Kimi intel) import cleanly without booting services
 - `npm run validate:html` — checks 9 HTML files for structural integrity
 
 ### Mila chatbot (easiest to demo)

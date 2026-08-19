@@ -1,12 +1,61 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { AGENTS } from './agents.js';
+import { askKimi, kimiEnabled } from '../intel/kimi.js';
+import { buildBrief } from '../intel/brief.js';
+import { formatMemory, loadContext, saveAssignment } from '../intel/store.js';
 
 const anthropic = new Anthropic();
 
-export async function runAgent(agentId, task) {
+async function runKimiAgent(agentId, agent, task, {
+  kimiAsk,
+  intelRoot,
+} = {}) {
+  const start = Date.now();
+  const context = await loadContext({ root: intelRoot });
+  const memory = formatMemory(context);
+  const ask = kimiAsk || (kimiEnabled() ? askKimi : null);
+
+  let text;
+  let tokens = 0;
+
+  if (ask) {
+    const asked = await ask(task, { memory });
+    text = asked.text;
+    tokens = asked.tokens || 0;
+    await saveAssignment({
+      question: task,
+      findings: text,
+      eventsUsed: context.events.map(event => event.id),
+    }, intelRoot);
+  } else {
+    const built = buildBrief(context);
+    text = [
+      built.markdown,
+      '',
+      '_(KIMI_API_KEY is not set. This is the structural brief from memory — the why-it-matters layer needs the key. Memory was still loaded, so this is not a blank chat.)_',
+      '',
+      'MEMORY SNAPSHOT',
+      memory,
+    ].join('\n');
+  }
+
+  return {
+    agentId,
+    name: agent.name,
+    text,
+    elapsed: ((Date.now() - start) / 1000).toFixed(1),
+    tokens,
+  };
+}
+
+export async function runAgent(agentId, task, options = {}) {
   const agent = AGENTS[agentId];
   if (!agent) {
     throw new Error(`Unknown agent: ${agentId}`);
+  }
+
+  if (agent.provider === 'kimi') {
+    return runKimiAgent(agentId, agent, task, options);
   }
 
   const start = Date.now();
@@ -69,12 +118,12 @@ function buildMissionPayload({ results, failures }) {
   };
 }
 
-export async function runMission(agentIds, task) {
-  const settled = await Promise.allSettled(agentIds.map(agentId => runAgent(agentId, task)));
+export async function runMission(agentIds, task, options = {}) {
+  const settled = await Promise.allSettled(agentIds.map(agentId => runAgent(agentId, task, options)));
   return buildMissionPayload(summarizeOutcomes(settled));
 }
 
-export async function runSwarm(agentIds, task, { parallelism = 3, runner = runAgent } = {}) {
+export async function runSwarm(agentIds, task, { parallelism = 3, runner = runAgent, ...runnerOptions } = {}) {
   if (!Array.isArray(agentIds) || agentIds.length === 0) {
     throw new Error('runSwarm requires at least one agent.');
   }
@@ -86,7 +135,7 @@ export async function runSwarm(agentIds, task, { parallelism = 3, runner = runAg
 
   while (queue.length > 0) {
     const batch = queue.splice(0, limit);
-    const settled = await Promise.allSettled(batch.map(agentId => runner(agentId, task)));
+    const settled = await Promise.allSettled(batch.map(agentId => runner(agentId, task, runnerOptions)));
     const { results, failures } = summarizeOutcomes(settled);
     allResults.push(...results);
     allFailures.push(...failures);
