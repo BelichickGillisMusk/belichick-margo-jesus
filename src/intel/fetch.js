@@ -25,12 +25,22 @@ export async function fetchPublicPage(url, { fetchImpl = fetch, timeoutMs = TIME
   }
 }
 
+export function htmlToExcerpt(html, limit = 800) {
+  return String(html || '')
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script[^>]*>/gi, ' ')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style[^>]*>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, limit);
+}
+
 export async function snapshotRoster(roster, { fetchImpl = fetch, delayMs = DELAY_MS, hashPage } = {}) {
   const snapshots = {};
   for (const competitor of roster) {
     try {
       const page = await fetchPublicPage(competitor.url, { fetchImpl });
-      const excerpt = page.text.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 800);
+      const excerpt = htmlToExcerpt(page.text);
       snapshots[competitor.id] = {
         hash: hashPage(excerpt),
         excerpt,

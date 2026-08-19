@@ -15,7 +15,7 @@ import {
 import { classifyChange, diffSnapshots, EVENT_KINDS } from '../src/intel/diff.js';
 import { buildBrief } from '../src/intel/brief.js';
 import { askKimi, kimiConfig, kimiEnabled, KIMI_SYSTEM } from '../src/intel/kimi.js';
-import { snapshotRoster } from '../src/intel/fetch.js';
+import { htmlToExcerpt, snapshotRoster } from '../src/intel/fetch.js';
 import { runAssign, runBrief, runVoice, runWatch } from '../src/intel/run.js';
 import { AGENTS, MISSIONS, SWARM_PRESETS } from '../src/slack-bot/agents.js';
 import { runAgent } from '../src/slack-bot/dispatch.js';
@@ -297,6 +297,14 @@ describe('kimi client env', { concurrency: false }, () => {
     assert.match(result.text, /KIMI_API_KEY is not set/);
     assert.match(result.text, /MEMORY SNAPSHOT/);
   });
+});
+
+test('htmlToExcerpt drops script and style bodies even when the closing tag has whitespace', () => {
+  const html = '<html><script type="text/javascript">Introducing pricing $99</script ><style>launch { color: red }</style ><body>Yard testing</body></html>';
+  const excerpt = htmlToExcerpt(html);
+  assert.doesNotMatch(excerpt, /pricing/);
+  assert.doesNotMatch(excerpt, /launch/);
+  assert.match(excerpt, /Yard testing/);
 });
 
 test('snapshotRoster records fetch failures without throwing', async () => {
