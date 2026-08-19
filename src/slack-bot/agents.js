@@ -1,6 +1,6 @@
 import { DEFAULT_SAMANTHA_EMAIL } from '../shared/runtime-contract.js';
 
-function defineAgent({ name, role, model, channel, systemPrompt, guardrails, outputFormat, skillPath }) {
+function defineAgent({ name, role, model, channel, systemPrompt, guardrails, outputFormat, skillPath, provider = 'anthropic' }) {
   return {
     name,
     role,
@@ -10,6 +10,7 @@ function defineAgent({ name, role, model, channel, systemPrompt, guardrails, out
     guardrails,
     outputFormat,
     skillPath,
+    provider,
   };
 }
 
@@ -247,6 +248,27 @@ Phones: 916-890-4427 (main), 415-900-8563 (Bay Area), 209-818-1371 (Stockton), 6
 
 Be relentless but honest. These clients already know us — the retest is the easiest close in the business. Don't let a single overdue truck slip through.`,
   }),
+  kimi: defineAgent({
+    name: 'Kimi',
+    role: 'Autonomous competitive-intelligence analyst — 30-competitor daily watch, persistent memory, sales/marketing/product brief',
+    model: process.env.KIMI_MODEL || 'kimi-k2-turbo-preview',
+    provider: 'kimi',
+    channel: '#recon-market',
+    skillPath: 'skills/kimi-intel/SKILL.md',
+    outputFormat: 'Daily brief split into Sales (what to say), Marketing (what changed), Product (what deserves another look), plus memory carried forward.',
+    guardrails: [
+      'Never invent a launch, a price, an integration, or a quote.',
+      'Public pages only — no logins, no paywalls, no scraping behind auth.',
+      'Load intel/memory/ before answering. Do not redo last week’s work.',
+      'If memory is empty, baseline. Do not speculate to fill the page.',
+    ],
+    systemPrompt: `You are Kimi, the Gillis competitive analyst for NorCal CARB Mobile.
+You do not redo research. MEMORY (previous assignments, events, customer-voice themes) is the source of truth and is prepended to every call.
+Only report what is new or what contradicts memory.
+Never invent a launch, a price, an integration, or a quote.
+Split every brief into Sales (what to say), Marketing (what changed), Product (what deserves another look).
+The fix for disappearing research is this memory, not a longer prompt.`,
+  }),
 };
 
 export const SWARM_PRESETS = {
@@ -268,13 +290,14 @@ export const SWARM_PRESETS = {
       'jon-jones',
       'cipher',
       'aplus-hunter',
+      'kimi',
     ],
   },
   intel: {
     label: 'Intelligence squad',
     emoji: ':mag:',
-    description: 'Market, technical, and creative intel agents brainstorming a single problem.',
-    agents: ['kesha', 'musk', 'sentinel', 'mila-legal'],
+    description: 'Market, technical, and creative intel agents brainstorming a single problem. Kimi carries last week’s research so the squad does not start from a blank chat.',
+    agents: ['kimi', 'kesha', 'musk', 'sentinel', 'mila-legal'],
   },
   ops: {
     label: 'Operations squad',
@@ -350,6 +373,12 @@ export const MISSIONS = {
     agents: ['kesha', 'musk'],
     type: 'Market Intel',
     emoji: ':mag:',
+    channel: '#recon-market',
+  },
+  'recon-intel': {
+    agents: ['kimi'],
+    type: 'Competitive Intel',
+    emoji: ':newspaper:',
     channel: '#recon-market',
   },
   'recon-compliance': {

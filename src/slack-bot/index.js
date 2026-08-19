@@ -19,6 +19,7 @@ import {
   validateRequiredEnv,
   isMainModule,
 } from '../shared/runtime-contract.js';
+import { runAssign, runVoice, runWatch } from '../intel/run.js';
 
 const { App } = bolt;
 const DEFAULT_MAX_CONCURRENT_MISSIONS = parseIntegerEnv('SLACK_MAX_CONCURRENT_MISSIONS', 2, 1);
@@ -67,6 +68,15 @@ const QUICK_ACTIONS = {
     task: 'Take an honest look at NorCal CARB Mobile right now and each weigh in from your specialty: what is the single best next move I can ship today?',
     emoji: ':ant:',
   },
+  intel_pulse: {
+    label: 'Intel pulse',
+    action: 'intel',
+    commandName: 'intel',
+    type: 'Competitive Intel',
+    agents: ['kimi'],
+    task: 'Write today’s competitive brief from memory. Sales / Marketing / Product. Do not invent launches or prices.',
+    emoji: ':newspaper:',
+  },
   budget_pulse: {
     label: 'Budget pulse',
     action: 'budget',
@@ -103,6 +113,7 @@ function buildRosterResponse() {
           { type: 'button', text: { type: 'plain_text', text: 'Deploy pulse' }, action_id: 'deploy_pulse' },
           { type: 'button', text: { type: 'plain_text', text: 'Compliance pulse' }, action_id: 'compliance_pulse' },
           { type: 'button', text: { type: 'plain_text', text: 'Swarm pulse' }, action_id: 'swarm_pulse' },
+          { type: 'button', text: { type: 'plain_text', text: 'Intel pulse' }, action_id: 'intel_pulse' },
           { type: 'button', text: { type: 'plain_text', text: 'Budget' }, action_id: 'budget_pulse' },
         ],
       },
@@ -157,6 +168,24 @@ function getDispatchBlocker(missionStore, { maxConcurrentMissions, dailyTokenBud
   }
 
   return null;
+}
+
+function intelOutcomeFromWatch(result) {
+  const suffix = result.kimiUsed
+    ? ''
+    : '\n\n_(KIMI_API_KEY not set — structural brief from memory. Set the key for the why-it-matters layer.)_';
+  return {
+    agentId: 'kimi',
+    name: 'Kimi',
+    text: `${result.markdown}${suffix}\n\n_Wrote ${result.file}_`,
+    elapsed: '0.0',
+    tokens: result.tokens || 0,
+  };
+}
+
+async function executeIntelPulse() {
+  const result = await runWatch();
+  return intelOutcomeFromWatch(result);
 }
 
 function createGuard(allowedUserIds, getUserId) {
@@ -314,12 +343,170 @@ export function createSlackApp({
     await respond({ text: buildBudgetText(missionStore, dailyTokenBudget) });
   });
 
+  app.command('/intel', guardCommand, async ({ ack, respond, command, say }) => {
+    await ack();
+
+    const raw = command.text?.trim() || '';
+    const fetchRequested = raw === 'fetch' || raw.startsWith('fetch ');
+    const assignment = raw && !fetchRequested ? raw : '';
+
+    const blocker = getDispatchBlocker(missionStore, { maxConcurrentMissions, dailyTokenBudget });
+    if (blocker) {
+      await respond({ text: blocker });
+      return;
+    }
+
+    if (assignment) {
+      await respond({ text: `:newspaper: *[INTEL]* assignment → "${assignment}"\nMemory is prepended. Stand by...` });
+      try {
+        const { cancelled, outcome } = await runTrackedMission({
+          missionStore,
+          commandName: 'intel',
+          task: assignment,
+          agents: ['kimi'],
+          type: 'Competitive Intel',
+          requestedBy: command.user_id,
+          execute: async () => {
+            const result = await runAssign(assignment);
+            return {
+              name: 'Kimi',
+              text: `${result.findings}\n\n_Assignment ${result.assignment.id} stored. Next run carries this forward._`,
+              elapsed: '0.0',
+              tokens: result.tokens || 0,
+            };
+          },
+        });
+
+        const text = cancelled
+          ? `:warning: *[CANCELLED]* Kimi — /intel "${assignment}" was cancelled before posting results.`
+          : formatMissionCompletion({
+              outcome,
+              type: 'Competitive Intel',
+              task: assignment,
+              emoji: ':newspaper:',
+              agentNames: 'Kimi',
+              missionTokenWarnThreshold,
+            });
+        await say({ text, channel: command.channel_id });
+      } catch (error) {
+        await say({
+          text: `:x: *[ERROR]* Kimi — /intel failed: ${error.message}`,
+          channel: command.channel_id,
+        });
+      }
+      return;
+    }
+
+    await respond({
+      text: fetchRequested
+        ? ':newspaper: *[INTEL]* fetching 30 public competitor pages, then briefing from memory...'
+        : ':newspaper: *[INTEL]* daily brief from memory. (`/intel fetch` to hit public pages. `/intel [question]` for a new assignment.)',
+    });
+
+    try {
+      const { cancelled, outcome } = await runTrackedMission({
+        missionStore,
+        commandName: 'intel',
+        task: fetchRequested ? 'Daily watch with public-page fetch' : 'Daily brief from memory',
+        agents: ['kimi'],
+        type: 'Competitive Intel',
+        requestedBy: command.user_id,
+        execute: async () => intelOutcomeFromWatch(await runWatch({
+          fetchPages: fetchRequested ? true : undefined,
+        })),
+      });
+
+      const text = cancelled
+        ? ':warning: *[CANCELLED]* Kimi — daily intel brief was cancelled before posting results.'
+        : formatMissionCompletion({
+            outcome,
+            type: 'Competitive Intel',
+            task: 'daily brief',
+            emoji: ':newspaper:',
+            agentNames: 'Kimi',
+            missionTokenWarnThreshold,
+          });
+      await say({ text, channel: command.channel_id });
+    } catch (error) {
+      await say({
+        text: `:x: *[ERROR]* Kimi — /intel failed: ${error.message}`,
+        channel: command.channel_id,
+      });
+    }
+  });
+
+  app.command('/intel-voice', guardCommand, async ({ ack, respond, command }) => {
+    await ack();
+    const quote = command.text?.trim();
+    if (!quote) {
+      await respond({ text: 'Usage: /intel-voice [what fleets keep saying]' });
+      return;
+    }
+
+    try {
+      const result = await runVoice(quote);
+      await respond({
+        text: `:speech_balloon: Logged. ${result.themeCount} customer-voice themes in memory. Top: *${result.top?.theme}* (x${result.top?.count}). Next /intel or /recon-intel carries this forward.`,
+      });
+    } catch (error) {
+      await respond({ text: `:x: Could not log customer voice: ${error.message}` });
+    }
+  });
+
   for (const [actionId, action] of Object.entries(QUICK_ACTIONS)) {
     app.action(actionId, guardAction, async ({ ack, body, respond, client }) => {
       await ack();
 
       if (action.action === 'budget') {
         await respond({ text: buildBudgetText(missionStore, dailyTokenBudget), response_type: 'ephemeral' });
+        return;
+      }
+
+      if (action.action === 'intel') {
+        const blocker = getDispatchBlocker(missionStore, { maxConcurrentMissions, dailyTokenBudget });
+        if (blocker) {
+          await respond({ text: blocker, response_type: 'ephemeral' });
+          return;
+        }
+
+        const channelId = body.channel?.id || body.container?.channel_id;
+        await respond({ text: `${action.emoji} Starting ${action.label}...`, response_type: 'ephemeral' });
+
+        try {
+          const { cancelled, outcome } = await runTrackedMission({
+            missionStore,
+            commandName: action.commandName,
+            task: action.task,
+            agents: action.agents,
+            type: action.type,
+            requestedBy: body.user.id,
+            execute: executeIntelPulse,
+          });
+
+          if (!channelId) {
+            return;
+          }
+
+          const text = cancelled
+            ? `:warning: *[CANCELLED]* Kimi — ${action.label} was cancelled before posting results.`
+            : formatMissionCompletion({
+                outcome,
+                type: action.type,
+                task: action.task,
+                emoji: action.emoji,
+                agentNames: 'Kimi',
+                missionTokenWarnThreshold,
+              });
+
+          await client.chat.postMessage({ channel: channelId, text });
+        } catch (error) {
+          if (channelId) {
+            await client.chat.postMessage({
+              channel: channelId,
+              text: `:x: *[ERROR]* Kimi — ${action.label} failed: ${error.message}`,
+            });
+          }
+        }
         return;
       }
 

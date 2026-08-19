@@ -10,3 +10,9 @@ google-service-account.json
 .dev.vars
 .dev.vars.*
 .hermes/
+
+# Kimi intel runtime — roster.json is committed; snapshots, events, briefs are not
+intel/memory/*
+!intel/memory/.gitkeep
+intel/briefs/*
+!intel/briefs/.gitkeep

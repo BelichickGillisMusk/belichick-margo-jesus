@@ -87,9 +87,9 @@
       },
       {
         "name": "competitor-watch",
-        "schedule": "0 7 * * 3",       // Wednesday 7 AM
-        "agent": "musk",
-        "task": "Check competitor websites for pricing/service changes, post to Slack",
+        "schedule": "0 7 * * *",       // Daily 7 AM — Kimi, not a weekly Musk one-shot
+        "agent": "kimi",
+        "task": "Write today's competitive brief from intel/memory. Sales / Marketing / Product. Do not invent launches or prices. If memory is empty, baseline.",
         "slackChannel": "#recon-market"
       },
       {
