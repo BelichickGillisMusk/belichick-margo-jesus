@@ -1,7 +1,27 @@
 # AGENT COMMAND CENTER — ClawdBot Roster
 
-**Last Updated:** 2026-03-22
-**Status:** Post-purge. All agents local-only. No cloud, no autonomous ops.
+**Last Updated:** 2026-08-24
+**Status:** Active. Node.js bots local-only. Boardroom UI on Cloudflare.
+
+---
+
+## Boardroom — Internal Agent Command UI
+
+The Boardroom is the browser-based office interface for dispatching agent plans and tracking tasks.
+
+- **URL:** https://boardroom.bryanoneillgillis.com (private, Cloudflare Access)
+- **Source:** `cloudflare/sites/boardroom/index.html`
+- **Full docs:** [`cloudflare/sites/boardroom/BOARDROOM.md`](cloudflare/sites/boardroom/BOARDROOM.md)
+
+Key features added in July 2026:
+- **Task Dashboard** — browser-persisted (`localStorage`) task tracker; auto-populates from solo dispatches
+- **File attachments** — attach `.md` (text extracted) or `.pdf` (downloadable) to any task
+- **Solo mode** — defaults to single-agent (Samantha); click `[solo]` for instant per-agent dispatch
+- **Solid Agents panel** — Mila (Creative & CX), Sloane (Content & SEO), Elon (Bold Execution)
+- **Hermes Superpowers** — full Hermes v0.18+ CLI capabilities in generated plans
+- **Communication Webapp** — SMS / GChat / Slack / WhatsApp form via Hermes
+
+The boardroom generates execution plans locally (no API calls) for copying to the agent CLI or Slack.
 
 ---
 
