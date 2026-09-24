@@ -68,6 +68,11 @@ export const ENVIRONMENT_VARIABLES = {
     'SCRAPER_REQUEST_RETRIES',
     'SCRAPER_REQUEST_DELAY_MS',
   ],
+  gumption: [
+    'GUMPTION_BASE_URL',
+    'GUMPTION_API_KEY',
+    'GUMPTION_INTAKE_SOURCES',
+  ],
 };
 
 export function parseIntegerEnv(name, fallback, minimum = Number.NEGATIVE_INFINITY) {

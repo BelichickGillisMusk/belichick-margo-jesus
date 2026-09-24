@@ -294,6 +294,18 @@ export const SWARM_PRESETS = {
     description: 'CARB customer service, legal, and data sync triangulating a compliance question.',
     agents: ['mila-carb', 'mila-legal', 'sentinel', 'datasync'],
   },
+  gumption: {
+    label: 'Gumption intake',
+    emoji: ':inbox_tray:',
+    description: 'Full ingest pass once Gumption is up: pull CSV/Excel/Stripe/Webhook/REST sources, decode VINs, match to invoices, produce an intake report ready for finalization.',
+    agents: ['datasync', 'lead-scraper', 'mila-carb', 'samantha', 'cipher'],
+  },
+  'gumption-final': {
+    label: 'Gumption finalize',
+    emoji: ':lock:',
+    description: 'Closeout pass after Gumption intake: reconcile Stripe/PayPal/QuickBooks against ingested tests, clear orphan tests + orphan invoices, produce a signed-off close report.',
+    agents: ['finbot', 'datasync', 'samantha', 'aplus-hunter', 'cipher'],
+  },
 };
 
 export const DEFAULT_SWARM_PRESET = 'intel';
