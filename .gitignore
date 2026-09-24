@@ -10,3 +10,25 @@ google-service-account.json
 .dev.vars
 .dev.vars.*
 .hermes/
+
+# Reconciliation working files — real customer data, never commit.
+# Ignore file CONTENTS but keep the two directories tracked via .gitkeep.
+reports/inputs/*
+reports/outputs/*
+!reports/inputs/.gitkeep
+!reports/outputs/.gitkeep
+
+# Generated contact cards contain real customer phones — never commit
+contacts/all.vcf
+contacts/all-google.csv
+contacts/call-sheet-by-week.csv
+contacts/SUMMARY.md
+contacts/weeks/
+contacts/import-ipad/
+contacts/import-android/
+contacts/GUMPTION.url
+
+# Voice notes for overnight Grok — never commit customer audio
+gumption-gillis-walkthrough/notes/*
+!gumption-gillis-walkthrough/notes/.gitkeep
+!gumption-gillis-walkthrough/notes/README.md

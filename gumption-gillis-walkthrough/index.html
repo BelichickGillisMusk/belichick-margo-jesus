@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#07090d" />
+<title>Gumption × Gillis — walkthrough + overnight notes</title>
+<style>
+  :root{
+    --bg:#07090d;--surface:#0d1117;--raised:#161b22;--line:rgba(255,255,255,.08);
+    --ink:#e6edf3;--dim:#9aa6b2;--faint:#5b6573;--teal:#5eead4;--orange:#ff6a3d;
+    --green:#4ade80;--sans:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  a{color:var(--teal)}
+  button,textarea{font:inherit;color:inherit}
+  button{cursor:pointer;border:0;background:none}
+  body{max-width:720px;margin:0 auto;padding:20px 16px 80px}
+  header{margin-bottom:28px}
+  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+  h1{font-size:28px;letter-spacing:-.03em;margin:8px 0 10px}
+  .lede{color:var(--dim);line-height:1.5;font-size:15px}
+  .bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+  .pill{font-family:var(--mono);font-size:11px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;color:var(--dim)}
+  .pill a{color:var(--teal);text-decoration:none}
+  .step{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;margin:14px 0}
+  .step h2{font-size:18px;letter-spacing:-.02em;margin-bottom:6px}
+  .num{font-family:var(--mono);font-size:11px;color:var(--orange);letter-spacing:.08em}
+  .default{font-size:13.5px;color:var(--dim);line-height:1.5;margin:8px 0 14px}
+  .note-box{background:var(--raised);border:1px solid var(--line);border-radius:12px;padding:12px}
+  .note-box label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+  textarea{width:100%;min-height:72px;background:transparent;border:0;resize:vertical;color:var(--ink)}
+  .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .btn{padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.03);font-size:13px}
+  .btn.rec{background:rgba(255,106,61,.15);border-color:rgba(255,106,61,.4);color:var(--orange)}
+  .btn.rec.hot{animation:pulse 1.2s ease-in-out infinite}
+  .btn.primary{background:linear-gradient(135deg,#f97316,var(--orange));color:#1a0a04;border:0;font-weight:700}
+  .status{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:8px}
+  .status.has{color:var(--green)}
+  @keyframes pulse{50%{opacity:.6}}
+  footer{margin-top:28px;padding-top:16px;border-top:1px solid var(--line);color:var(--dim);font-size:13px;line-height:1.5}
+  .compile{position:sticky;bottom:12px;display:flex;gap:8px;justify-content:center;padding:10px;background:rgba(7,9,13,.85);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:999px;margin-top:24px}
+</style>
+</head>
+<body>
+<header>
+  <div class="kicker">NorCal CARB Mobile · overnight pack</div>
+  <h1>Gumption × Gillis walkthrough</h1>
+  <p class="lede">Tap through the ten steps. Leave an <strong>audio note only on a major edit</strong> — skip the rest. Grok ships the defaults overnight from <a href="GROK-OVERNIGHT.md">GROK-OVERNIGHT.md</a> plus whatever you drop in <code>notes/</code>.</p>
+  <div class="bar">
+    <span class="pill"><a href="https://gumption.co">Open Gumption</a></span>
+    <span class="pill">Tester IF530523</span>
+    <span class="pill">VIN + date, never VIN only</span>
+  </div>
+</header>
+
+<div id="steps"></div>
+
+<div class="compile">
+  <button class="btn" id="compileBtn">Download overnight transcripts</button>
+  <button class="btn primary" id="gumptionBtn">Open Gumption</button>
+</div>
+
+<footer>
+  Audio stays on this device until you tap <em>Save note</em> (downloads <code>01-….webm</code> / <code>.m4a</code>). Move those files into <code>gumption-gillis-walkthrough/notes/</code> before you sleep. Grok will not guess names, phones, or emails, and will not glue Android contacts back into one card.
+</footer>
+
+<script>
+const STEPS = [
+  { id:'01-open-gumption', title:'Open Gumption', def:'Keep the public link at gumption.co. If you self-host, say the URL in the note so GUMPTION_BASE_URL gets set.' },
+  { id:'02-stripe', title:'Stripe payments + payouts', def:'Ingest NCM-STRIPE as reports/inputs/stripe.csv. Map customer name, email, phone, created date. No note = that mapping ships.' },
+  { id:'03-invoices', title:'Invoices + Squarespace', def:'File → Download CSV for CLIENTS INVOICE SIMPLE and Squarespace orders. Drop as invoices.csv and squarespace.csv. NAP fields only — no invented emails.' },
+  { id:'04-tests', title:'8.15 tests file', def:'Keep reports/inputs/tests.xlsx (1,280 rows, Jun 2025 → Aug 14 2026, all IF530523). Major edit only if a newer export replaces it.' },
+  { id:'05-vin-date', title:'Match VIN + date', def:'Reconcile on normalized VIN and date window (±14d invoice, ±45d CRM). Banner when ≥70% of rows are FULL. Never match VIN alone.' },
+  { id:'06-week-calls', title:'Week call lists', def:'ISO weeks, one sitting per week. call-sheet-by-week.csv lists VIN/plate/date even without a name. Busiest week in the file: 2026-W24 (42 tests).' },
+  { id:'07-android-contacts', title:'Android contacts', def:'One person, one .vcf in contacts/import-android/one-each/. Unique UID + N: name. If the mega-contact is still on the phone, Undo import first. Never import the call-sheet as contacts.' },
+  { id:'08-intake', title:'/gumption intake', def:'Slack: /gumption intake. Squad: DataSync, Lead Scraper, Mila-CARB, Samantha, Cipher. STAGE-WAITING if Gumption is not up yet.' },
+  { id:'09-finalize', title:'/gumption final', def:'Slack: /gumption final. FinBot closes Stripe/PayPal/QB, zeros orphan tests and invoices, writes RECON_YYYY-MM-DD to Drive.' },
+  { id:'10-overnight', title:'What Grok builds tonight', def:'Implement only steps with a note. Defaults stand on the rest. Morning file: notes/MORNING.md with Shipped / Blocked / Ignored.' },
+];
+
+const root = document.getElementById('steps');
+const recState = {};
+
+function loadTranscript(id){
+  try { return localStorage.getItem('gg-note-'+id) || ''; } catch { return ''; }
+}
+function saveTranscript(id, value){
+  try { localStorage.setItem('gg-note-'+id, value); } catch {}
+}
+
+STEPS.forEach((step, i) => {
+  const el = document.createElement('article');
+  el.className = 'step';
+  el.innerHTML = `
+    <div class="num">STEP ${String(i+1).padStart(2,'0')} · ${step.id}</div>
+    <h2>${step.title}</h2>
+    <p class="default"><strong>Default (Grok ships this if you skip):</strong> ${step.def}</p>
+    <div class="note-box">
+      <label>Major-edit note — audio or type. Empty = default stands.</label>
+      <textarea id="ta-${step.id}" placeholder="e.g. ‘stop, match invoices on service date not created date’">${loadTranscript(step.id)}</textarea>
+      <div class="actions">
+        <button class="btn rec" data-rec="${step.id}">Record audio</button>
+        <button class="btn" data-save="${step.id}">Save note</button>
+      </div>
+      <div class="status" id="st-${step.id}">No note yet.</div>
+    </div>
+  `;
+  root.appendChild(el);
+  const ta = el.querySelector('textarea');
+  ta.addEventListener('input', () => {
+    saveTranscript(step.id, ta.value);
+    mark(step.id, ta.value);
+  });
+  mark(step.id, ta.value);
+});
+
+function mark(id, text){
+  const st = document.getElementById('st-'+id);
+  if (text && text.trim()){
+    st.textContent = 'Typed note saved on this device.';
+    st.className = 'status has';
+  } else if (recState[id]?.blob){
+    st.textContent = 'Audio ready — tap Save note to download.';
+    st.className = 'status has';
+  } else {
+    st.textContent = 'No note yet. Default stands overnight.';
+    st.className = 'status';
+  }
+}
+
+root.addEventListener('click', async (e) => {
+  const recId = e.target.dataset.rec;
+  const saveId = e.target.dataset.save;
+  if (recId) toggleRec(recId, e.target);
+  if (saveId) saveNote(saveId);
+});
+
+async function toggleRec(id, btn){
+  if (recState[id]?.media){
+    recState[id].media.stop();
+    return;
+  }
+  if (!navigator.mediaDevices?.getUserMedia){
+    alert('This browser cannot record. Type the note, or record a Voice Memo and drop it in notes/ as '+id+'.m4a');
+    return;
+  }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const mime = ['audio/webm;codecs=opus','audio/mp4','audio/webm'].find(m => MediaRecorder.isTypeSupported(m)) || '';
+    const media = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
+    const chunks = [];
+    media.ondataavailable = ev => { if (ev.data.size) chunks.push(ev.data); };
+    media.onstop = () => {
+      stream.getTracks().forEach(t => t.stop());
+      recState[id] = { blob: new Blob(chunks, { type: media.mimeType || 'audio/webm' }), mime: media.mimeType };
+      btn.textContent = 'Record audio';
+      btn.classList.remove('hot');
+      mark(id, document.getElementById('ta-'+id).value);
+    };
+    media.start();
+    recState[id] = { media };
+    btn.textContent = 'Stop';
+    btn.classList.add('hot');
+    document.getElementById('st-'+id).textContent = 'Recording… tap Stop when done.';
+  } catch (err) {
+    alert('Mic blocked. Type the note, or drop a Voice Memo in notes/. ('+err.message+')');
+  }
+}
+
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function saveNote(id){
+  const text = document.getElementById('ta-'+id).value.trim();
+  saveTranscript(id, text);
+  if (text){
+    downloadBlob(new Blob([text], { type:'text/plain' }), id+'.txt');
+  }
+  const audio = recState[id]?.blob;
+  if (audio){
+    const ext = (recState[id].mime || '').includes('mp4') ? 'm4a' : 'webm';
+    downloadBlob(audio, id+'.'+ext);
+  }
+  if (!text && !audio){
+    document.getElementById('st-'+id).textContent = 'Nothing to save — default stands.';
+    return;
+  }
+  document.getElementById('st-'+id).textContent = 'Downloaded. Move the file(s) into gumption-gillis-walkthrough/notes/ before you sleep.';
+  document.getElementById('st-'+id).className = 'status has';
+}
+
+document.getElementById('gumptionBtn').addEventListener('click', () => {
+  window.open('https://gumption.co', '_blank', 'noopener');
+});
+
+document.getElementById('compileBtn').addEventListener('click', () => {
+  const lines = [
+    '# Overnight transcripts — Gumption × Gillis',
+    '',
+    'Generated '+new Date().toISOString(),
+    'Empty steps mean: ship the default in GROK-OVERNIGHT.md.',
+    '',
+  ];
+  STEPS.forEach(step => {
+    const text = (document.getElementById('ta-'+step.id).value || '').trim();
+    lines.push('## '+step.id+' — '+step.title);
+    lines.push(text || '_no note — default stands_');
+    lines.push('');
+  });
+  downloadBlob(new Blob([lines.join('\n')], { type:'text/markdown' }), 'OVERNIGHT-TRANSCRIPTS.md');
+});
+</script>
+</body>
+</html>

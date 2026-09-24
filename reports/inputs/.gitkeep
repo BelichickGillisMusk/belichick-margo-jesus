@@ -1,0 +1,11 @@
+# Drop these files here (they are gitignored — never committed):
+#
+#   tests.xlsx        — CARB CTC-VIS test export (from portal)
+#   crm.csv           — Master CRM export (from Google Sheet
+#                       1TdNnf7eLaPNN3anaBGpNdjo_unK04zWwZJ859ZDvIO4)
+#   invoices.csv      — Invoice export (QuickBooks / Stripe / manual)
+#
+# Then run:  npm run reconcile
+#
+# Or point elsewhere:
+#   TESTS_FILE=... CRM_FILE=... INVOICES_FILE=... npm run reconcile

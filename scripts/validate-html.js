@@ -15,6 +15,7 @@ const htmlFiles = [
   'cloudflare/sites/silverbackai/index.html',
   'braintrust-hq/index.html',
   'mobileovitest/index.html',
+  'gumption-gillis-walkthrough/index.html',
 ];
 
 for (const relativePath of htmlFiles) {
