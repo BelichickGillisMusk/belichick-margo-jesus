@@ -28,6 +28,12 @@ export const RUNTIME_SURFACES = [
     mode: 'operator-run',
     description: 'CLI-driven Google Places lead scraper with optional Google Sheets export.',
   },
+  {
+    id: 'kimi-intel',
+    entryPoint: 'scripts/kimi-intel.mjs',
+    mode: 'operator-run',
+    description: 'Daily competitive-intelligence watcher: 30-competitor roster, append-only memory, sales/marketing/product brief.',
+  },
 ];
 
 export const ENVIRONMENT_VARIABLES = {
@@ -67,6 +73,15 @@ export const ENVIRONMENT_VARIABLES = {
     'GOOGLE_SERVICE_ACCOUNT_KEY',
     'SCRAPER_REQUEST_RETRIES',
     'SCRAPER_REQUEST_DELAY_MS',
+  ],
+  intel: [
+    'KIMI_API_KEY',
+    'KIMI_BASE_URL',
+    'KIMI_MODEL',
+    'INTEL_FETCH',
+    'INTEL_FETCH_DELAY_MS',
+    'INTEL_FETCH_TIMEOUT_MS',
+    'INTEL_DIR',
   ],
 };
 

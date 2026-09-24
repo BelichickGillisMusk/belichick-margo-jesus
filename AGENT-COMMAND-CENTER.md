@@ -80,6 +80,9 @@ npm run scrape    # Lead scraper — one-shot CLI tool
 | `/recon-leads [query]` | Lead Scraper | #recon-leads |
 | `/recon-legal [topic]` | Sentinel + Mila-Legal | #recon-legal |
 | `/recon-market [industry]` | Kesha + Musk | #recon-market |
+| `/recon-intel [question]` | Kimi | #recon-market |
+| `/intel` / `/intel fetch` / `/intel [question]` | Kimi (memory-backed brief or assignment) | Channel where dispatched |
+| `/intel-voice [quote]` | Kimi (logs customer voice, no model call) | Ephemeral |
 | `/recon-compliance [vin]` | Mila-CARB | #recon-compliance |
 | `/recon-prospect [company]` | Jon Jones + Lead Scraper | #recon-sales |
 | `/swarm [preset|agent,agent,...] | task` | Configurable squad (default `intel`) | Channel where dispatched |
@@ -100,8 +103,8 @@ npm run scrape    # Lead scraper — one-shot CLI tool
 **Swarm presets (used by `/swarm` and the *Swarm pulse* button):**
 | Preset | Squad | Use For |
 |--------|-------|---------|
-| `full` | All 12 operational agents | "Brain trust" — every specialist weighs in |
-| `intel` (default) | Kesha + Musk + Sentinel + Mila-Legal | Market & legal triangulation |
+| `full` | All operational agents including Kimi | "Brain trust" — every specialist weighs in |
+| `intel` (default) | Kimi + Kesha + Musk + Sentinel + Mila-Legal | Market & legal triangulation; Kimi carries last week’s research |
 | `ops` | Samantha + DataSync + Website Helper | Day-to-day execution review |
 | `revenue` | Jon Jones + Lead Scraper + FinBot + Cipher | Pipeline + money pass |
 | `compliance` | Mila-CARB + Mila-Legal + Sentinel + DataSync | CARB question deep dive |

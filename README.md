@@ -4,11 +4,12 @@ AI agent team. Local-first. Ships three real bots plus a road-ready Samantha orc
 
 ## Runtime surfaces
 
-The current runtime is intentionally split into three surfaces:
+The current runtime is intentionally split into four surfaces:
 
 - **Slack bot** — `src/slack-bot/index.js`
 - **Mila chatbot** — `src/mila-chatbot/index.js`
 - **Lead scraper** — `src/lead-scraper/index.js`
+- **Kimi intel** — `scripts/kimi-intel.mjs` (`src/intel/`)
 
 `src/slack-bot/agents.js` is the runtime source of truth for agent definitions used by the Slack app. The `skills/*/SKILL.md` files remain the human-facing prompt and operating-reference layer.
 
@@ -121,7 +122,7 @@ Real Slack bot with slash commands that dispatch agents to Claude.
 npm run slack
 ```
 
-Commands: `/recon-leads`, `/recon-legal`, `/recon-market`, `/recon-compliance`, `/recon-prospect`, `/recon-deploy`, `/dispatch`, `/agent-status`, `/budget`, `/kill`, `/roster`
+Commands: `/recon-leads`, `/recon-legal`, `/recon-market`, `/recon-intel`, `/recon-compliance`, `/recon-prospect`, `/recon-deploy`, `/intel`, `/intel-voice`, `/dispatch`, `/agent-status`, `/budget`, `/kill`, `/roster`
 
 Needs: `SLACK_BOT_TOKEN`, `SLACK_APP_TOKEN`, `SLACK_SIGNING_SECRET`, `ANTHROPIC_API_KEY`
 
@@ -150,6 +151,21 @@ Operational notes:
 - Session history, TTL, CORS policy, and lead retention are configurable via environment variables.
 - The knowledge base is loaded from `skills/mila-carb-cs/references/clean-truck-check-complete.md` at startup.
 - `/chat` accepts an optional `lead` object with `name`, `email`, and `need` for explicit capture.
+
+### 4. Kimi competitive intel
+
+Persistent research, not a longer prompt. Kimi watches 30 competitors, appends every launch / price / integration / positioning shift to `intel/memory/`, and briefs sales, marketing, and product. The next assignment loads that log plus customer-voice themes so the work does not disappear when the chat closes.
+
+```bash
+npm run intel            # daily watch + brief (INTEL_FETCH=1 to hit public pages)
+npm run intel:brief      # brief from memory only
+npm run intel:voice -- "fleets keep asking about the 2027 quarterly mandate"
+npm run intel:assign -- "did A+ change OVI pricing in the Central Valley?"
+```
+
+Slack: `/intel`, `/intel fetch`, `/intel [question]`, `/intel-voice [quote]`, `/recon-intel [question]`, **Intel pulse** on `/roster`.
+
+Needs: nothing required. `KIMI_API_KEY` adds the why-it-matters layer; without it the watcher still diffs public pages and writes a structural brief. CI never fetches (`INTEL_FETCH` defaults off).
 
 ## Runtime contract
 
@@ -182,6 +198,15 @@ Operational notes:
 - `SCRAPER_REQUEST_RETRIES`
 - `SCRAPER_REQUEST_DELAY_MS`
 
+### Kimi competitive intel
+- `KIMI_API_KEY`
+- `KIMI_BASE_URL`
+- `KIMI_MODEL`
+- `INTEL_FETCH`
+- `INTEL_FETCH_DELAY_MS`
+- `INTEL_FETCH_TIMEOUT_MS`
+- `INTEL_DIR`
+
 ## Agent roster
 
 | Agent | Role | Used By |
@@ -193,6 +218,7 @@ Operational notes:
 | Sentinel | Legal deep analysis | Slack |
 | Kesha | Marketing/trends | Slack |
 | Musk | Tech/competitor intel | Slack |
+| Kimi | Daily competitive intelligence (persistent memory) | Slack + `npm run intel` |
 | Jon Jones | Sales/prospect pitches | Slack |
 | Cipher | Budget tracking | Slack |
 | Lead Scraper | Google Places leads | Scraper + Slack |

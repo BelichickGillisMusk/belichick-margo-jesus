@@ -16,7 +16,7 @@ Create these channels in your Slack workspace before enabling the integration.
 |---------|---------|-----------|-----------|
 | `#recon-leads` | Prospect lists, business contacts | Lead Scraper | Jon Jones, You |
 | `#recon-legal` | Regulation intel, compliance changes | Sentinel, Mila-Legal | Belichick, You |
-| `#recon-market` | Market research, competitor analysis | Kesha, Musk | Belichick, You |
+| `#recon-market` | Market research, competitor analysis | Kesha, Musk, Kimi | Belichick, You, Sales, Product |
 | `#recon-sales` | Prospect dossiers, pitch strategies | Jon Jones | You |
 | `#recon-compliance` | Vehicle/fleet compliance status | Mila-CARB | You, Fleet Owners |
 
@@ -45,6 +45,9 @@ done
 /recon-leads    → Lead Scraper → #recon-leads
 /recon-legal    → Sentinel + Mila-Legal → #recon-legal
 /recon-market   → Kesha + Musk → #recon-market
+/recon-intel    → Kimi → #recon-market
+/intel          → Kimi daily brief (memory) → channel
+/intel-voice    → log customer-voice theme (no model call)
 /recon-compliance → Mila-CARB → #recon-compliance
 /recon-prospect → Jon Jones + Lead Scraper → #recon-sales
 /agent-status   → Belichick → #agent-status
