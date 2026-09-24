@@ -1,0 +1,4 @@
+# Reconciliation outputs land here (gitignored):
+#
+#   reconciliation-YYYY-MM-DD.csv    — per-test-row match status
+#   summary-YYYY-MM-DD.md            — human-readable summary
